@@ -17,20 +17,62 @@
 
 namespace CloudCreativity\LaravelStripe\Facades;
 
+use CloudCreativity\LaravelStripe\Client;
 use CloudCreativity\LaravelStripe\Connector;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
+use CloudCreativity\LaravelStripe\Contracts\Webhooks\DispatcherInterface;
+use CloudCreativity\LaravelStripe\Testing\ClientFake;
+use CloudCreativity\LaravelStripe\Testing\StripeFake;
 use Illuminate\Support\Facades\Facade;
 use Stripe\Event;
+use Stripe\StripeObject;
 
 /**
  * Class Stripe
  *
  * @package CloudCreativity\LaravelStripe
+ *
  * @method static Connector app()
  * @method static Connector account(string $accountId)
  * @method static void dispatch(Event $event)
+ *
+ * @method static void withQueue(StripeObject ...$objects)
+ * @method static void assertInvoked(string $class, string $method, \Closure $args = null)
+ * @method static void assertInvokedAt(int $index, string $class, string $method, \Closure $args = null)
  */
 class Stripe extends Facade
 {
+
+    /**
+     * Fake static calls to Stripe.
+     *
+     * @return StripeFake
+     */
+    public static function fake()
+    {
+        /**
+         * Swapping the client stubs static calls to Stripe. This allows the entire Laravel
+         * Stripe package to operate, with only the static calls to the Stripe package being
+         * removed.
+         */
+        static::$app->instance(
+            Client::class,
+            $client = new ClientFake(static::$app->make('events'))
+        );
+
+        /**
+         * We then swap in a Stripe service fake, that has our test assertions on it.
+         * This extends the real Stripe service and doesn't overload anything on it,
+         * so the service will operate exactly as expected.
+         */
+        static::swap($fake = new StripeFake(
+            static::$app->make(AccountAdapterInterface::class),
+            static::$app->make(DispatcherInterface::class),
+            $client
+        ));
+
+        return $fake;
+    }
 
     /**
      * @return string

@@ -19,10 +19,9 @@ namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Events\ClientReceivedResult;
 use CloudCreativity\LaravelStripe\Events\ClientWillSend;
+use CloudCreativity\LaravelStripe\Exceptions\InvalidArgumentException;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
-use RuntimeException;
 
 class Client
 {
@@ -50,24 +49,32 @@ class Client
      */
     public function __invoke($class, $method, ...$args)
     {
-        if (!class_exists($class)) {
-            throw new InvalidArgumentException('Expecting a valid class name.');
+        if (!is_callable("{$class}::{$method}")) {
+            throw new InvalidArgumentException(sprintf('Cannot class %s method %s', $class, $method));
         }
 
-        $callable = "{$class}::{$method}";
         $name = Str::snake(class_basename($class));
-
-        if (!is_callable($callable)) {
-            throw new RuntimeException(sprintf('Cannot class %s method %s', $class, $method));
-        }
 
         $this->events->dispatch(new ClientWillSend($name, $method, $args));
 
-        $result = call_user_func_array($callable, $args);
+        $result = $this->execute($class, $method, $args);
 
         $this->events->dispatch(new ClientReceivedResult($name, $method, $args, $result));
 
         return $result;
+    }
+
+    /**
+     * Execute the static Stripe call.
+     *
+     * @param $class
+     * @param $method
+     * @param array $args
+     * @return mixed
+     */
+    protected function execute($class, $method, array $args)
+    {
+        return call_user_func_array("{$class}::{$method}", $args);
     }
 
 }

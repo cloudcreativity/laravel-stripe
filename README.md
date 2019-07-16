@@ -27,10 +27,25 @@ Stripe::account($accountId)
 $account->stripe()->paymentIntents()->create('gbp', 999);
 ```
 
-See [this class](./src/Connector.php) for the resources that we have already implemented.
+### Testing Example
 
-> If you need to add a resource that is currently not catered for, see the [Contributing](#Contributing)
-section below.
+```php
+Stripe::withQueue($expected = new \Stripe\PaymentIntent());
+
+$actual = Stripe::account($accountId)->paymentIntents()->create('gbp', 999);
+
+$this->assertSame($expected, $actual);
+
+Stripe::assertInvoked(
+    \Stripe\PaymentIntent::class, 
+    'create', 
+    function ($params, $options) use ($accountId) {
+        $this->assertEquals(['currency' => 'gbp', 'amount' => 999], $params);
+        $this->assertEquals(['stripe_account' => $accountId], $options);
+        return true;
+    }
+);
+```
 
 ### Why not just use Cashier?
 
@@ -213,7 +228,7 @@ Available methods are:
 
 To use connected accounts, we expect you to have an Eloquent model in which you are storing the
 details of your connected accounts, including the Stripe ID. Set the `stripe.connected_accounts.model`
-to your model class, then add the following interface and trait:
+config value to your model class, then add the following interface and trait:
 
 ```php
 <?php
