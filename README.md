@@ -30,8 +30,8 @@ section below.
 
 ## Why not just use Cashier?
 
-This package is meant to be used *in addition* to [Laravel Cashier](https://laravel.com/docs/billing)
-- not instead of it.
+This package is meant to be used *in addition* to [Laravel Cashier](https://laravel.com/docs/billing),
+not instead of it.
 
 Our primary use-case is Stripe Connect. We needed a package that provided really easy access to data from
 connected Stripe accounts. We wanted to make interacting with the entire Stripe API fluent,
@@ -82,7 +82,7 @@ return [
 ### Eloquent
 
 To use connected accounts, we expect you to have an Eloquent model in which you are storing the
-details of your connected accounts, including the Stripe id. Set the `stripe.connected_accounts.model`
+details of your connected accounts, including the Stripe ID. Set the `stripe.connected_accounts.model`
 to your model class, then add the following interface and trait:
 
 ```php
@@ -96,17 +96,44 @@ use Illuminate\Database\Eloquent\Model;
 
 class StripeAccount extends Model implements AccountInterface
 {
-
     use ConnectedAccount;
 
     // ...
 }
 ```
 
+### Stripe ID Column
+
+If your model does not use an incrementing primary key, we assume that the primary key is also the Stripe ID.
+
+If your model does use incrementing primary keys, we default to `stripe_account_id` as the column name.
+
+If you use a different name, implement the `getStripeAccountKeyName()` on your model:
+
+```php
+<?php
+
+namespace App;
+
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
+use CloudCreativity\LaravelStripe\Eloquent\ConnectedAccount;
+use Illuminate\Database\Eloquent\Model;
+
+class StripeAccount extends Model implements AccountInterface
+{
+    use ConnectedAccount;
+
+    public function getStripeAccountKeyName()
+    {
+        return 'account_id';
+    }
+}
+```
+
 ### Not Using Eloquent?
 
-You can easily integrate alternative storage implementions but writing an adapter that 
-[implements this interface.](./src/Contracts/ConnectedAccountAdapter.php)
+You can easily integrate alternative storage implementions by writing an adapter that 
+[implements this interface.](./src/Contracts/Connect/AccountAdapterInterface.php)
 Then set the `stripe.connected_accounts.adapter` config option to your custom class.
 
 ## Console
@@ -138,6 +165,8 @@ Options:
   -A, --account[=ACCOUNT]  The connected account
   -e, --expand[=EXPAND]    The paths to expand (multiple values allowed)
 ```
+
+> This console command is provided for debugging purposes.
 
 ## Contributing
 

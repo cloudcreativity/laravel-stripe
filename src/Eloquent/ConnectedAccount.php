@@ -41,11 +41,25 @@ trait ConnectedAccount
     }
 
     /**
+     * Get the Stripe account ID column name.
+     *
+     * If your model does not use an incrementing primary key, we assume
+     * that the primary key is also the Stripe ID.
+     *
+     * If your model does use incrementing primary keys, we default to
+     * `stripe_account_id` as the column name.
+     *
+     * If you use a different name, just implement this method yourself.
+     *
      * @return string
      */
     public function getStripeAccountKeyName()
     {
-        return $this->getKeyName();
+        if (!$this->incrementing) {
+            return $this->getKeyName();
+        }
+
+        return 'stripe_account_id';
     }
 
 }

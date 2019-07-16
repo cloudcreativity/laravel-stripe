@@ -34,8 +34,12 @@ class Assert
      */
     public static function id($expected, $id)
     {
-        if (!is_string($id) || !Str::startsWith($id, $expected)) {
-            throw new InvalidArgumentException("Expecting a Stripe id with prefix '{$expected}'");
+        if (!is_string($id)) {
+            throw new InvalidArgumentException('Expecting a string id.');
+        }
+
+        if (!Str::startsWith($id, $expected)) {
+            throw new InvalidArgumentException("Expecting a Stripe id with prefix '{$expected}', received '{$id}'.");
         }
     }
 
