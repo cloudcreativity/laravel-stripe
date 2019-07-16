@@ -28,7 +28,7 @@ matrix:
 install:
 - composer require "laravel/framework:${LARAVEL_VERSION}" --no-update -n
 - composer require "phpunit/phpunit:${PHPUNIT_VERSION}" --dev --no-update -n
-- travis_retry composer install --no-suggest --prefer-dist -n -o
+- travis_retry composer up --no-suggest --prefer-dist -n -o
 
 script:
   - vendor/bin/phpunit

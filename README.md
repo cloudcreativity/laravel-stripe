@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cloudcreativity/laravel-stripe.svg?branch=master)](https://travis-ci.org/cloudcreativity/laravel-stripe)
+
 # Laravel Stripe
 
 A Laravel integration for [Stripe's official PHP package.](https://github.com/stripe/stripe-php)
