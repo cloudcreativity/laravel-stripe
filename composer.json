@@ -14,9 +14,15 @@
     "require": {
         "php": "^5.6|^7.0",
         "ext-json": "*",
-        "illuminate/support": "^5.4"
+        "illuminate/console": "^5.4",
+        "illuminate/contracts": "^5.4",
+        "illuminate/database": "^5.4",
+        "illuminate/support": "^5.4",
+        "psr/log": "^1.0",
+        "stripe/stripe-php": "^6.40"
     },
     "require-dev": {
+        "laravel/cashier": "^8.0|^9.0",
         "orchestra/testbench": "^3.4",
         "phpunit/phpunit": "^5.7|^6.5|^7.0"
     },
