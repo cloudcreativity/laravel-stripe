@@ -2,6 +2,8 @@
 
 # Laravel Stripe
 
+## Overview
+
 A Laravel integration for [Stripe's official PHP package.](https://github.com/stripe/stripe-php)
  
 This package allows you to fluently query the Stripe API via repositories.
@@ -30,7 +32,7 @@ See [this class](./src/Connector.php) for the resources that we have already imp
 > If you need to add a resource that is currently not catered for, see the [Contributing](#Contributing)
 section below.
 
-## Why not just use Cashier?
+### Why not just use Cashier?
 
 This package is meant to be used *in addition* to [Laravel Cashier](https://laravel.com/docs/billing),
 not instead of it.
@@ -109,7 +111,8 @@ To access connected accounts, you will need to have stored the Stripe account id
 See [Connected Accounts](#connected-accounts) below for details as to how to integrate models
 or other storage with this package.
 
-Once you've done that, you can access the connected Stripe account via the facade or service:
+Once you've done that, you can access the connected Stripe account via the facade, service,
+or the account model:
 
 ```php
 // Using the facade...
@@ -122,7 +125,10 @@ app('stripe')->account($accountId)->account();
 
 // Using dependency injection
 /** @var \CloudCreativity\LaravelStripe\StripeService $service */
-$service->app()->account();
+$service->account($accountId)->account();
+
+// Or if you have the account model:
+$model->stripe()->account();
 ```
 
 ### Accessing Repositories
