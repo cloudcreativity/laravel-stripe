@@ -19,11 +19,11 @@
         "illuminate/database": "^5.4",
         "illuminate/support": "^5.4",
         "psr/log": "^1.0",
-        "stripe/stripe-php": "^6.40"
+        "stripe/stripe-php": "^5.9|^6.40"
     },
     "require-dev": {
-        "laravel/cashier": "^8.0|^9.0",
-        "orchestra/testbench": ">=3.4 <3.8",
+        "laravel/cashier": "^7.0|^8.0|^9.0",
+        "orchestra/testbench": "3.4.*|3.5.*|3.6.*|3.7.*",
         "phpunit/phpunit": "^5.7|^6.5|^7.0"
     },
     "autoload": {
