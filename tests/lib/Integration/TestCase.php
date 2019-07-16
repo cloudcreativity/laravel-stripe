@@ -7,7 +7,6 @@ use CloudCreativity\LaravelStripe\ServiceProvider;
 use CloudCreativity\LaravelStripe\Tests\TestAccount;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Foundation\Application;
-use Laravel\Cashier\CashierServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -73,7 +72,6 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
-            CashierServiceProvider::class,
             ServiceProvider::class,
         ];
     }

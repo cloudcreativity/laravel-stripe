@@ -47,7 +47,7 @@ Stripe::assertInvoked(
 );
 ```
 
-### Why not just use Cashier?
+### What About Cashier?
 
 This package is meant to be used *in addition* to [Laravel Cashier](https://laravel.com/docs/billing),
 not instead of it.
@@ -190,8 +190,8 @@ The method signature may vary according to the resource, but the general pattern
 all required parameters are type-hinted, and then the final argument will be an iterable
 of *optional* parameters.
 
-For example, `payment_intents` require a `currency` and `amount` to create, so the method
-signature is `create($currency, $amount, $params = [])`.
+For example, `payment_intent` resources require a `currency` and `amount` to create,
+so the method signature is `create($currency, $amount, $params = [])`.
 
 > Optional `$params` can be provided as any value that will be accepted by Laravel's `collect()`
 method. This allows you to pass collections, with this package taking care of converting them

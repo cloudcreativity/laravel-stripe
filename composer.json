@@ -14,17 +14,16 @@
     "require": {
         "php": "^5.6|^7.0",
         "ext-json": "*",
-        "illuminate/console": "^5.4",
-        "illuminate/contracts": "^5.4",
-        "illuminate/database": "^5.4",
-        "illuminate/support": "^5.4",
+        "illuminate/console": "5.4.*",
+        "illuminate/contracts": "5.4.*",
+        "illuminate/database": "5.4.*",
+        "illuminate/support": "5.4.*",
         "psr/log": "^1.0",
-        "stripe/stripe-php": "^5.9|^6.40"
+        "stripe/stripe-php": "^6.40"
     },
     "require-dev": {
-        "laravel/cashier": "^7.0|^8.0|^9.0",
-        "orchestra/testbench": "3.4.*|3.5.*|3.6.*|3.7.*",
-        "phpunit/phpunit": "^5.7|^6.5|^7.0"
+        "orchestra/testbench": "3.4.*",
+        "phpunit/phpunit": "^5.7"
     },
     "autoload": {
         "psr-4": {
