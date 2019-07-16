@@ -5,7 +5,7 @@ A Laravel integration for [Stripe's official PHP package.](https://github.com/st
 This package allows you to fluently query the Stripe API via repositories.
 Repositories can be for either your application's Stripe account, or connected Stripe accounts.
 
-For example:
+### Example
 
 ```php
 // For your application's account:
@@ -46,7 +46,7 @@ So if you need to do more than just Cashier's billing functionality, install thi
 Install the package using Composer:
 
 ```bash
-$ composer require cloudcreativity/laravel-stripe
+$ composer require cloudcreativity/laravel-stripe:1.x-dev
 ```
 
 Then publish the package config:
@@ -76,6 +76,128 @@ return [
     ],
 ];
 ```
+
+## Repositories
+
+Access to Stripe objects is provided via repositories. These are accessed either on your
+application's Stripe account, or on a Connected account. You can get these via our
+facade, the `stripe` container binding, or via dependency injection of the
+`\CloudCreativity\LaravelStripe\StripeService` class.
+
+### Application Account
+
+To access your application' Stripe account, use the `app()` method as follows:
+
+```php
+// Using the facade...
+/** @var \Stipe\Account $account */
+$account = Stripe::app()->account();
+
+// Using the container alias...
+app('stripe')->app()->account();
+
+// Using dependency injection
+/** @var \CloudCreativity\LaravelStripe\StripeService $service */
+$service->app()->account();
+```
+
+### Connected Accounts
+
+To access connected accounts, you will need to have stored the Stripe account id.
+See [Connected Accounts](#connected-accounts) below for details as to how to integrate models
+or other storage with this package.
+
+Once you've done that, you can access the connected Stripe account via the facade or service:
+
+```php
+// Using the facade...
+/** @var string $accountId the Stripe account id (starts with acct_) */
+/** @var \Stipe\Account $account */
+$account = Stripe::account($accountId)->account();
+
+// Using the container alias...
+app('stripe')->account($accountId)->account();
+
+// Using dependency injection
+/** @var \CloudCreativity\LaravelStripe\StripeService $service */
+$service->app()->account();
+```
+
+### Accessing Repositories
+
+The object returned from the Stripe `app()` and `account($accountId)` methods provides access to
+repositories for Stripe resources. The method name is the camel-case name of the Stripe object
+type, for example `payment_intents` are accessible via the `paymentIntents()` method:
+
+```php
+/** @var \CloudCreativity\LaravelStripe\Repositories\PaymentIntentRepository $intents */
+$intents = Stripe::app()->paymentIntents();
+```
+
+The available repositories are as follows (classes are in the `Repositories` namespace):
+
+| Stripe Object | Method | Class |
+| :-- | :-- | :-- |
+| `account` | `accounts()` | `AccountRepository` |
+| `charge` | `charges()` | `ChargeRepository` |
+| `event` | `events()` | `EventRepository` |
+| `payment_intent` | `paymentIntents()` | `PaymentIntentRepository` |
+| `refund` | `refunds()` | `RefundRepository` |
+
+> Need a missing repository? Repositories are really easy to write, so are ideal for quick PRs.
+Our aim is to get full coverage of the Stripe API, so if it is missing we will accept a PR to add
+a missing repository. See [Contributing](#contributing) below.
+
+#### Using Repositories
+
+Each repository will implement the following methods, depending on whether they are available in
+the Stripe API:
+
+| Method | Description |
+| :-- | :-- |
+| `all` | List resources (returns a Stripe collection). |
+| `collect` | List resources (returns a Laravel collection). |
+| `retrieve` | Retrieve a specific resource by ID. |
+| `update` | Update a specific resource. |
+
+> Note that there is no `delete` method as this is available on the Stripe object returned
+by the `retrieve` method.
+
+The method signature may vary according to the resource, but the general pattern is that
+all required parameters are type-hinted, and then the final argument will be an iterable
+of *optional* parameters.
+
+For example, `payment_intents` require a `currency` and `amount` to create, so the method
+signature is `create($currency, $amount, $params = [])`.
+
+> Optional `$params` can be provided as any value that will be accepted by Laravel's `collect()`
+method. This allows you to pass collections, with this package taking care of converting them
+to arrays before passing them on.
+
+#### Request Options and Helper Methods
+
+Each repository has methods for additional request options, and helper methods for common
+parameters. These helpers must be called *before* calling any of the `all`,
+`create`, `retrieve` and `update` methods. For example:
+
+```php
+$charges = Stripe::account($accountId)
+    ->charges()
+    ->expand('application', 'application_fee')
+    ->all();
+```
+
+Available methods are:
+
+| Method | Description |
+| :-- | :-- |
+| `expand(string ...$keys)` | Paths to [expand objects](https://stripe.com/docs/api/expanding_objects). |
+| `idempotent(string $value)` | Use an [idempotent request](https://stripe.com/docs/api/idempotent_requests). |
+| `metadata(iterable $meta)` | Add [metadata](https://stripe.com/docs/api/metadata) (if the resource supports it). |
+| `option(string $key, $value)` | Add an option. |
+| `options(iterable $values)` | Add multiple options. |
+| `param(string $key, $value)` | Add an optional parameter. |
+| `params(iterable $values)` | Add multiple optional parameters. |
 
 ## Connected Accounts
 
@@ -166,7 +288,7 @@ Options:
   -e, --expand[=EXPAND]    The paths to expand (multiple values allowed)
 ```
 
-> This console command is provided for debugging purposes.
+> This console command is provided for debugging data in your Stripe API.
 
 ## Contributing
 
