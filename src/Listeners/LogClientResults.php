@@ -17,25 +17,23 @@
 
 namespace CloudCreativity\LaravelStripe\Listeners;
 
-use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Events\ClientReceivedResult;
-use Illuminate\Support\Arr;
+use CloudCreativity\LaravelStripe\Log\Logger;
 use JsonSerializable;
 
 class LogClientResults
 {
 
-    /**
-     * @var array
-     */
-    private $exclude;
+    private $log;
 
     /**
      * LogClientResults constructor.
+     *
+     * @param Logger $log
      */
-    public function __construct()
+    public function __construct(Logger $log)
     {
-        $this->exclude = Config::logExclude();
+        $this->log = $log;
     }
 
     /**
@@ -49,78 +47,14 @@ class LogClientResults
         $message = "Stripe: result for {$event->name}.{$event->method}";
         $context = $event->toArray();
 
-        if ($event->result instanceof JsonSerializable) {
-            $message .= ':' . PHP_EOL . $this->encode($event->result);
-            unset($context['result']);
-        }
-
-        logger()->log(Config::logLevel(), $message, $context);
-    }
-
-    /**
-     * Encode a Stripe object for a log message.
-     *
-     * @param JsonSerializable $data
-     * @return string
-     */
-    private function encode($data)
-    {
-        if ($data instanceof JsonSerializable) {
-            $data = $data->jsonSerialize();
-        }
-
-        $data = $this->serialize((array) $data);
-
-        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    private function serialize(array $data)
-    {
-        $this->sanitise($data);
-
-        return collect($data)->map(function ($value) {
-            return is_array($value) ? $this->serialize($value) : $value;
-        })->all();
-    }
-
-    /**
-     * @param array $data
-     */
-    private function sanitise(array &$data)
-    {
-        if (!isset($data['object'])) {
+        if (!$event->result instanceof JsonSerializable) {
+            $this->log->log($message, $context);
             return;
         }
 
-        foreach ($this->exclude($data['object']) as $path) {
-            if (!$value = Arr::get($data, $path)) {
-                continue;
-            }
-
-            if (is_string($value)) {
-                Arr::set($data, $path, '***');
-            } else {
-                Arr::forget($data, $path);
-            }
-        }
+        unset($context['result']);
+        $this->log->encode($message, $event->result, $context);
     }
 
-    /**
-     * Get the paths to exclude from logging.
-     *
-     * @param $name
-     * @return array
-     */
-    private function exclude($name)
-    {
-        if (isset($this->exclude[$name])) {
-            return (array) $this->exclude[$name];
-        }
 
-        return $this->exclude[$name] = [];
-    }
 }

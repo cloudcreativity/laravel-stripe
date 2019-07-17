@@ -17,11 +17,26 @@
 
 namespace CloudCreativity\LaravelStripe\Listeners;
 
-use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Events\ClientWillSend;
+use CloudCreativity\LaravelStripe\Log\Logger;
 
 class LogClientRequests
 {
+
+    /**
+     * @var Logger
+     */
+    private $log;
+
+    /**
+     * LogClientRequests constructor.
+     *
+     * @param Logger $log
+     */
+    public function __construct(Logger $log)
+    {
+        $this->log = $log;
+    }
 
     /**
      * Handle the event.
@@ -31,8 +46,7 @@ class LogClientRequests
      */
     public function handle(ClientWillSend $event)
     {
-        logger()->log(
-            Config::logLevel(),
+        $this->log->log(
             "Stripe: sending {$event->name}.{$event->method}",
             $event->toArray()
         );

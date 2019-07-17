@@ -17,10 +17,10 @@
 
 namespace CloudCreativity\LaravelStripe;
 
-use CloudCreativity\LaravelStripe\Contracts\Webhooks\NullDispatcher;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use RuntimeException;
+use Stripe\Webhook;
 
 class Config
 {
@@ -79,17 +79,62 @@ class Config
      *
      * @return string
      */
-    public static function webhooks()
+    public static function webhookProcessor()
     {
-        if (!$fqn = self::get('webhooks')) {
-            return NullDispatcher::class;
-        }
+        $fqn = self::get('webhooks.processor');
 
         if (!class_exists($fqn)) {
             throw new RuntimeException("Webhook dispatcher class {$fqn} does not exist.");
         }
 
         return $fqn;
+    }
+
+    /**
+     * Get a webhook signing secret by key.
+     *
+     * @param string $name
+     * @return string
+     */
+    public static function webhookSigningSecrect($name)
+    {
+        if (!$secret = self::get("webhooks.signing_secrets.{$name}")) {
+            throw new RuntimeException("Webhook signing secret does not exist: {$name}");
+        }
+
+        if (!is_string($secret)|| empty($secret)) {
+            throw new RuntimeException("Invalid webhook signing secret: {$name}");
+        }
+
+        return $secret;
+    }
+
+    /**
+     * Get the webhook signature tolerance.
+     *
+     * @return int
+     */
+    public static function webhookTolerance()
+    {
+        return self::get('webhooks.signature_tolerance', Webhook::DEFAULT_TOLERANCE);
+    }
+
+    /**
+     * Get the queue config for the named webhook event.
+     *
+     * @param string $eventName
+     * @return array
+     */
+    public static function webhookQueueDetails($eventName)
+    {
+        if (self::has($path = "webhooks.queues.{$eventName}")) {
+            return array_replace(['connection' => null, 'queue' => null], (array) self::get($path));
+        }
+
+        return [
+            'connection' => self::get('webhooks.queues.default_queue_connection'),
+            'queue' => self::get('webhooks.queues.default_queue'),
+        ];
     }
 
     /**
@@ -161,5 +206,14 @@ class Config
     private static function get($key, $default = null)
     {
         return config("stripe.{$key}", $default);
+    }
+
+    /**
+     * @param $key
+     * @return bool
+     */
+    private static function has($key)
+    {
+        return config()->has("stripe.{$key}");
     }
 }

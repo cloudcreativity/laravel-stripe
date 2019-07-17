@@ -18,12 +18,15 @@
 namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
-use CloudCreativity\LaravelStripe\Contracts\Webhooks\DispatcherInterface;
+use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Eloquent\Adapter;
+use CloudCreativity\LaravelStripe\Log\Logger;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Stripe\Stripe;
 
 class ServiceProvider extends BaseServiceProvider
@@ -34,7 +37,7 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(Router $router)
     {
         Stripe::setApiKey(Config::apiKey());
 
@@ -51,6 +54,8 @@ class ServiceProvider extends BaseServiceProvider
         ]);
 
         $this->commands(Console\Commands\StripeQuery::class);
+
+        $router->aliasMiddleware('stripe.verify-webhook', Http\Middleware\VerifySignature::class);
     }
 
     /**
@@ -79,8 +84,19 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->bind(Client::class);
 
         /** Webhooks */
-        $this->app->singleton(DispatcherInterface::class, function (Application $app) {
-            return $app->make(Config::webhooks());
+        $this->app->singleton(ProcessorInterface::class, function (Application $app) {
+            return $app->make(Config::webhookProcessor());
+        });
+
+        /** Logger */
+        $this->app->singleton(Logger::class, function (Application $app) {
+            $level = Config::logLevel();
+
+            return new Logger(
+                $level ? $app->make(LoggerInterface::class) : new NullLogger(),
+                $level,
+                Config::logExclude()
+            );
         });
     }
 

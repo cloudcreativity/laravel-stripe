@@ -17,11 +17,12 @@
 
 namespace CloudCreativity\LaravelStripe;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
-use CloudCreativity\LaravelStripe\Contracts\Webhooks\DispatcherInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Exceptions\AccountNotConnected;
-use Stripe\Event;
+use CloudCreativity\LaravelStripe\Log\Logger;
+use JsonSerializable;
+use Stripe\StripeObject;
 
 class StripeService
 {
@@ -32,20 +33,20 @@ class StripeService
     private $accounts;
 
     /**
-     * @var DispatcherInterface
+     * @var Logger
      */
-    private $webhooks;
+    private $log;
 
     /**
      * StripeService constructor.
      *
      * @param AccountAdapterInterface $accounts
-     * @param DispatcherInterface $webhooks
+     * @param Logger $log
      */
-    public function __construct(AccountAdapterInterface $accounts, DispatcherInterface $webhooks)
+    public function __construct(AccountAdapterInterface $accounts, Logger $log)
     {
         $this->accounts = $accounts;
-        $this->webhooks = $webhooks;
+        $this->log = $log;
     }
 
     /**
@@ -65,6 +66,7 @@ class StripeService
      *
      * @param AccountInterface|string $accountId
      * @return Connector
+     * @throws AccountNotConnected
      */
     public function account($accountId)
     {
@@ -95,19 +97,15 @@ class StripeService
     }
 
     /**
-     * Dispatch a Stripe webhook.
+     * Log a Stripe object, sanitising any sensitive data.
      *
-     * @param Event $event
-     * @return void
+     * @param string $message
+     * @param mixed $data
+     * @param array $context
      */
-    public function dispatch(Event $event)
+    public function log($message, $data, array $context = [])
     {
-        $account = null;
-
-        if (isset($event['account'])) {
-            $account = $this->accounts->find($event['account']);
-        }
-
-        $this->webhooks->dispatch($event, $account);
+        $this->log->encode($message, $data, $context);
     }
+
 }

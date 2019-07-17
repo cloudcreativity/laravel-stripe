@@ -15,37 +15,44 @@
  * limitations under the License.
  */
 
-namespace CloudCreativity\LaravelStripe\Webhooks;
+namespace CloudCreativity\LaravelStripe\Models;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
-use CloudCreativity\LaravelStripe\Contracts\Webhooks\DispatcherInterface;
-use Illuminate\Contracts\Events\Dispatcher as EventsContract;
-use Stripe\Event;
+use Illuminate\Database\Eloquent\Model;
 
-class Dispatcher implements DispatcherInterface
+class StripeEvent extends Model
 {
 
     /**
-     * @var EventsContract
+     * @var bool
      */
-    private $events;
+    public $incrementing = false;
 
     /**
-     * Dispatcher constructor.
-     *
-     * @param EventsContract $events
+     * @var array
      */
-    public function __construct(EventsContract $events)
-    {
-        $this->events = $events;
-    }
+    protected $fillable = [
+        'account',
+        'api_version',
+        'created',
+        'livemode',
+        'pending_webhooks',
+        'type',
+        'request',
+    ];
 
     /**
-     * @inheritDoc
+     * @var array
      */
-    public function dispatch(Event $event, AccountInterface $account = null)
-    {
-        // TODO
-    }
+    protected $dates = [
+        'created',
+    ];
 
+    /**
+     * @var array
+     */
+    protected $casts = [
+        'livemode' => 'boolean',
+        'pending_webhooks' => 'integer',
+        'request' => 'json',
+    ];
 }

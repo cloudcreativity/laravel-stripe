@@ -20,11 +20,10 @@ namespace CloudCreativity\LaravelStripe\Facades;
 use CloudCreativity\LaravelStripe\Client;
 use CloudCreativity\LaravelStripe\Connector;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
-use CloudCreativity\LaravelStripe\Contracts\Webhooks\DispatcherInterface;
+use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\Testing\ClientFake;
 use CloudCreativity\LaravelStripe\Testing\StripeFake;
 use Illuminate\Support\Facades\Facade;
-use Stripe\Event;
 use Stripe\StripeObject;
 
 /**
@@ -34,7 +33,7 @@ use Stripe\StripeObject;
  *
  * @method static Connector app()
  * @method static Connector account(string $accountId)
- * @method static void dispatch(Event $event)
+ * @method static void log(string $message, StripeObject|mixed $data, array $context = [])
  *
  * @method static void withQueue(StripeObject ...$objects)
  * @method static void assertInvoked(string $class, string $method, \Closure $args = null)
@@ -67,7 +66,7 @@ class Stripe extends Facade
          */
         static::swap($fake = new StripeFake(
             static::$app->make(AccountAdapterInterface::class),
-            static::$app->make(DispatcherInterface::class),
+            static::$app->make(Logger::class),
             $client
         ));
 

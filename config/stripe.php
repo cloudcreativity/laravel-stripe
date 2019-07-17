@@ -11,7 +11,7 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | API Version
+    | API Settings
     |--------------------------------------------------------------------------
     |
     | The default API version that this application uses. Not providing
@@ -90,7 +90,21 @@ return [
     | If want to disable webhook events, set the value here to null.
     |
     */
-    'webhooks' => \CloudCreativity\LaravelStripe\Webhooks\Dispatcher::class,
+    'webhooks' => [
+        'signature_tolerance' => env('STRIPE_WEBHOOKS_SIGNATURE_TOLERANCE', \Stripe\Webhook::DEFAULT_TOLERANCE),
+        'signing_secrets' => [
+            'default' => env('STRIPE_WEBHOOKS_SIGNING_SECRET'),
+        ],
+        'processor' => \CloudCreativity\LaravelStripe\Webhooks\Processor::class,
+        'default_queue_connection' => env('STRIPE_WEBHOOKS_QUEUE_CONNECTION'),
+        'default_queue' => env('STRIPE_WEBHOOKS_QUEUE'),
+        'queues' => [
+            'payment_intent.succeeded' => [
+                'connection' => env('STRIPE_WEBHOOKS_QUEUE_CONNECTION'),
+                'queue' => env('STRIPE_WEBHOOKS_QUEUE'),
+            ],
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
