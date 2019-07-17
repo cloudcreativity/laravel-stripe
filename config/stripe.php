@@ -11,7 +11,7 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | API Settings
+    | API Version
     |--------------------------------------------------------------------------
     |
     | The default API version that this application uses. Not providing
@@ -22,16 +22,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Connected Account
+    | Stripe Connect
     |--------------------------------------------------------------------------
     |
-    | The adapter provides access to the stored connected account details.
-    | By default we provide an Eloquent adapter, which will be configured to
-    | query the model class specified below.
+    | Settings for your Stripe Connect integration.
     */
-    'connected_accounts' => [
-        'adapter' => \CloudCreativity\LaravelStripe\Eloquent\Adapter::class,
-        'model' => \App\StripeAccount::class,
+    'connect' => [
+        'model' => \CloudCreativity\LaravelStripe\Models\StripeAccount::class,
     ],
 
     /*
@@ -76,30 +73,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Webhook Events
+    | Webhooks
     |--------------------------------------------------------------------------
     |
-    | This package allows you to dispatch Stripe webhooks as events.
-    | These events will have your Stripe account model attached automatically
-    | if the webhook relates to a connected account.
+    | This package provides a webhook implementation. Webhooks will be
+    | stored as the model below and then dispatched for asynchronous processing
+    | on by the Laravel queue.
     |
-    | You can customise the event implementation by changing the
-    | dispatcher class here. Your custom implementation will need to
-    | implement our `Contracts\Webhooks\DispatcherInterface`.
+    | You need to add your endpoint signing secrets in the `signing_secrets`
+    | array below. The key of the secret is the name you pass to the
+    | `stripe.verify` middleware, e.g. `stripe.verify:default`.
     |
-    | If want to disable webhook events, set the value here to null.
+    | Webhook process jobs will be pushed to the default queue (and connection)
+    | specified below. You can also set queue/connections for specific
+    | Stripe webhooks - which allows you to prioritise some events over
+    | others. The example below shows how to set a different connection/queue
+    | for the `payment_intent.succeeded` webhook. (Note that the key in
+    | config is `payment_intent_succeeded`.)
     |
     */
     'webhooks' => [
+        'model' => \CloudCreativity\LaravelStripe\Models\StripeEvent::class,
         'signature_tolerance' => env('STRIPE_WEBHOOKS_SIGNATURE_TOLERANCE', \Stripe\Webhook::DEFAULT_TOLERANCE),
         'signing_secrets' => [
             'default' => env('STRIPE_WEBHOOKS_SIGNING_SECRET'),
         ],
-        'processor' => \CloudCreativity\LaravelStripe\Webhooks\Processor::class,
         'default_queue_connection' => env('STRIPE_WEBHOOKS_QUEUE_CONNECTION'),
         'default_queue' => env('STRIPE_WEBHOOKS_QUEUE'),
         'queues' => [
-            'payment_intent.succeeded' => [
+            'payment_intent_succeeded' => [
                 'connection' => env('STRIPE_WEBHOOKS_QUEUE_CONNECTION'),
                 'queue' => env('STRIPE_WEBHOOKS_QUEUE'),
             ],
@@ -122,7 +124,7 @@ return [
     'log' => [
         'level' => env('STRIPE_LOG_LEVEL'),
         'exclude' => [
-            'payment_intent' => 'client_secret',
+            'payment_intent' => ['client_secret'],
         ],
     ],
 ];

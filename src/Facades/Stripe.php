@@ -19,8 +19,7 @@ namespace CloudCreativity\LaravelStripe\Facades;
 
 use CloudCreativity\LaravelStripe\Client;
 use CloudCreativity\LaravelStripe\Connector;
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
-use CloudCreativity\LaravelStripe\Log\Logger;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Testing\ClientFake;
 use CloudCreativity\LaravelStripe\Testing\StripeFake;
 use Illuminate\Support\Facades\Facade;
@@ -31,8 +30,9 @@ use Stripe\StripeObject;
  *
  * @package CloudCreativity\LaravelStripe
  *
- * @method static Connector app()
- * @method static Connector account(string $accountId)
+ * @method static Connector account()
+ * @method static Connector connect(string $accountId)
+ * @method static AccountInterface connectAccount(string $accountId)
  * @method static void log(string $message, StripeObject|mixed $data, array $context = [])
  *
  * @method static void withQueue(StripeObject ...$objects)
@@ -45,7 +45,7 @@ class Stripe extends Facade
     /**
      * Fake static calls to Stripe.
      *
-     * @return StripeFake
+     * @return void
      */
     public static function fake()
     {
@@ -64,13 +64,7 @@ class Stripe extends Facade
          * This extends the real Stripe service and doesn't overload anything on it,
          * so the service will operate exactly as expected.
          */
-        static::swap($fake = new StripeFake(
-            static::$app->make(AccountAdapterInterface::class),
-            static::$app->make(Logger::class),
-            $client
-        ));
-
-        return $fake;
+        static::swap(new StripeFake($client));
     }
 
     /**

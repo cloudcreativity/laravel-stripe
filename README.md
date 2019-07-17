@@ -60,6 +60,18 @@ In contrast, Cashier does not provide full Stripe API coverage, and provides
 [no support for Stripe Connect.](https://github.com/laravel/cashier/pull/519)
 So if you need to do more than just Cashier's billing functionality, install this package as well.
 
+## Version Compatibility
+
+The following table shows which version to install. We have provided the Stripe API version that we
+developed against as guide. You may find the package works with older versions of the API.
+
+| Laravel | Stripe PHP | Stripe API | Laravel-Stripe | Cashier |
+| :-- | :-- | :-- | :-- |:-- |
+| `5.4.x` | `^6.40` | `>=2019-05-16` | `0.x` | n/a |
+
+> Installing version `0.x` of this package and Cashier is not supported, because Cashier required
+an older version of the `stripe/stripe-php` package for Laravel 5.4.
+
 ## Installation
 
 Install the package using Composer:

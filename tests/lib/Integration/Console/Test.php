@@ -18,8 +18,8 @@
 namespace CloudCreativity\LaravelStripe\Tests\Integration\Console;
 
 use CloudCreativity\LaravelStripe\Facades\Stripe;
+use CloudCreativity\LaravelStripe\Models\StripeAccount;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
-use CloudCreativity\LaravelStripe\Tests\TestAccount;
 use Stripe\Collection;
 use Stripe\StripeObject;
 
@@ -53,8 +53,8 @@ class Test extends TestCase
      */
     public function testAllConnect($fqn, $resource)
     {
-        /** @var TestAccount $account */
-        $account = factory(TestAccount::class)->create();
+        /** @var StripeAccount $account */
+        $account = factory(StripeAccount::class)->create();
 
         Stripe::withQueue(new Collection());
 
@@ -110,8 +110,8 @@ class Test extends TestCase
      */
     public function testRetrieveConnect($fqn, $resource)
     {
-        /** @var TestAccount $account */
-        $account = factory(TestAccount::class)->create();
+        /** @var StripeAccount $account */
+        $account = factory(StripeAccount::class)->create();
 
         Stripe::withQueue(new StripeObject($id = 'foo_bazbat'));
 

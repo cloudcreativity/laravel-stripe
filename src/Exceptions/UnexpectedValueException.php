@@ -17,33 +17,8 @@
 
 namespace CloudCreativity\LaravelStripe\Exceptions;
 
-use LogicException;
+use UnexpectedValueException as BaseException;
 
-class AccountNotConnected extends LogicException
+class UnexpectedValueException extends BaseException
 {
-
-    /**
-     * @var string
-     */
-    private $accountId;
-
-    /**
-     * AccountNotConnected constructor.
-     *
-     * @param $accountId
-     * @param \Exception|null $previous
-     */
-    public function __construct($accountId, \Exception $previous = null)
-    {
-        parent::__construct("Stripe account {$accountId} is not connected.", 0, $previous);
-        $this->accountId = $accountId;
-    }
-
-    /**
-     * @return string
-     */
-    public function accountId()
-    {
-        return $this->accountId;
-    }
 }

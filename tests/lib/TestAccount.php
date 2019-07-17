@@ -18,7 +18,7 @@
 namespace CloudCreativity\LaravelStripe\Tests;
 
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
-use CloudCreativity\LaravelStripe\Eloquent\ConnectedAccount;
+use CloudCreativity\LaravelStripe\Connect\ConnectedAccount;
 use Illuminate\Database\Eloquent\Model;
 
 class TestAccount extends Model implements AccountInterface

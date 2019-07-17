@@ -23,6 +23,7 @@ use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
@@ -44,12 +45,12 @@ class ProcessWebhook implements ShouldQueue
     /**
      * ProcessWebhook constructor.
      *
-     * @param StripeEvent $event
+     * @param StripeEvent|Model $event
      *      the stored Stripe event model.
      * @param array $payload
      *      the payload received from Stripe
      */
-    public function __construct(StripeEvent $event, array $payload)
+    public function __construct($event, array $payload)
     {
         $this->event = $event;
         $this->payload = $payload;
@@ -73,6 +74,11 @@ class ProcessWebhook implements ShouldQueue
      */
     public function handle(Dispatcher $events, AccountAdapterInterface $accounts)
     {
+        /**
+         * We look the account up via the adapter rather than the Stripe Event
+         * model, in case the developer is using their own event model (which
+         * may not have the account relationship).
+         */
         $accountId = isset($this->payload['account']) ? $this->payload['account'] : null;
         $account = $accountId ? $accounts->find($accountId) : null;
 
@@ -86,11 +92,11 @@ class ProcessWebhook implements ShouldQueue
         $parts = explode('.', $event->type());
 
         /** Dispatch a namespaced event, e.g. `payment_intent` */
-        $events->dispatch(sprintf('stripe.webhooks::%s.*', $parts[0]), $event);
+        $events->dispatch(sprintf('stripe.webhooks:%s.*', $parts[0]), $event);
 
         /** Dispatch a specific event. */
         $events->dispatch(
-            sprintf('stripe.webhooks::%s', $event->type()),
+            sprintf('stripe.webhooks:%s', $event->type()),
             $event
         );
 

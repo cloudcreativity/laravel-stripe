@@ -18,6 +18,7 @@
 namespace CloudCreativity\LaravelStripe;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 use RuntimeException;
 use Stripe\Webhook;
@@ -47,47 +48,21 @@ class Config
     }
 
     /**
-     * Get the class for the connected account adapter.
-     *
-     * @return string
-     */
-    public static function connectedAccountAdapter()
-    {
-        return self::get('connected_accounts.adapter');
-    }
-
-    /**
      * Get the class for the connected account model.
      *
      * @return string
      */
-    public static function connectedAccountModel()
+    public static function connectModel()
     {
-        $fqn = self::get('connected_accounts.model') ?: null;
-
-        if (!class_exists($fqn)) {
-            throw new RuntimeException("Connected account class {$fqn} does not exist.");
-        }
-
-        return $fqn;
+        return self::fqn('connect.model');
     }
 
     /**
-     * Get the class for dispatching webhooks.
-     *
-     * A null value disables webhook dispatching.
-     *
      * @return string
      */
-    public static function webhookProcessor()
+    public static function webhookModel()
     {
-        $fqn = self::get('webhooks.processor');
-
-        if (!class_exists($fqn)) {
-            throw new RuntimeException("Webhook dispatcher class {$fqn} does not exist.");
-        }
-
-        return $fqn;
+        return self::fqn('webhooks.model');
     }
 
     /**
@@ -125,15 +100,20 @@ class Config
      * @param string $eventName
      * @return array
      */
-    public static function webhookQueueDetails($eventName)
+    public static function webhookQueue($eventName)
     {
-        if (self::has($path = "webhooks.queues.{$eventName}")) {
-            return array_replace(['connection' => null, 'queue' => null], (array) self::get($path));
+        $key = str_replace('.', '_', $eventName);
+
+        if (self::has($path = "webhooks.queues.{$key}")) {
+            return [
+                'connection' => self::get("{$path}.connection"),
+                'queue' => self::get("{$path}.queue"),
+            ];
         }
 
         return [
-            'connection' => self::get('webhooks.queues.default_queue_connection'),
-            'queue' => self::get('webhooks.queues.default_queue'),
+            'connection' => self::get('webhooks.default_queue_connection'),
+            'queue' => self::get('webhooks.default_queue'),
         ];
     }
 
@@ -206,6 +186,21 @@ class Config
     private static function get($key, $default = null)
     {
         return config("stripe.{$key}", $default);
+    }
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    private static function fqn($key)
+    {
+        $fqn = self::get($key) ?: null;
+
+        if (!class_exists($fqn)) {
+            throw new RuntimeException("Configured class at 'stripe.{$key}' does not exist: {$fqn}");
+        }
+
+        return $fqn;
     }
 
     /**

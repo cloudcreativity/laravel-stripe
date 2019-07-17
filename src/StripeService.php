@@ -17,44 +17,18 @@
 
 namespace CloudCreativity\LaravelStripe;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
-use CloudCreativity\LaravelStripe\Exceptions\AccountNotConnected;
-use CloudCreativity\LaravelStripe\Log\Logger;
-use JsonSerializable;
-use Stripe\StripeObject;
+use CloudCreativity\LaravelStripe\Exceptions\AccountNotConnectedException;
 
 class StripeService
 {
-
-    /**
-     * @var AccountAdapterInterface
-     */
-    private $accounts;
-
-    /**
-     * @var Logger
-     */
-    private $log;
-
-    /**
-     * StripeService constructor.
-     *
-     * @param AccountAdapterInterface $accounts
-     * @param Logger $log
-     */
-    public function __construct(AccountAdapterInterface $accounts, Logger $log)
-    {
-        $this->accounts = $accounts;
-        $this->log = $log;
-    }
 
     /**
      * Access the main application account.
      *
      * @return Connector
      */
-    public function app()
+    public function account()
     {
         return new Connector();
     }
@@ -66,34 +40,32 @@ class StripeService
      *
      * @param AccountInterface|string $accountId
      * @return Connector
-     * @throws AccountNotConnected
+     * @throws AccountNotConnectedException
      */
-    public function account($accountId)
-    {
-        return $this->connectedAccount($accountId);
-    }
-
-    /**
-     * Access a connected account.
-     *
-     * @param AccountInterface|string $accountId
-     *      the Stripe account id.
-     * @return Connector
-     * @throws AccountNotConnected
-     */
-    public function connectedAccount($accountId)
+    public function connect($accountId)
     {
         if ($accountId instanceof AccountInterface) {
             return new Connector($accountId);
         }
 
-        Assert::id(Assert::ACCOUNT_ID_PREFIX, $accountId);
-
-        if ($account = $this->accounts->find($accountId)) {
+        if ($account = $this->connectAccount($accountId)) {
             return new Connector($account);
         }
 
-        throw new AccountNotConnected($accountId);
+        throw new AccountNotConnectedException($accountId);
+    }
+
+    /**
+     * Get a Stripe Connect account by id.
+     *
+     * @param $accountId
+     * @return AccountInterface|null
+     */
+    public function connectAccount($accountId)
+    {
+        Assert::id(Assert::ACCOUNT_ID_PREFIX, $accountId);
+
+        return app('stripe.connect')->find($accountId);
     }
 
     /**
@@ -105,7 +77,7 @@ class StripeService
      */
     public function log($message, $data, array $context = [])
     {
-        $this->log->encode($message, $data, $context);
+        app('stripe.log')->encode($message, $data, $context);
     }
 
 }

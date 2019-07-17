@@ -19,10 +19,12 @@ namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
-use CloudCreativity\LaravelStripe\Eloquent\Adapter;
+use CloudCreativity\LaravelStripe\Connect\Adapter;
 use CloudCreativity\LaravelStripe\Log\Logger;
-use Illuminate\Contracts\Events\Dispatcher;
+use CloudCreativity\LaravelStripe\Webhooks\Processor;
+use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Psr\Log\LoggerInterface;
@@ -51,11 +53,28 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->publishes([
             __DIR__ . '/../config/stripe.php' => config_path('stripe.php'),
-        ]);
+        ], 'stripe');
 
         $this->commands(Console\Commands\StripeQuery::class);
 
-        $router->aliasMiddleware('stripe.verify-webhook', Http\Middleware\VerifySignature::class);
+        $router->aliasMiddleware('stripe.verify', Http\Middleware\VerifySignature::class);
+
+        /**
+         * If this package is running migrations, we load them. Otherwise we
+         * make them publishable so that the developer can publish them and modify
+         * them as needed.
+         */
+        if (LaravelStripe::$runMigrations) {
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+            $this->app->afterResolving(ModelFactory::class, function (ModelFactory $factory) {
+                $factory->load(__DIR__ . '/../database/factories');
+            });
+        } else {
+            $this->publishes([
+                __DIR__ . '/../database/factories' => database_path('factories'),
+                __DIR__ . '/../database/migrations' => database_path('migrations'),
+            ], 'stripe.models');
+        }
     }
 
     /**
@@ -69,24 +88,11 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->singleton(StripeService::class);
         $this->app->alias(StripeService::class, 'stripe');
 
-        /** Connected Account Adapter */
-        $this->app->singleton(AccountAdapterInterface::class, function (Application $app) {
-            return $app->make(Config::connectedAccountAdapter());
-        });
-
-        /** Eloquent Adapter */
-        $this->app->bind(Adapter::class, function (Application $app) {
-            $model = Config::connectedAccountModel();
-            return new Adapter(new $model);
-        });
-
-        /** Client */
-        $this->app->bind(Client::class);
+        /** Connect */
+        $this->bindConnect();
 
         /** Webhooks */
-        $this->app->singleton(ProcessorInterface::class, function (Application $app) {
-            return $app->make(Config::webhookProcessor());
-        });
+        $this->bindWebhooks();
 
         /** Logger */
         $this->app->singleton(Logger::class, function (Application $app) {
@@ -97,6 +103,44 @@ class ServiceProvider extends BaseServiceProvider
                 $level,
                 Config::logExclude()
             );
+        });
+    }
+
+    /**
+     * Bind the Stripe Connect implementation into the service container.
+     *
+     * @return void
+     */
+    private function bindConnect()
+    {
+        $this->app->singleton(AccountAdapterInterface::class, function (Application $app) {
+            return $app->make(LaravelStripe::$accounts);
+        });
+
+        $this->app->alias(AccountAdapterInterface::class, 'stripe.connect');
+
+        $this->app->bind(Adapter::class, function (Application $app) {
+            $model = Config::connectModel();
+            return new Adapter(new $model);
+        });
+    }
+
+    /**
+     * Bind the webhook implementation into the service container.
+     *
+     * @return void
+     */
+    private function bindWebhooks()
+    {
+        $this->app->singleton(ProcessorInterface::class, function (Application $app) {
+            return $app->make(LaravelStripe::$webhooks);
+        });
+
+        $this->app->alias(ProcessorInterface::class, 'stripe.webhooks');
+
+        $this->app->bind(Processor::class, function (Application $app) {
+            $model = Config::webhookModel();
+            return new Processor($app->make(Dispatcher::class), new $model);
         });
     }
 
@@ -116,7 +160,6 @@ class ServiceProvider extends BaseServiceProvider
             ]);
         });
 
-        /** @var Dispatcher $events */
         $events = app('events');
         $events->listen(Events\ClientWillSend::class, Listeners\LogClientRequests::class);
         $events->listen(Events\ClientReceivedResult::class, Listeners\LogClientResults::class);

@@ -19,9 +19,9 @@ namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Events\ClientReceivedResult;
 use CloudCreativity\LaravelStripe\Events\ClientWillSend;
-use CloudCreativity\LaravelStripe\Exceptions\InvalidArgumentException;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class Client
 {

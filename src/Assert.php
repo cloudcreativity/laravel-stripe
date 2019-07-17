@@ -17,7 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe;
 
-use CloudCreativity\LaravelStripe\Exceptions\InvalidArgumentException;
+use CloudCreativity\LaravelStripe\Exceptions\UnexpectedValueException;
 use Illuminate\Support\Str;
 
 class Assert
@@ -35,11 +35,11 @@ class Assert
     public static function id($expected, $id)
     {
         if (!is_string($id)) {
-            throw new InvalidArgumentException('Expecting a string id.');
+            throw new UnexpectedValueException('Expecting a string id.');
         }
 
         if (!Str::startsWith($id, $expected)) {
-            throw new InvalidArgumentException("Expecting a Stripe id with prefix '{$expected}', received '{$id}'.");
+            throw new UnexpectedValueException("Expecting a Stripe id with prefix '{$expected}', received '{$id}'.");
         }
     }
 
@@ -52,11 +52,11 @@ class Assert
     public static function supportedCurrency($currency)
     {
         if (!is_string($currency) || empty($currency)) {
-            throw new InvalidArgumentException('Expecting a non-empty string.');
+            throw new UnexpectedValueException('Expecting a non-empty string.');
         }
 
         if (!Config::currencies()->containsStrict($currency)) {
-            throw new InvalidArgumentException("Expecting a valid currency, received: {$currency}");
+            throw new UnexpectedValueException("Expecting a valid currency, received: {$currency}");
         }
     }
 
@@ -73,13 +73,13 @@ class Assert
         self::supportedCurrency($currency);
 
         if (!is_int($amount)) {
-            throw new InvalidArgumentException('Expecting an integer.');
+            throw new UnexpectedValueException('Expecting an integer.');
         }
 
         $minimum = Config::minimum($currency);
 
         if ($minimum > $amount) {
-            throw new InvalidArgumentException("Expecting a charge amount that is greater than {$minimum}.");
+            throw new UnexpectedValueException("Expecting a charge amount that is greater than {$minimum}.");
         }
     }
 
@@ -93,7 +93,7 @@ class Assert
     public static function zeroDecimal($amount)
     {
         if (!is_int($amount) || 0 > $amount) {
-            throw new InvalidArgumentException('Expecting a positive integer.');
+            throw new UnexpectedValueException('Expecting a positive integer.');
         }
     }
 }

@@ -17,7 +17,10 @@
 
 namespace CloudCreativity\LaravelStripe\Models;
 
+use CloudCreativity\LaravelStripe\Connector;
+use CloudCreativity\LaravelStripe\Exceptions\AccountNotConnectedException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StripeEvent extends Model
 {
@@ -31,7 +34,8 @@ class StripeEvent extends Model
      * @var array
      */
     protected $fillable = [
-        'account',
+        'id',
+        'account_id',
         'api_version',
         'created',
         'livemode',
@@ -55,4 +59,27 @@ class StripeEvent extends Model
         'pending_webhooks' => 'integer',
         'request' => 'json',
     ];
+
+    /**
+     * @return BelongsTo
+     */
+    public function account()
+    {
+        return $this->belongsTo(StripeAccount::class);
+    }
+
+    /**
+     * Get the Stripe connector for the account that this belongs to.
+     *
+     * @return Connector
+     * @throws AccountNotConnectedException
+     */
+    public function stripe()
+    {
+        if ($account = $this->account_id) {
+            return app('stripe')->connect($account);
+        }
+
+        return app('stripe')->account();
+    }
 }

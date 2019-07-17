@@ -23,7 +23,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Stripe\Event;
-use UnexpectedValueException;
 
 class WebhookController extends Controller
 {
@@ -52,12 +51,13 @@ class WebhookController extends Controller
      */
     public function __invoke(Request $request, ProcessorInterface $processor)
     {
-        try {
-            $event = Event::constructFrom($request->json());
-        } catch (UnexpectedValueException $ex) {
-            $this->log->log("Invalid Stripe webhook payload: {$ex->getMessage()}");
-            abort(Response::HTTP_BAD_REQUEST);
+        if ('event' !== $request->json('object') || empty($request->json('id'))) {
+            $this->log->log("Invalid Stripe webhook payload.");
+
+            return response()->json(['error' => 'Invalid JSON payload.'], Response::HTTP_BAD_REQUEST);
         }
+
+        $event = Event::constructFrom($request->json()->all());
 
         /** Only process the webhook if it has not already been processed. */
         if ($processor->didProcess($event)) {

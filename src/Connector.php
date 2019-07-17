@@ -18,8 +18,9 @@
 namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
-use CloudCreativity\LaravelStripe\Exceptions\InvalidArgumentException;
+use CloudCreativity\LaravelStripe\Exceptions\UnexpectedValueException;
 use CloudCreativity\LaravelStripe\Repositories\AbstractRepository;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Stripe\Account;
 
@@ -27,7 +28,7 @@ class Connector
 {
 
     /**
-     * @var AccountInterface
+     * @var AccountInterface|Model
      */
     private $account;
 
@@ -57,10 +58,29 @@ class Connector
         }
 
         if (!$repository instanceof AbstractRepository) {
-            throw new InvalidArgumentException("Invalid resource type: {$resource}");
+            throw new UnexpectedValueException("Invalid resource type: {$resource}");
         }
 
         return $repository;
+    }
+
+    /**
+     * Is the connector for the provided account?
+     *
+     * @param AccountInterface $account
+     * @return bool
+     */
+    public function is(AccountInterface $account)
+    {
+        if (!$this->account) {
+            return false;
+        }
+
+        if ($account instanceof Model) {
+            return $account->is($this->account);
+        }
+
+        return $account === $this->account;
     }
 
     /**
@@ -74,11 +94,11 @@ class Connector
     }
 
     /**
-     * Get the Stripe Account object for this connector's account.
+     * Retrieve the Stripe account object that this connector belongs to.
      *
      * @return Account
      */
-    public function account()
+    public function retrieve()
     {
         return $this->accounts()->retrieve();
     }

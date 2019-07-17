@@ -19,7 +19,8 @@ namespace CloudCreativity\LaravelStripe\Tests\Integration;
 
 use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\ServiceProvider;
-use CloudCreativity\LaravelStripe\Tests\TestAccount;
+use CloudCreativity\LaravelStripe\Tests\TestExceptionHandler;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Foundation\Application;
 use Orchestra\Testbench\TestCase as BaseTestCase;
@@ -114,7 +115,6 @@ abstract class TestCase extends BaseTestCase
     {
         /** Include our default config. */
         $app['config']->set('stripe', require __DIR__ . '/../../../config/stripe.php');
-        $app['config']->set('stripe.connected_accounts.model', TestAccount::class);
 
         /** Setup a test database. */
         $app['config']->set('database.default', 'testbench');
@@ -123,5 +123,30 @@ abstract class TestCase extends BaseTestCase
             'database' => ':memory:',
             'prefix'   => '',
         ]);
+    }
+
+    /**
+     * @return $this
+     * @todo remove in Laravel ^5.5
+     */
+    protected function withoutExceptionHandling()
+    {
+        $this->instance(ExceptionHandler::class, $this->app->make(TestExceptionHandler::class));
+
+        return $this;
+    }
+
+    /**
+     * Load a stub.
+     *
+     * @param string $name
+     * @return array
+     */
+    protected function stub($name)
+    {
+        return json_decode(
+            file_get_contents(__DIR__ . '/../../stubs/' . $name . '.json'),
+            true
+        );
     }
 }

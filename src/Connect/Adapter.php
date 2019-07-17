@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-namespace CloudCreativity\LaravelStripe\Eloquent;
+namespace CloudCreativity\LaravelStripe\Connect;
 
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
-use CloudCreativity\LaravelStripe\Exceptions\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 class Adapter implements AccountAdapterInterface
 {

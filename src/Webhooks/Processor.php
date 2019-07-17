@@ -20,8 +20,9 @@ namespace CloudCreativity\LaravelStripe\Webhooks;
 use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Jobs\ProcessWebhook;
-use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Stripe\Event;
 
 class Processor implements ProcessorInterface
@@ -33,13 +34,20 @@ class Processor implements ProcessorInterface
     private $queue;
 
     /**
+     * @var Model
+     */
+    private $model;
+
+    /**
      * Processor constructor.
      *
      * @param Dispatcher $queue
+     * @param Model $model
      */
-    public function __construct(Dispatcher $queue)
+    public function __construct(Dispatcher $queue, Model $model)
     {
         $this->queue = $queue;
+        $this->model = $model;
     }
 
     /**
@@ -47,10 +55,20 @@ class Processor implements ProcessorInterface
      */
     public function process(Event $event)
     {
-        $queue = Config::webhookQueueDetails($event->type);
-        $model = StripeEvent::create($event->jsonSerialize());
+        $data = $event->jsonSerialize();
 
-        $job = new ProcessWebhook($model, $event->jsonSerialize());
+        /**
+         * Create the model, giving it the option of filling the account as `account_id`.
+         */
+        $model = $this->model->create(
+            collect($data)->put('account_id', Arr::get($data, 'account'))->all()
+        );
+
+        /** Get the queue config for this specific event.  */
+        $queue = Config::webhookQueue($event->type);
+
+        /** Dispatch a job to asynchronously process the webhook. */
+        $job = new ProcessWebhook($model, $data);
         $job->onConnection($queue['connection'])->onQueue($queue['queue']);
 
         $this->queue->dispatch($job);
@@ -61,7 +79,7 @@ class Processor implements ProcessorInterface
      */
     public function didProcess(Event $event)
     {
-        return StripeEvent::query()->whereKey($event->id)->exists();
+        return $this->model->newQuery()->whereKey($event->id)->exists();
     }
 
 }

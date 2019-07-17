@@ -117,7 +117,10 @@ class Logger
      */
     private function sanitise(array &$data)
     {
-        if (!isset($data['object'])) {
+        $name = isset($data['object']) ? $data['object'] : null;
+
+        /** Stripe webhooks contain an object key that is not a string. */
+        if (!is_string($name)) {
             return;
         }
 
@@ -137,7 +140,7 @@ class Logger
     /**
      * Get the paths to exclude from logging.
      *
-     * @param $name
+     * @param mixed $name
      * @return array
      */
     private function exclude($name)

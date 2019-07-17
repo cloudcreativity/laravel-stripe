@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace CloudCreativity\LaravelStripe\Eloquent;
+namespace CloudCreativity\LaravelStripe\Connect;
 
 use CloudCreativity\LaravelStripe\Connector;
 
@@ -27,7 +27,7 @@ trait ConnectedAccount
      */
     public function stripe()
     {
-        return app('stripe')->connectedAccount(
+        return app('stripe')->connect(
             $this->getStripeAccountId()
         );
     }

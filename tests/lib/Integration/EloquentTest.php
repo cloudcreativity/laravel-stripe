@@ -17,11 +17,20 @@
 
 namespace CloudCreativity\LaravelStripe\Tests\Integration;
 
-use CloudCreativity\LaravelStripe\Connector;
+use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\Tests\TestAccount;
 
 class EloquentTest extends TestCase
 {
+
+    /**
+     * @return void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+        config()->set('stripe.connect.model', TestAccount::class);
+    }
 
     public function test()
     {
@@ -30,7 +39,8 @@ class EloquentTest extends TestCase
 
         $this->assertSame($model->getKeyName(), $model->getStripeAccountKeyName(), 'key name');
         $this->assertSame($model->getKey(), $model->getStripeAccountId(), 'key');
-        $this->assertInstanceOf(Connector::class, $model->stripe(), 'stripe');
+        $this->assertTrue($model->stripe()->is($model), 'model connector');
+        $this->assertTrue(Stripe::connect($model->id)->is($model), 'facade account connector');
     }
 
     public function testIncrementing()

@@ -18,8 +18,10 @@
 namespace CloudCreativity\LaravelStripe\Http\Middleware;
 
 use CloudCreativity\LaravelStripe\Config;
+use CloudCreativity\LaravelStripe\Events\SignatureVerificationFailed;
 use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\Webhooks\Verifier;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Response;
 use Stripe\Error\SignatureVerification;
 
@@ -32,6 +34,11 @@ class VerifySignature
     private $verifier;
 
     /**
+     * @var Dispatcher
+     */
+    private $events;
+
+    /**
      * @var Logger
      */
     private $log;
@@ -40,11 +47,13 @@ class VerifySignature
      * VerifySignature constructor.
      *
      * @param Verifier $verifier
+     * @param Dispatcher $events
      * @param Logger $log
      */
-    public function __construct(Verifier $verifier, Logger $log)
+    public function __construct(Verifier $verifier, Dispatcher $events, Logger $log)
     {
         $this->verifier = $verifier;
+        $this->events = $events;
         $this->log = $log;
     }
 
@@ -63,12 +72,16 @@ class VerifySignature
         try {
             $this->verifier->verify($request, $signingSecret);
         } catch (SignatureVerification $ex) {
-            $this->log->log("Stripe webhook signature verification failed: {$ex->getMessage()}", [
-                'header' => $ex->getSigHeader(),
-                'signing_secret_key' => $signingSecret,
-            ]);
+            $event = new SignatureVerificationFailed(
+                $ex->getMessage(),
+                $ex->getSigHeader(),
+                $signingSecret
+            );
 
-            abort(Response::HTTP_BAD_REQUEST);
+            $this->log->log("Stripe webhook signature verification failed.", $event->toArray());
+            $this->events->dispatch($event);
+
+            return response()->json(['error' => 'Invalid signature.'], Response::HTTP_BAD_REQUEST);
         }
 
         $this->log->log("Verified Stripe webhook with signing secret: {$signingSecret}");

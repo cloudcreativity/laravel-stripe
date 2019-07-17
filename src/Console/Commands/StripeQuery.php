@@ -18,7 +18,7 @@
 namespace CloudCreativity\LaravelStripe\Console\Commands;
 
 use CloudCreativity\LaravelStripe\Connector;
-use CloudCreativity\LaravelStripe\Exceptions\InvalidArgumentException;
+use CloudCreativity\LaravelStripe\Exceptions\UnexpectedValueException;
 use CloudCreativity\LaravelStripe\Repositories\AbstractRepository;
 use CloudCreativity\LaravelStripe\StripeService;
 use Illuminate\Console\Command;
@@ -61,7 +61,7 @@ class StripeQuery extends Command
 
         try {
             /** @var Connector $connector */
-            $connector = $account ? $stripe->account($account) : $stripe->app();
+            $connector = $account ? $stripe->connect($account) : $stripe->account();
 
             /** @var AbstractRepository $repository */
             $repository = call_user_func($connector, $resource);
@@ -74,7 +74,7 @@ class StripeQuery extends Command
             $result = $id ?
                 $this->retrieve($repository, $resource, $id) :
                 $this->query($repository, $resource);
-        } catch (InvalidArgumentException $ex) {
+        } catch (UnexpectedValueException $ex) {
             $this->error($ex->getMessage());
             return 1;
         } catch (StripeException $ex) {
@@ -97,7 +97,7 @@ class StripeQuery extends Command
     private function retrieve(AbstractRepository $repository, $resource, $id)
     {
         if (!method_exists($repository, 'retrieve')) {
-            throw new InvalidArgumentException("Retrieving resource '{$resource}' is not supported.");
+            throw new UnexpectedValueException("Retrieving resource '{$resource}' is not supported.");
         }
 
         $this->info(sprintf('Retrieving %s %s', Str::singular($resource), $id));
@@ -115,7 +115,7 @@ class StripeQuery extends Command
     private function query(AbstractRepository $repository, $resource)
     {
         if (!method_exists($repository, 'all')) {
-            throw new InvalidArgumentException("Querying resource '{$resource}' is not supported.");
+            throw new UnexpectedValueException("Querying resource '{$resource}' is not supported.");
         }
 
         $this->info("Querying {$resource}");

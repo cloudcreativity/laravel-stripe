@@ -31,13 +31,10 @@ class StripeFake extends StripeService
     /**
      * StripeFake constructor.
      *
-     * @param AccountAdapterInterface $accounts
-     * @param Logger $log
      * @param ClientFake $client
      */
-    public function __construct(AccountAdapterInterface $accounts, Logger $log, ClientFake $client)
+    public function __construct(ClientFake $client)
     {
-        parent::__construct($accounts, $log);
         $this->stripeClient = $client;
     }
 }
