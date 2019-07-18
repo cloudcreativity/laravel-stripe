@@ -96,15 +96,19 @@ return [
         'model' => \CloudCreativity\LaravelStripe\Models\StripeEvent::class,
         'signature_tolerance' => env('STRIPE_WEBHOOKS_SIGNATURE_TOLERANCE', \Stripe\Webhook::DEFAULT_TOLERANCE),
         'signing_secrets' => [
-            'default' => env('STRIPE_WEBHOOKS_SIGNING_SECRET'),
+            'app' => env('STRIPE_WEBHOOKS_SIGNING_SECRET'),
+            'connect' => env('STRIPE_WEBHOOKS_CONNECT_SIGNING_SECRET'),
         ],
         'default_queue_connection' => env('STRIPE_WEBHOOKS_QUEUE_CONNECTION'),
         'default_queue' => env('STRIPE_WEBHOOKS_QUEUE'),
         'queues' => [
-            'payment_intent_succeeded' => [
-                'connection' => env('STRIPE_WEBHOOKS_QUEUE_CONNECTION'),
-                'queue' => env('STRIPE_WEBHOOKS_QUEUE'),
-            ],
+//            'payment_intent_succeeded' => [
+//                'connection' => env('QUEUE_HIGH_PRIORITY_CONNECTION'),
+//                'queue' => env('QUEUE_HIGH_PRIORITY'),
+//            ],
+        ],
+        'jobs' => [
+//            'payment_intent_succeeded' => \App\FulfilledOrder::class,
         ],
     ],
 

@@ -2,8 +2,9 @@
 
 namespace CloudCreativity\LaravelStripe\Models;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
+use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Connect\ConnectedAccount;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -58,6 +59,13 @@ class StripeAccount extends Model implements AccountInterface
      */
     public function events()
     {
-        return $this->hasMany(StripeEvent::class, 'account');
+        $model = Config::webhookModel();
+
+        return new HasMany(
+            $model->newQuery(),
+            $this,
+            $model->getQualifiedAccountIdKeyName(),
+            $this->getKeyName()
+        );
     }
 }

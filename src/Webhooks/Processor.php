@@ -20,7 +20,8 @@ namespace CloudCreativity\LaravelStripe\Webhooks;
 use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Jobs\ProcessWebhook;
-use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Contracts\Bus\Dispatcher as Bus;
+use Illuminate\Contracts\Events\Dispatcher as Events;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Stripe\Event;
@@ -29,9 +30,14 @@ class Processor implements ProcessorInterface
 {
 
     /**
-     * @var Dispatcher
+     * @var Bus
      */
     private $queue;
+
+    /**
+     * @var Events
+     */
+    private $events;
 
     /**
      * @var Model
@@ -41,12 +47,14 @@ class Processor implements ProcessorInterface
     /**
      * Processor constructor.
      *
-     * @param Dispatcher $queue
+     * @param Bus $queue
+     * @param Events $events
      * @param Model $model
      */
-    public function __construct(Dispatcher $queue, Model $model)
+    public function __construct(Bus $queue, Events $events, Model $model)
     {
         $this->queue = $queue;
+        $this->events = $events;
         $this->model = $model;
     }
 
@@ -80,6 +88,50 @@ class Processor implements ProcessorInterface
     public function didProcess(Event $event)
     {
         return $this->model->newQuery()->whereKey($event->id)->exists();
+    }
+
+    /**
+     * Dispatch a processed webhook.
+     *
+     * For each webhook, we dispatch three events to give applications options
+     * as to how they want to bind.
+     *
+     * E.g. if the Stripe event name is `payment_intent.succeeded`, we dispatch:
+     *
+     * - `stripe.webhooks`
+     * - `stripe.webhooks:payment_intent.*`
+     * - `stripe.webhooks:payment_intent.succeeded`
+     *
+     * @param Webhook $webhook
+     * @return void
+     */
+    public function dispatch(Webhook $webhook)
+    {
+        foreach ($this->eventsFor($webhook->type()) as $name) {
+            $this->events->dispatch($name, $webhook);
+        }
+
+        /** Update the timestamps on the stored event */
+        if ($webhook->event instanceof Model) {
+            $webhook->event->touch();
+        }
+    }
+
+    /**
+     * Get event names for the specified webhook.
+     *
+     * @param string $type
+     * @return string[]
+     */
+    protected function eventsFor($type)
+    {
+        $object = explode('.', $type)[0];
+
+        return [
+            'stripe.webhooks',
+            "stripe.webhooks:{$object}.*",
+            "stripe.webhooks:{$type}",
+        ];
     }
 
 }

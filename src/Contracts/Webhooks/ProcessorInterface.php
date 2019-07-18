@@ -17,6 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Contracts\Webhooks;
 
+use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use Stripe\Event;
 
 interface ProcessorInterface
@@ -49,5 +50,13 @@ interface ProcessorInterface
      * @see https://stripe.com/docs/webhooks/best-practices#duplicate-events
      */
     public function didProcess(Event $event);
+
+    /**
+     * Dispatch a processed webhook.
+     *
+     * @param Webhook $webhook
+     * @return void
+     */
+    public function dispatch(Webhook $webhook);
 
 }

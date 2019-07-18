@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace CloudCreativity\LaravelStripe\Events;
+namespace CloudCreativity\LaravelStripe\Webhooks;
 
 use Carbon\Carbon;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
@@ -52,19 +52,45 @@ class Webhook
     public $payload;
 
     /**
+     * The configured queue for this webhook.
+     *
+     * @var string|null
+     */
+    public $queue;
+
+    /**
+     * The configured queue connection for this webhook.
+     *
+     * @var string|null
+     */
+    public $connection;
+
+    /**
      * Webhook constructor.
      *
      * @param StripeEvent $event
      * @param AccountInterface|null $account
      * @param array $payload
      *      the raw Stripe event payload.
+     * @param string|null $queue
+     *      the configured queue for this webhook.
+     * @param string|null $connection
+     *      the configured queue connection for this webhook.
+     *
      * @todo PHP7 the account should be type-hinted as `?AccountInterface` and payload should not be optional.
      */
-    public function __construct(StripeEvent $event, AccountInterface $account = null, array $payload = [])
-    {
+    public function __construct(
+        StripeEvent $event,
+        AccountInterface $account = null,
+        array $payload = [],
+        $queue = null,
+        $connection = null
+    ) {
         $this->event = $event;
         $this->account = $account;
         $this->payload = $payload;
+        $this->queue = $queue;
+        $this->connection = $connection;
     }
 
     /**
@@ -193,4 +219,5 @@ class Webhook
     {
         return Arr::has($this->payload, $path);
     }
+
 }

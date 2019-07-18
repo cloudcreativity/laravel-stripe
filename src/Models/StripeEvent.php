@@ -17,6 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Models;
 
+use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Connector;
 use CloudCreativity\LaravelStripe\Exceptions\AccountNotConnectedException;
 use Illuminate\Database\Eloquent\Model;
@@ -65,7 +66,31 @@ class StripeEvent extends Model
      */
     public function account()
     {
-        return $this->belongsTo(StripeAccount::class);
+        $model = Config::connectModel();
+
+        return new BelongsTo(
+            $model->newQuery(),
+            $this,
+            $this->getAccountIdKeyName(),
+            $model->getStripeAccountKeyName(),
+            'account'
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountIdKeyName()
+    {
+        return 'account_id';
+    }
+
+    /**
+     * @return string
+     */
+    public function getQualifiedAccountIdKeyName()
+    {
+        return $this->getTable() . '.' . $this->getAccountIdKeyName();
     }
 
     /**

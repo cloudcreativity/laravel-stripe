@@ -18,10 +18,10 @@
 namespace CloudCreativity\LaravelStripe\Jobs;
 
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
-use CloudCreativity\LaravelStripe\Events\Webhook;
+use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
+use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\InteractsWithQueue;
@@ -59,20 +59,12 @@ class ProcessWebhook implements ShouldQueue
     /**
      * Execute the job.
      *
-     * For each webhook, we dispatch three events to give applications options
-     * as to how they want to bind.
-     *
-     * E.g. if the Stripe event name is `payment_intent.succeeded`, we dispatch:
-     *
-     * - `stripe.webhooks`
-     * - `stripe.webhooks:payment_intent.*`
-     * - `stripe.webhooks:payment_intent.succeeded`
-     *
-     * @param Dispatcher $events
      * @param AccountAdapterInterface $accounts
+     * @param ProcessorInterface $processor
      * @return void
+     * @throws \Throwable
      */
-    public function handle(Dispatcher $events, AccountAdapterInterface $accounts)
+    public function handle(AccountAdapterInterface $accounts, ProcessorInterface $processor)
     {
         /**
          * We look the account up via the adapter rather than the Stripe Event
@@ -82,25 +74,17 @@ class ProcessWebhook implements ShouldQueue
         $accountId = isset($this->payload['account']) ? $this->payload['account'] : null;
         $account = $accountId ? $accounts->find($accountId) : null;
 
-        /** Dispatch a generic event that anything can bind to. */
-        $events->dispatch('stripe.webhooks', $event = new Webhook(
+        $webhook = new Webhook(
             $this->event,
             $account,
-            $this->payload
-        ));
-
-        $parts = explode('.', $event->type());
-
-        /** Dispatch a namespaced event, e.g. `payment_intent` */
-        $events->dispatch(sprintf('stripe.webhooks:%s.*', $parts[0]), $event);
-
-        /** Dispatch a specific event. */
-        $events->dispatch(
-            sprintf('stripe.webhooks:%s', $event->type()),
-            $event
+            $this->payload,
+            $this->queue,
+            $this->connection
         );
 
-        /** Update the timestamps on the stored webhook */
-        $this->event->touch();
+        $this->event->getConnection()->transaction(function () use ($processor, $webhook) {
+            $processor->dispatch($webhook);
+        });
     }
+
 }

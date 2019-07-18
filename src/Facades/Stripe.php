@@ -22,6 +22,7 @@ use CloudCreativity\LaravelStripe\Connector;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Testing\ClientFake;
 use CloudCreativity\LaravelStripe\Testing\StripeFake;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Facade;
 use Stripe\StripeObject;
 
@@ -30,6 +31,7 @@ use Stripe\StripeObject;
  *
  * @package CloudCreativity\LaravelStripe
  *
+ * @method static Route webhook(string $uri, string $signingSecret)
  * @method static Connector account()
  * @method static Connector connect(string $accountId)
  * @method static AccountInterface connectAccount(string $accountId)

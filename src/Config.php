@@ -17,8 +17,9 @@
 
 namespace CloudCreativity\LaravelStripe;
 
+use CloudCreativity\LaravelStripe\Models\StripeAccount;
+use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use InvalidArgumentException;
 use RuntimeException;
 use Stripe\Webhook;
@@ -48,21 +49,25 @@ class Config
     }
 
     /**
-     * Get the class for the connected account model.
+     * Get the Connect account model.
      *
-     * @return string
+     * @return StripeAccount|mixed
      */
     public static function connectModel()
     {
-        return self::fqn('connect.model');
+        $class = self::fqn('connect.model');
+
+        return new $class;
     }
 
     /**
-     * @return string
+     * @return StripeEvent|mixed
      */
     public static function webhookModel()
     {
-        return self::fqn('webhooks.model');
+        $class = self::fqn('webhooks.model');
+
+        return new $class;
     }
 
     /**
@@ -115,6 +120,23 @@ class Config
             'connection' => self::get('webhooks.default_queue_connection'),
             'queue' => self::get('webhooks.default_queue'),
         ];
+    }
+
+    /**
+     * Get the job to dispatch for the named webhook event.
+     *
+     * @param $eventName
+     * @return string|null
+     */
+    public static function webhookJob($eventName)
+    {
+        $key = str_replace('.', '_', $eventName);
+
+        if (self::has($path = "webhooks.jobs.{$key}")) {
+            return self::fqn($path);
+        }
+
+        return null;
     }
 
     /**

@@ -19,9 +19,26 @@ namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Exceptions\AccountNotConnectedException;
+use CloudCreativity\LaravelStripe\Http\Controllers\WebhookController;
+use Illuminate\Support\Facades\Route;
 
 class StripeService
 {
+
+    /**
+     * Register a webhook endpoint.
+     *
+     * @param string $uri
+     * @param string $signingSecret
+     *      the key of the signing secret in the `stripe.webhooks.signing_secrets` config.
+     * @return \Illuminate\Routing\Route
+     */
+    public function webhook($uri, $signingSecret)
+    {
+        return Route::post($uri, '\\' . WebhookController::class)->middleware(
+            "stripe.verify:{$signingSecret}"
+        );
+    }
 
     /**
      * Access the main application account.

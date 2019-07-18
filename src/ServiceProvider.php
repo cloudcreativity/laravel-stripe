@@ -17,12 +17,16 @@
 
 namespace CloudCreativity\LaravelStripe;
 
+use CloudCreativity\LaravelStripe\Connect\Adapter;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
-use CloudCreativity\LaravelStripe\Connect\Adapter;
+use CloudCreativity\LaravelStripe\Events\ClientReceivedResult;
+use CloudCreativity\LaravelStripe\Events\ClientWillSend;
+use CloudCreativity\LaravelStripe\Listeners\DispatchWebhookJob;
 use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\Webhooks\Processor;
 use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Contracts\Events\Dispatcher as Events;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Routing\Router;
@@ -37,9 +41,11 @@ class ServiceProvider extends BaseServiceProvider
     /**
      * Boot services.
      *
+     * @param Router $router
+     * @param Events $events
      * @return void
      */
-    public function boot(Router $router)
+    public function boot(Router $router, Events $events)
     {
         Stripe::setApiKey(Config::apiKey());
 
@@ -47,9 +53,8 @@ class ServiceProvider extends BaseServiceProvider
             Stripe::setApiVersion($version);
         }
 
-        if (Config::logLevel()) {
-            $this->enableLogging();
-        }
+        $this->bootLogging($events);
+        $this->bootWebhooks($events);
 
         $this->publishes([
             __DIR__ . '/../config/stripe.php' => config_path('stripe.php'),
@@ -119,9 +124,8 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->app->alias(AccountAdapterInterface::class, 'stripe.connect');
 
-        $this->app->bind(Adapter::class, function (Application $app) {
-            $model = Config::connectModel();
-            return new Adapter(new $model);
+        $this->app->bind(Adapter::class, function () {
+            return new Adapter(Config::connectModel());
         });
     }
 
@@ -139,29 +143,43 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->alias(ProcessorInterface::class, 'stripe.webhooks');
 
         $this->app->bind(Processor::class, function (Application $app) {
-            $model = Config::webhookModel();
-            return new Processor($app->make(Dispatcher::class), new $model);
+            return new Processor(
+                $app->make(Dispatcher::class),
+                $app->make(Events::class),
+                Config::webhookModel()
+            );
         });
     }
 
     /**
-     * Boot logging implementation.
+     * Boot the webhook implementation.
      *
+     * @param Events $events
      * @return void
      */
-    private function enableLogging()
+    private function bootWebhooks(Events $events)
+    {
+        $events->listen('stripe.webhooks', DispatchWebhookJob::class);
+    }
+
+    /**
+     * Boot the logging implementation.
+     *
+     * @param Events $events
+     * @return void
+     */
+    private function bootLogging(Events $events)
     {
         Stripe::setLogger(app(LoggerInterface::class));
 
         $this->app->afterResolving(StripeService::class, function () {
-            logger()->log(Config::logLevel(), "Stripe: service booted.", [
+            app(Logger::class)->log("Stripe: service booted.", [
                 'api_key' => substr(Stripe::getApiKey(), 3, 4),
                 'api_version' => Stripe::getApiVersion(),
             ]);
         });
 
-        $events = app('events');
-        $events->listen(Events\ClientWillSend::class, Listeners\LogClientRequests::class);
-        $events->listen(Events\ClientReceivedResult::class, Listeners\LogClientResults::class);
+        $events->listen(ClientWillSend::class, Listeners\LogClientRequests::class);
+        $events->listen(ClientReceivedResult::class, Listeners\LogClientResults::class);
     }
 }
