@@ -19,10 +19,9 @@ namespace CloudCreativity\LaravelStripe\Tests\Integration;
 
 use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\ServiceProvider;
-use CloudCreativity\LaravelStripe\Tests\TestExceptionHandler;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Foundation\Application;
+use Laravel\Cashier\CashierServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -31,7 +30,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -51,26 +50,16 @@ abstract class TestCase extends BaseTestCase
     /**
      * Provider for all Stripe classes that are implemented via repositories.
      *
-     * To support Laravel 5.4, we have to use an old version of the Stripe PHP
-     * library. We therefore filter out any classes that do not exist.
-     *
-     * @todo filtering needs to be removed once we drop Laravel 5.4. The version
-     * constraint for the stripe/stripe-php should always be set to support all
-     * classes that are available on the latest version.
-     *
      * @return array
-     * @todo remove filtering once we are only on Stripe ^6.0.
      */
     public function classProvider()
     {
-        return collect([
+        return [
             'accounts' => [\Stripe\Account::class, 'accounts'],
             'charges' => [\Stripe\Charge::class, 'charges'],
             'events' => [\Stripe\Event::class, 'events'],
             'payment_intents' => [\Stripe\PaymentIntent::class, 'payment_intents'],
-        ])->filter(function (array $values) {
-            return class_exists($values[0]);
-        })->all();
+        ];
     }
 
     /**
@@ -85,6 +74,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
+            CashierServiceProvider::class,
             ServiceProvider::class,
         ];
     }
@@ -120,17 +110,6 @@ abstract class TestCase extends BaseTestCase
             'database' => ':memory:',
             'prefix'   => '',
         ]);
-    }
-
-    /**
-     * @return $this
-     * @todo remove in Laravel ^5.5
-     */
-    protected function withoutExceptionHandling()
-    {
-        $this->instance(ExceptionHandler::class, $this->app->make(TestExceptionHandler::class));
-
-        return $this;
     }
 
     /**

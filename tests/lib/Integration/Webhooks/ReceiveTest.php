@@ -28,13 +28,14 @@ use CloudCreativity\LaravelStripe\Webhooks\Verifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\MockObject\MockObject;
 use Stripe\Error\SignatureVerification;
 
 class ReceiveTest extends TestCase
 {
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var MockObject
      */
     private $verifier;
 
@@ -46,7 +47,7 @@ class ReceiveTest extends TestCase
     /**
      * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

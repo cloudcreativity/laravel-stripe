@@ -26,7 +26,7 @@ class EloquentTest extends TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         config()->set('stripe.connect.model', TestAccount::class);
