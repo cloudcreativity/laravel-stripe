@@ -87,9 +87,7 @@ return [
     | Webhook process jobs will be pushed to the default queue (and connection)
     | specified below. You can also set queue/connections for specific
     | Stripe webhooks - which allows you to prioritise some events over
-    | others. The example below shows how to set a different connection/queue
-    | for the `payment_intent.succeeded` webhook. (Note that the key in
-    | config is `payment_intent_succeeded`.)
+    | others. Refer to the documentation for examples.
     |
     */
     'webhooks' => [
@@ -101,14 +99,20 @@ return [
         ],
         'default_queue_connection' => env('STRIPE_WEBHOOKS_QUEUE_CONNECTION'),
         'default_queue' => env('STRIPE_WEBHOOKS_QUEUE'),
-        'queues' => [
+        'account' => [
+//            'charge_refunded' => [
+//                'job' => \App\RefundOrder::class,
+//            ],
 //            'payment_intent_succeeded' => [
 //                'connection' => env('QUEUE_HIGH_PRIORITY_CONNECTION'),
 //                'queue' => env('QUEUE_HIGH_PRIORITY'),
+//                'job' => \App\FulfillOrder::class,
 //            ],
         ],
-        'jobs' => [
-//            'payment_intent_succeeded' => \App\FulfilledOrder::class,
+        'connect' => [
+//            'payment_intent_succeeded' => [
+//                'queue' => env('QUEUE_HIGH_PRIORITY'),
+//            ],
         ],
     ],
 

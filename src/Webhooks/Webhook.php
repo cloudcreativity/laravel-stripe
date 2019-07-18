@@ -17,13 +17,10 @@
 
 namespace CloudCreativity\LaravelStripe\Webhooks;
 
-use Carbon\Carbon;
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Arr;
 use Stripe\Event;
-use Stripe\StripeObject;
 
 class Webhook
 {
@@ -31,164 +28,71 @@ class Webhook
     use SerializesModels;
 
     /**
+     * The Stripe Event object.
+     *
+     * @var Event
+     */
+    public $webhook;
+
+    /**
      * The stored webhook.
      *
-     * @var StripeEvent
+     * @var StripeEvent|mixed
      */
-    public $event;
+    public $model;
 
     /**
-     * The connected account the event relates to.
-     *
-     * @var AccountInterface|mixed|null
+     * @var array
      */
-    public $account;
-
-    /**
-     * The raw payload.
-     *
-     * @var array $payload
-     */
-    public $payload;
-
-    /**
-     * The configured queue for this webhook.
-     *
-     * @var string|null
-     */
-    public $queue;
-
-    /**
-     * The configured queue connection for this webhook.
-     *
-     * @var string|null
-     */
-    public $connection;
+    public $config;
 
     /**
      * Webhook constructor.
      *
-     * @param StripeEvent $event
-     * @param AccountInterface|null $account
-     * @param array $payload
-     *      the raw Stripe event payload.
-     * @param string|null $queue
-     *      the configured queue for this webhook.
-     * @param string|null $connection
-     *      the configured queue connection for this webhook.
-     *
-     * @todo PHP7 the account should be type-hinted as `?AccountInterface` and payload should not be optional.
+     * @param Event $webhook
+     * @param StripeEvent|mixed $model
+     * @param array $config
      */
-    public function __construct(
-        StripeEvent $event,
-        AccountInterface $account = null,
-        array $payload = [],
-        $queue = null,
-        $connection = null
-    ) {
-        $this->event = $event;
-        $this->account = $account;
-        $this->payload = $payload;
-        $this->queue = $queue;
-        $this->connection = $connection;
+    public function __construct(Event $webhook, $model, array $config = [])
+    {
+        $this->webhook = $webhook;
+        $this->model = $model;
+        $this->config = $config;
     }
 
     /**
-     * The event id.
-     *
      * @return string
      */
     public function id()
     {
-        return $this->payload['id'];
+        return $this->webhook->id;
     }
 
     /**
-     * The id of the connected account that originated the event.
+     * Get the type of webhook.
      *
-     * @return string|null
-     */
-    public function accountId()
-    {
-        return $this->get('account');
-    }
-
-    /**
-     * The stored connected account that originated the event.
-     *
-     * Note that even if there is an account id, this might return null
-     * if the account is no longer in your application's storage.
-     *
-     * @return AccountInterface|null
-     */
-    public function account()
-    {
-        return $this->account;
-    }
-
-    /**
-     * The Stripe API version used to render the data.
-     *
-     * @return string|null
-     */
-    public function apiVersion()
-    {
-        return $this->payload['api_version'];
-    }
-
-    /**
-     * @return Carbon|null
-     */
-    public function created()
-    {
-        if ($created = $this->get('created')) {
-            return Carbon::createFromTimestamp($created);
-        }
-
-        return null;
-    }
-
-    /**
-     * @return StripeObject|mixed
-     */
-    public function data()
-    {
-        return Event::constructFrom($this->payload)->data;
-    }
-
-    /**
-     * @return bool
-     */
-    public function liveMode()
-    {
-        return (bool) $this->get('livemode');
-    }
-
-    /**
-     * @return int
-     */
-    public function pendingWebhooks()
-    {
-        return $this->get('pending_webhooks');
-    }
-
-    /**
-     * @return bool
-     */
-    public function testMode()
-    {
-        return !$this->liveMode();
-    }
-
-    /**
      * @return string
      */
     public function type()
     {
-        return $this->get('type');
+        return $this->webhook->type;
     }
 
     /**
+     * Is this a Connect webhook?
+     *
+     * Useful for listeners or jobs that run on both account and Connect webhooks.
+     *
+     * @return bool
+     */
+    public function connect()
+    {
+        return false;
+    }
+
+    /**
+     * Is the webhook the specified type?
+     *
      * @param $type
      * @return bool
      */
@@ -198,26 +102,44 @@ class Webhook
     }
 
     /**
-     * Get a value from the payload using dot notation.
+     * Is the webhook not the specified type.
      *
-     * @param string $path
-     * @param null $default
-     * @return mixed
+     * @param string $type
+     * @return bool
      */
-    public function get($path, $default = null)
+    public function isNot($type)
     {
-        return Arr::get($this->payload, $path, $default);
+        return !$this->is($type);
     }
 
     /**
-     * Check if an item exists in the payload using dot notation.
+     * Get the configured queue for the webhook.
      *
-     * @param string $path
-     * @return bool
+     * @return string|null
      */
-    public function has($path)
+    public function queue()
     {
-        return Arr::has($this->payload, $path);
+        return Arr::get($this->config, 'queue');
+    }
+
+    /**
+     * Get the configured connection for the webhook.
+     *
+     * @return
+     */
+    public function connection()
+    {
+        return Arr::get($this->config, 'connection');
+    }
+
+    /**
+     * Get the configured job for the webhook.
+     *
+     * @return string|null
+     */
+    public function job()
+    {
+        return Arr::get($this->config, 'job');
     }
 
 }

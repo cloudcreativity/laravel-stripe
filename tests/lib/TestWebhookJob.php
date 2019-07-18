@@ -2,6 +2,7 @@
 
 namespace CloudCreativity\LaravelStripe\Tests;
 
+use CloudCreativity\LaravelStripe\Webhooks\ConnectWebhook;
 use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,9 +22,9 @@ class TestWebhookJob implements ShouldQueue
     /**
      * TestWebhookJob constructor.
      *
-     * @param Webhook $webhook
+     * @param Webhook|ConnectWebhook $webhook
      */
-    public function __construct(Webhook $webhook)
+    public function __construct($webhook)
     {
         $this->webhook = $webhook;
     }

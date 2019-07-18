@@ -2,9 +2,8 @@
 
 namespace CloudCreativity\LaravelStripe\Listeners;
 
-use CloudCreativity\LaravelStripe\Config;
-use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use CloudCreativity\LaravelStripe\Log\Logger;
+use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Bus\Dispatcher;
 
@@ -41,26 +40,21 @@ class DispatchWebhookJob
      */
     public function handle(Webhook $webhook)
     {
-        if ($job = Config::webhookJob($webhook->type())) {
-            $this->dispatch($job, $webhook);
+        if (!$job = $webhook->job()) {
+            return;
         }
-    }
 
-    /**
-     * Dispatch the named job.
-     *
-     * Jobs are dispatched to the same queue and connection as the webhook.
-     *
-     * @param string $job
-     *      the fully qualified job class name.
-     * @param Webhook $webhook
-     * @return void
-     */
-    private function dispatch($job, Webhook $webhook)
-    {
         /** @var Queueable $job */
         $job = new $job($webhook);
-        $job->onConnection($webhook->connection)->onQueue($webhook->queue);
+        $job->onConnection($webhook->connection());
+        $job->onQueue($webhook->queue());
+
+        $this->log->log("Dispatching job for webhook '{$webhook->type()}'.", [
+            'id' => $webhook->id(),
+            'connection' => $webhook->connection(),
+            'queue' => $webhook->queue(),
+            'job' => $webhook->job(),
+        ]);
 
         $this->queue->dispatch($job);
     }

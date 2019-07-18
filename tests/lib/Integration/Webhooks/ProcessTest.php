@@ -18,10 +18,11 @@
 namespace CloudCreativity\LaravelStripe\Tests\Webhooks;
 
 use Carbon\Carbon;
-use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use CloudCreativity\LaravelStripe\Jobs\ProcessWebhook;
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
+use CloudCreativity\LaravelStripe\Webhooks\ConnectWebhook;
+use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use Illuminate\Support\Facades\Event;
 
 class ProcessTest extends TestCase
@@ -48,71 +49,73 @@ class ProcessTest extends TestCase
 
     public function test()
     {
-        $event = factory(StripeEvent::class)->create([
+        $model = factory(StripeEvent::class)->create([
             'updated_at' => Carbon::now()->subMinute(),
         ]);
 
         $payload = [
-            'id' => $event->getKey(),
+            'id' => $model->getKey(),
             'type' => 'charge.failed',
         ];
 
-        dispatch(new ProcessWebhook($event, $payload));
+        dispatch(new ProcessWebhook($model, $payload));
 
         $expected = [
             'stripe.webhooks',
-            'stripe.webhooks:charge.*',
+            'stripe.webhooks:charge',
             'stripe.webhooks:charge.failed',
         ];
 
         foreach ($expected as $name) {
-            Event::assertDispatched($name, function ($ev, Webhook $webhook) use ($name, $event, $payload) {
-                $this->assertTrue($event->is($webhook->event), "{$name}: model");
-                $this->assertNull($webhook->account, "{$name}: account");
-                $this->assertEquals($payload, $webhook->payload, "{$name}: payload");
-                $this->assertNull($webhook->connection, "{$name}: connection");
-                $this->assertNull($webhook->queue, "{$name}: queue");
-                return true;
-            });
+            Event::assertDispatched(
+                $name,
+                function ($ev, Webhook $webhook) use ($name, $model, $payload) {
+                    $this->assertNotInstanceOf(ConnectWebhook::class, $webhook, 'not connect');
+                    $this->assertEquals(\Stripe\Event::constructFrom($payload), $webhook->webhook, "{$name}: webhook");
+                    $this->assertTrue($model->is($webhook->model), "{$name}: model");
+                    return true;
+                }
+            );
         }
 
         /** Ensure the model had its timestamp updated. */
         $this->assertDatabaseHas('stripe_events', [
-            $event->getKeyName() => $event->getKey(),
+            $model->getKeyName() => $model->getKey(),
             'updated_at' => Carbon::now()->toDateTimeString(),
         ]);
     }
 
     public function testConnect()
     {
-        $event = factory(StripeEvent::class)->states('connect')->create();
+        $model = factory(StripeEvent::class)->states('connect')->create();
 
         $payload = [
-            'id' => $event->getKey(),
-            'account' => $event->account_id,
+            'id' => $model->getKey(),
+            'account' => $model->account_id,
             'type' => 'payment_intent.succeeded',
         ];
 
-        $job = new ProcessWebhook($event, $payload);
+        $job = new ProcessWebhook($model, $payload);
         $job->onConnection('sync')->onQueue('my_queue');
 
         dispatch($job);
 
         $expected = [
-            'stripe.webhooks',
-            'stripe.webhooks:payment_intent.*',
-            'stripe.webhooks:payment_intent.succeeded',
+            'stripe.connect.webhooks',
+            'stripe.connect.webhooks:payment_intent',
+            'stripe.connect.webhooks:payment_intent.succeeded',
         ];
 
         foreach ($expected as $name) {
-            Event::assertDispatched($name, function ($ev, Webhook $webhook) use ($name, $event, $payload) {
-                $this->assertTrue($event->is($webhook->event), "{$name}: model");
-                $this->assertTrue($event->account->is($webhook->account), "{$name}: account");
-                $this->assertEquals($payload, $webhook->payload, "{$name}: payload");
-                $this->assertSame('sync', $webhook->connection, "{$name}: connection");
-                $this->assertSame('my_queue', $webhook->queue, "{$name}: queue");
-                return true;
-            });
+            Event::assertDispatched(
+                $name,
+                function ($ev, ConnectWebhook $webhook) use ($name, $model, $payload) {
+                    $this->assertEquals(\Stripe\Event::constructFrom($payload), $webhook->webhook, "{$name}: webhook");
+                    $this->assertTrue($model->account->is($webhook->account), "{$name}: account");
+                    $this->assertTrue($model->is($webhook->model), "{$name}: model");
+                    return true;
+                }
+            );
         }
     }
 }

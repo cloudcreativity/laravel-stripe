@@ -146,6 +146,7 @@ class ServiceProvider extends BaseServiceProvider
             return new Processor(
                 $app->make(Dispatcher::class),
                 $app->make(Events::class),
+                $app->make('stripe.connect'),
                 Config::webhookModel()
             );
         });
@@ -160,6 +161,7 @@ class ServiceProvider extends BaseServiceProvider
     private function bootWebhooks(Events $events)
     {
         $events->listen('stripe.webhooks', DispatchWebhookJob::class);
+        $events->listen('stripe.connect.webhooks', DispatchWebhookJob::class);
     }
 
     /**

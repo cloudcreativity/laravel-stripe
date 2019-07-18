@@ -17,12 +17,13 @@
 
 namespace CloudCreativity\LaravelStripe\Tests\Integration\Webhooks;
 
-use CloudCreativity\LaravelStripe\Webhooks\Webhook;
-use CloudCreativity\LaravelStripe\Models\StripeAccount;
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
 use CloudCreativity\LaravelStripe\Tests\TestWebhookJob;
+use CloudCreativity\LaravelStripe\Webhooks\ConnectWebhook;
+use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use Illuminate\Support\Facades\Queue;
+use Stripe\Event;
 
 class ListenersTest extends TestCase
 {
@@ -34,10 +35,6 @@ class ListenersTest extends TestCase
     {
         parent::setUp();
         Queue::fake();
-
-        config()->set('stripe.webhooks.jobs', [
-            'payment_intent_succeeded' => TestWebhookJob::class,
-        ]);
     }
 
     /**
@@ -47,18 +44,51 @@ class ListenersTest extends TestCase
      */
     public function test()
     {
+        $event = Event::constructFrom([
+            'id' => 'evt_00000000',
+            'type' => 'payment_intent.succeeded',
+        ]);
+
         event('stripe.webhooks', $webhook = new Webhook(
+            $event,
             factory(StripeEvent::class)->create(),
-            factory(StripeAccount::class)->create(),
-            ['id' => 'evt_00000000', 'object' => 'event', 'type' => 'payment_intent.succeeded'],
-            'my_queue',
-            'my_connection'
+            ['queue' => 'my_queue', 'connection' => 'my_connection', 'job' => TestWebhookJob::class]
         ));
 
         Queue::assertPushedOn('my_queue', TestWebhookJob::class, function ($job) use ($webhook) {
-            $this->assertSame($webhook, $job->webhook, 'webhook');
+            $this->assertSame($webhook, $job->webhook);
             $this->assertSame('my_queue', $job->queue, 'queue');
             $this->assertSame('my_connection', $job->connection, 'connection');
+            return true;
+        });
+    }
+
+    /**
+     * If there are any configured webhook jobs, we expect them to be dispatched
+     * when the `stripe.connect.webhooks` event is fired. They should be dispatched on the
+     * same queue and connection as the webhook itself.
+     */
+    public function testConnect()
+    {
+        $event = Event::constructFrom([
+            'id' => 'evt_00000000',
+            'type' => 'payment_intent.succeeded',
+            'account' => 'acct_0000000000',
+        ]);
+
+        $model = factory(StripeEvent::class)->states('connect')->create();
+
+        event('stripe.connect.webhooks', $webhook = new ConnectWebhook(
+            $event,
+            $model->account,
+            $model,
+            ['job' => TestWebhookJob::class]
+        ));
+
+        Queue::assertPushed(TestWebhookJob::class, function ($job) use ($webhook) {
+            $this->assertSame($webhook, $job->webhook);
+            $this->assertNull($job->queue, 'queue');
+            $this->assertNull($job->connection, 'connection');
             return true;
         });
     }
@@ -69,9 +99,9 @@ class ListenersTest extends TestCase
     public function testDoesNotDispatch()
     {
         event('stripe.webhooks', $webhook = new Webhook(
+            Event::constructFrom(['id' => 'evt_00000000', 'type' => 'charge.refunded']),
             factory(StripeEvent::class)->create(),
-            factory(StripeAccount::class)->create(),
-            ['id' => 'evt_00000000', 'object' => 'event', 'type' => 'charge.refunded']
+            ['job' => null]
         ));
 
         Queue::assertNotPushed(TestWebhookJob::class);

@@ -102,11 +102,12 @@ to their webhook requests should be returned immediately, and any complex logic 
 The queue and connection that is used for webhook processing can be configured in the
 `stripe.webhooks.default_queue_connection` and `stripe.webhooks.default_queue` values.
 
-You can also configure a queue and connection for specific events in the `stripe.webhooks.queues`
-config array. This is useful if you want to push specific webhooks onto a priority queue. 
+You can also configure a queue and connection for specific events in the `stripe.webhooks.account`
+and `stripe.webhooks.connect` config arrays. This is useful if you want to push specific webhooks onto
+a priority queue. 
 
-For example, if our application wanted to prioritise `payment_intent.succeeded` events, our
-config would look like this:
+For example, if our application wanted to prioritise `payment_intent.succeeded` events on the application's
+Stripe account, and `charge.refunded` on Connect accounts, our config would look like this:
 
 ```php
 return [
@@ -114,14 +115,25 @@ return [
     
     'webhooks' => [
         // ...
+        
         'default_queue_connection' => env('STRIPE_WEBHOOKS_QUEUE_CONNECTION'),
         'default_queue' => env('STRIPE_WEBHOOKS_QUEUE'),
-        'queues' => [
+        
+        // Account Webhooks
+        'account' => [
             'payment_intent_succeeded' => [
                 'connection' => env('QUEUE_HIGH_PRIORITY_CONNECTION'),
                 'queue' => env('QUEUE_HIGH_PRIORITY'),
             ],
-        ],    
+        ],
+        
+        // Connect Webhooks
+        'connect' => [
+            'charge_refunded' => [
+                'connection' => env('QUEUE_HIGH_PRIORITY_CONNECTION'),
+                'queue' => env('QUEUE_HIGH_PRIORITY'),
+            ],
+        ],
     ],
 ];
 ``` 
@@ -143,22 +155,28 @@ Add listeners by binding to any of the following events:
 | Event Name | Description |
 | :-- | :-- | 
 | `stripe.webhooks` | Bind to every webhook. |
-| `stripe.webhooks:<object>.*` | Listen for webhooks for the specified Stripe object. |
+| `stripe.webhooks:<object>` | Listen for webhooks for the specified Stripe object. |
 | `stripe.webhooks:<event_name>` | Listen for a specific webhook. |
 
 For example, when processing a `payment_intent.succeeded` webhook, the following three events will be
 fired in this order:
 
 - `stripe.webhooks`
-- `stripe.webhooks:payment_intent.*`
+- `stripe.webhooks:payment_intent`
 - `stripe.webhooks:payment_intent.succeeded`
 
-Listeners receive an instance of `\CloudCreativity\LaravelStripe\Webhooks\Webhook` as their first
-and only argument.
+Arguments will receive an instance of either:
+
+- `\CloudCreativity\LaravelStripe\Webhooks\Webhook`: for account webhooks.
+- `\CloudCreativity\LaravelStripe\Webhooks\ConnectWebhook`: for Connect webhooks.
+
+> The `ConnectWebhook` extends `Webhook`, so if your listener is for both account and Connect webhooks,
+type-hint `Webhook`. If you need to check, use the `$webhook->connect()` method, which returns `true`
+if it is a Connect webhook.
 
 ### Jobs
 
-Alternatively you can choose for a job to be queued when a webhook is processed. The job will
+You can also choose for a job to be queued when a webhook is processed. The job will
 be constructed with the webhook, giving you access to all the information from Stripe. For example:
 
 
@@ -191,7 +209,10 @@ class FulfillOrder implements ShouldQueue
 }
 ```
 
-Then add the job to your `stripe.webhooks.jobs` configuration:
+> The constructor will receive a `ConnectWebhook` for Connect webhooks. You can type-hint that
+if you job only runs on Connect webhooks.
+
+Then add the job to your `stripe.webhooks.account` or `stripe.webhooks.connect` configuration:
 
 ```php
 return [
@@ -199,12 +220,23 @@ return [
     
     'webhooks' => [
         // ...
-        'jobs' => [
-            'payment_intent_succeeded' => \App\Jobs\FulfillOrder::class,
-        ],    
+        
+        // Account Webhooks
+        'account' => [
+            'payment_intent_succeeded' => [
+                'job' => \App\Jobs\FulfillOrder::class,
+            ],
+        ],
+        
+        // Connect Webhooks
+        'connect' => [
+            'charge_refunded' => [
+                'job' => \App\Jobs\RefundPurchase::class,
+            ],
+        ],
     ],
 ];
-``` 
+```
 
 > Note that we use the snake case version of the event name, so `payment_intent.succeeded` becomes
 `payment_intent_succeeded`.

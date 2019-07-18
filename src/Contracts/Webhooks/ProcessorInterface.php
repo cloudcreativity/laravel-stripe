@@ -17,14 +17,14 @@
 
 namespace CloudCreativity\LaravelStripe\Contracts\Webhooks;
 
-use CloudCreativity\LaravelStripe\Webhooks\Webhook;
+use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use Stripe\Event;
 
 interface ProcessorInterface
 {
 
     /**
-     * Process the Stripe webhook.
+     * Receive a Stripe webhook.
      *
      * If your webhook processor performs complex logic, or makes network calls,
      * it’s possible that the request would time out before Stripe sees its complete execution.
@@ -35,11 +35,12 @@ interface ProcessorInterface
      *
      * @param Event $event
      * @return void
+     * @see https://stripe.com/docs/webhooks/best-practices#acknowledge-events-immediately
      */
-    public function process(Event $event);
+    public function receive(Event $event);
 
     /**
-     * Has the Stripe webhook been processed?
+     * Has the Stripe webhook been received?
      *
      * Webhook endpoints might occasionally receive the same event more than once.
      * Stripe advise to guard against duplicated event receipts by making event
@@ -49,14 +50,16 @@ interface ProcessorInterface
      * @return bool
      * @see https://stripe.com/docs/webhooks/best-practices#duplicate-events
      */
-    public function didProcess(Event $event);
+    public function didReceive(Event $event);
 
     /**
      * Dispatch a processed webhook.
      *
-     * @param Webhook $webhook
+     * @param Event $event
+     * @param StripeEvent|mixed $model
+     *      the stored webhook.
      * @return void
      */
-    public function dispatch(Webhook $webhook);
+    public function dispatch(Event $event, $model);
 
 }

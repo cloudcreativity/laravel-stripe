@@ -122,7 +122,33 @@ class ReceiveTest extends TestCase
 
     public function testSpecificQueue()
     {
-        config()->set('stripe.webhooks.queues', [
+        unset($this->event['account']);
+
+        config()->set('stripe.webhooks.account', [
+            /** Use the underscore version */
+            'charge_failed' => [
+                'connection' => null,
+                'queue' => 'high_queue',
+            ],
+        ]);
+
+        $this->withoutExceptionHandling()
+            ->postJson('/test/webhook', $this->event)
+            ->assertStatus(204);
+
+        $expected = StripeEvent::findOrFail($this->event['id']);
+
+        Queue::assertPushedOn('high_queue', ProcessWebhook::class, function ($job) use ($expected) {
+            $this->assertNull($job->connection, 'job connection');
+            $this->assertTrue($expected->is($job->event), 'job event');
+            $this->assertEquals($this->event, $job->payload, 'job payload');
+            return true;
+        });
+    }
+
+    public function testConnectSpecificQueue()
+    {
+        config()->set('stripe.webhooks.connect', [
             /** Use the underscore version */
             'charge_failed' => [
                 'connection' => null,

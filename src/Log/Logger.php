@@ -64,7 +64,7 @@ class Logger
      */
     public function log($message, array $context = [])
     {
-        $this->log->log($this->level, $message, $context);
+        $this->log->log($this->level, 'Stripe: ' . $message, $context);
     }
 
     /**

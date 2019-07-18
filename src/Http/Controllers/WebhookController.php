@@ -60,7 +60,7 @@ class WebhookController extends Controller
         $event = Event::constructFrom($request->json()->all());
 
         /** Only process the webhook if it has not already been processed. */
-        if ($processor->didProcess($event)) {
+        if ($processor->didReceive($event)) {
             $this->log->log(sprintf(
                 "Ignoring Stripe webhook %s for event %s, as it is already processed.",
                 $event->id,
@@ -68,7 +68,7 @@ class WebhookController extends Controller
             ));
         } else {
             $this->log->encode("Received new Stripe webhook event {$event->type}", $event);
-            $processor->process($event);
+            $processor->receive($event);
         }
 
         return response('', Response::HTTP_NO_CONTENT);

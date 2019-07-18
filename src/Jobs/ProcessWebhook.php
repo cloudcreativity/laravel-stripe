@@ -17,15 +17,15 @@
 
 namespace CloudCreativity\LaravelStripe\Jobs;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
+use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
-use CloudCreativity\LaravelStripe\Webhooks\Webhook;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Stripe\Event;
 
 class ProcessWebhook implements ShouldQueue
 {
@@ -59,31 +59,22 @@ class ProcessWebhook implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param AdapterInterface $accounts
      * @param ProcessorInterface $processor
+     * @param Logger $log
      * @return void
      * @throws \Throwable
      */
-    public function handle(AdapterInterface $accounts, ProcessorInterface $processor)
+    public function handle(ProcessorInterface $processor, Logger $log)
     {
-        /**
-         * We look the account up via the adapter rather than the Stripe Event
-         * model, in case the developer is using their own event model (which
-         * may not have the account relationship).
-         */
-        $accountId = isset($this->payload['account']) ? $this->payload['account'] : null;
-        $account = $accountId ? $accounts->find($accountId) : null;
+        $webhook = Event::constructFrom($this->payload);
 
-        $webhook = new Webhook(
-            $this->event,
-            $account,
-            $this->payload,
-            $this->queue,
-            $this->connection
+        $log->log(
+            "Processing webhook {$webhook->id}.",
+            collect($this->payload)->only('account', 'type')->all()
         );
 
         $this->event->getConnection()->transaction(function () use ($processor, $webhook) {
-            $processor->dispatch($webhook);
+            $processor->dispatch($webhook, $this->event);
         });
     }
 

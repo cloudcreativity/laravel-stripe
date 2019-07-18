@@ -102,41 +102,23 @@ class Config
     /**
      * Get the queue config for the named webhook event.
      *
-     * @param string $eventName
+     * @param string $type
+     * @param bool $connect
      * @return array
      */
-    public static function webhookQueue($eventName)
+    public static function webhookQueue($type, $connect = false)
     {
-        $key = str_replace('.', '_', $eventName);
+        $path = sprintf(
+            'webhooks.%s.%s',
+            $connect ? 'connect' : 'account',
+            str_replace('.', '_', $type)
+        );
 
-        if (self::has($path = "webhooks.queues.{$key}")) {
-            return [
-                'connection' => self::get("{$path}.connection"),
-                'queue' => self::get("{$path}.queue"),
-            ];
-        }
-
-        return [
+        return array_replace([
             'connection' => self::get('webhooks.default_queue_connection'),
             'queue' => self::get('webhooks.default_queue'),
-        ];
-    }
-
-    /**
-     * Get the job to dispatch for the named webhook event.
-     *
-     * @param $eventName
-     * @return string|null
-     */
-    public static function webhookJob($eventName)
-    {
-        $key = str_replace('.', '_', $eventName);
-
-        if (self::has($path = "webhooks.jobs.{$key}")) {
-            return self::fqn($path);
-        }
-
-        return null;
+            'job' => null,
+        ], (array) self::get($path));
     }
 
     /**

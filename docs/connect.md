@@ -17,7 +17,9 @@ The model's attributes are:
 | `company` | `json` | Information about the company or business. |
 | `country` | `string` | The account's country. |
 | `created` | `datetime` | When the account was created with Stripe. |
+| `created_at` | `datetime` | When the account model was created in your application. |
 | `default_currency` | `string` | Three-letter ISO currency code representing the default currency for the account. |
+| `deleted_at` | `datetime` | When the account model was soft-deleted. By default the account is soft-deleted when deauthorized. |
 | `details_submitted` | `bool` | Whether account details have been submitted. |
 | `email` | `string` | The primary user's email address. |
 | `individual` | `json` | Information about the person represented by the account. |
@@ -27,6 +29,7 @@ The model's attributes are:
 | `settings` | `json` | Account options for customizing how the account functions within Stripe. |
 | `tos_acceptance` | `json` | Details on the acceptance of the Stripe Services Agreement. |
 | `type` | `string` | The Stripe account type. Can be `standard`, `express`, or `custom`. |
+| `updated_at` | `datetime` | When the account model was last updated. |
 
 > Some columns will only have values depending on the type of account. You should refer to the
 [Stripe account documentation](https://stripe.com/docs/api/accounts) for more information.
@@ -121,6 +124,11 @@ $charges = $model->stripe()->charges()->all();
 ```
 
 Refer to the [Repositories](./repositories.md) chapter for more details.
+
+## Webhooks
+
+Our [Webhook](./webhooks.md) implementation is fully compatible for Connect webhooks. Refer
+to that chapter for details.
 
 ## Custom Implementation
 

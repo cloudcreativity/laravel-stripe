@@ -18,8 +18,11 @@
 namespace CloudCreativity\LaravelStripe\Webhooks;
 
 use CloudCreativity\LaravelStripe\Config;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Jobs\ProcessWebhook;
+use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use Illuminate\Contracts\Bus\Dispatcher as Bus;
 use Illuminate\Contracts\Events\Dispatcher as Events;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +31,9 @@ use Stripe\Event;
 
 class Processor implements ProcessorInterface
 {
+
+    const EVENT_PREFIX = 'stripe.webhooks';
+    const CONNECT_EVENT_PREFIX = 'stripe.connect.webhooks';
 
     /**
      * @var Bus
@@ -40,6 +46,11 @@ class Processor implements ProcessorInterface
     private $events;
 
     /**
+     * @var AdapterInterface
+     */
+    private $accounts;
+
+    /**
      * @var Model
      */
     private $model;
@@ -49,19 +60,25 @@ class Processor implements ProcessorInterface
      *
      * @param Bus $queue
      * @param Events $events
+     * @param AdapterInterface $accounts
      * @param Model $model
      */
-    public function __construct(Bus $queue, Events $events, Model $model)
-    {
+    public function __construct(
+        Bus $queue,
+        Events $events,
+        AdapterInterface $accounts,
+        Model $model
+    ) {
         $this->queue = $queue;
         $this->events = $events;
+        $this->accounts = $accounts;
         $this->model = $model;
     }
 
     /**
      * @inheritDoc
      */
-    public function process(Event $event)
+    public function receive(Event $event)
     {
         $data = $event->jsonSerialize();
 
@@ -73,7 +90,8 @@ class Processor implements ProcessorInterface
         );
 
         /** Get the queue config for this specific event.  */
-        $queue = Config::webhookQueue($event->type);
+        $accountId = isset($event['account']) ? $event['account'] : null;
+        $queue = Config::webhookQueue($event->type, !!$accountId);
 
         /** Dispatch a job to asynchronously process the webhook. */
         $job = new ProcessWebhook($model, $data);
@@ -85,7 +103,7 @@ class Processor implements ProcessorInterface
     /**
      * @inheritDoc
      */
-    public function didProcess(Event $event)
+    public function didReceive(Event $event)
     {
         return $this->model->newQuery()->whereKey($event->id)->exists();
     }
@@ -93,27 +111,79 @@ class Processor implements ProcessorInterface
     /**
      * Dispatch a processed webhook.
      *
-     * For each webhook, we dispatch three events to give applications options
+     * For each webhook, we dispatch events to give applications options
      * as to how they want to bind.
      *
      * E.g. if the Stripe event name is `payment_intent.succeeded`, we dispatch:
      *
      * - `stripe.webhooks`
-     * - `stripe.webhooks:payment_intent.*`
+     * - `stripe.webhooks:payment_intent`
      * - `stripe.webhooks:payment_intent.succeeded`
      *
-     * @param Webhook $webhook
+     * However, if the event is a Connect webhook, we dispatch:
+     *
+     * - `stripe.connect.webhooks`
+     * - `stripe.connect.webhooks:payment_intent`
+     * - `stripe.connect.webhooks:payment_intent.succeeded`
+     *
+     * @param Event $webhook
+     * @param StripeEvent|mixed $model
      * @return void
      */
-    public function dispatch(Webhook $webhook)
+    public function dispatch(Event $webhook, $model)
     {
-        foreach ($this->eventsFor($webhook->type()) as $name) {
-            $this->events->dispatch($name, $webhook);
+        if ($accountId = Arr::get($webhook, 'account')) {
+            $this->dispatchConnect($webhook, $this->accounts->find($accountId), $model);
+        } else {
+            $this->dispatchAccount($webhook, $model);
         }
 
         /** Update the timestamps on the stored event */
-        if ($webhook->event instanceof Model) {
-            $webhook->event->touch();
+        if ($model instanceof Model) {
+            $model->touch();
+        }
+    }
+
+    /**
+     * Dispatch a webhook for the application's Stripe account.
+     *
+     * @param Event $event
+     * @param $model
+     * @return void
+     */
+    protected function dispatchAccount(Event $event, $model)
+    {
+        $webhook = new Webhook(
+            $event,
+            $model,
+            Config::webhookQueue($event->type)
+        );
+
+        foreach ($this->eventsFor($event->type) as $name) {
+            $this->events->dispatch($name, $webhook);
+        }
+    }
+
+    /**
+     * Dispatch a webhook for a Stripe Connect account.
+     *
+     * @param Event $event
+     * @param AccountInterface|null $account
+     * @param StripeEvent|mixed $model
+     * @return void
+     * @todo change method signature for PHP7.
+     */
+    protected function dispatchConnect(Event $event, AccountInterface $account = null, $model = null)
+    {
+        $webhook = new ConnectWebhook(
+            $event,
+            $account,
+            $model,
+            Config::webhookQueue($event->type, true)
+        );
+
+        foreach ($this->eventsFor($event->type, true) as $name) {
+            $this->events->dispatch($name, $webhook);
         }
     }
 
@@ -121,16 +191,17 @@ class Processor implements ProcessorInterface
      * Get event names for the specified webhook.
      *
      * @param string $type
+     * @param bool $connect
      * @return string[]
      */
-    protected function eventsFor($type)
+    protected function eventsFor($type, $connect = false)
     {
-        $object = explode('.', $type)[0];
+        $prefix = $connect ? static::CONNECT_EVENT_PREFIX : static::EVENT_PREFIX;
 
         return [
-            'stripe.webhooks',
-            "stripe.webhooks:{$object}.*",
-            "stripe.webhooks:{$type}",
+            $prefix,
+            sprintf('%s:%s', $prefix, explode('.', $type)[0]),
+            sprintf('%s:%s', $prefix, $type),
         ];
     }
 
