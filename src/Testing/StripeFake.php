@@ -17,7 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Testing;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\StripeService;

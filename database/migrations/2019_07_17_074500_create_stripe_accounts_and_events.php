@@ -22,7 +22,9 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->json('business_profile')->nullable();
             $table->string('business_type')->nullable();
             $table->json('capabilities')->nullable();
+            $table->json('company')->nullable();
             $table->string('country', 3);
+            $table->timestamp('created')->nullable();
             $table->string('default_currency', 3);
             $table->boolean('details_submitted');
             $table->string('email');
@@ -30,6 +32,7 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->json('metadata')->nullable();
             $table->boolean('payouts_enabled');
             $table->json('requirements')->nullable();
+            $table->json('settings')->nullable();
             $table->json('tos_acceptance')->nullable();
             $table->string('type');
         });

@@ -17,12 +17,12 @@
 
 namespace CloudCreativity\LaravelStripe\Connect;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
-class Adapter implements AccountAdapterInterface
+class Adapter implements AdapterInterface
 {
 
     /**

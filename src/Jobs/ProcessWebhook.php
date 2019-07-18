@@ -17,7 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Jobs;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use CloudCreativity\LaravelStripe\Webhooks\Webhook;
@@ -59,12 +59,12 @@ class ProcessWebhook implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param AccountAdapterInterface $accounts
+     * @param AdapterInterface $accounts
      * @param ProcessorInterface $processor
      * @return void
      * @throws \Throwable
      */
-    public function handle(AccountAdapterInterface $accounts, ProcessorInterface $processor)
+    public function handle(AdapterInterface $accounts, ProcessorInterface $processor)
     {
         /**
          * We look the account up via the adapter rather than the Stripe Event

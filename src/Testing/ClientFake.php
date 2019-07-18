@@ -17,15 +17,13 @@
 
 namespace CloudCreativity\LaravelStripe\Testing;
 
-use ArrayIterator;
 use CloudCreativity\LaravelStripe\Client;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
-use IteratorAggregate;
-use LogicException;
+use PHPUnit\Framework\Assert;
 use Stripe\StripeObject;
 
-class ClientFake extends Client implements IteratorAggregate
+class ClientFake extends Client
 {
 
     /**
@@ -101,30 +99,22 @@ class ClientFake extends Client implements IteratorAggregate
     }
 
     /**
-     * @return ArrayIterator
-     */
-    public function getIterator()
-    {
-        return $this->history->getIterator();
-    }
-
-    /**
      * @param $class
      * @param $method
      * @param array $args
-     * @return mixed
+     * @return StripeObject
      */
     protected function execute($class, $method, array $args)
     {
-        if (!$result = $this->queue->shift()) {
-            throw new LogicException("Unexpected Stripe call: {$class}::{$method}");
+        if ($this->queue->isEmpty()) {
+            Assert::fail(("Unexpected Stripe call: {$class}::{$method}"));
         }
 
         $this->history->push([
             'class' => $class,
             'method' => $method,
             'args' => $args,
-            'result' => $result
+            'result' => $result = $this->queue->shift()
         ]);
 
         return $result;

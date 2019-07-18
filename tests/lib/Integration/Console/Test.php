@@ -33,7 +33,7 @@ class Test extends TestCase
      */
     public function testAll($fqn, $resource)
     {
-        Stripe::withQueue(new Collection());
+        Stripe::fake(new Collection());
 
         $result = $this->artisan('stripe', compact('resource'));
 
@@ -56,7 +56,7 @@ class Test extends TestCase
         /** @var StripeAccount $account */
         $account = factory(StripeAccount::class)->create();
 
-        Stripe::withQueue(new Collection());
+        Stripe::fake(new Collection());
 
         $result = $this->artisan('stripe', [
             'resource' => $resource,
@@ -83,7 +83,7 @@ class Test extends TestCase
      */
     public function testRetrieveAndExpand($fqn, $resource)
     {
-        Stripe::withQueue(new StripeObject($id = 'foo_bazbat'));
+        Stripe::fake(new StripeObject($id = 'foo_bazbat'));
 
         $result = $this->artisan('stripe', [
             'resource' => $resource,
@@ -113,7 +113,7 @@ class Test extends TestCase
         /** @var StripeAccount $account */
         $account = factory(StripeAccount::class)->create();
 
-        Stripe::withQueue(new StripeObject($id = 'foo_bazbat'));
+        Stripe::fake(new StripeObject($id = 'foo_bazbat'));
 
         $result = $this->artisan('stripe', [
             'resource' => $resource,

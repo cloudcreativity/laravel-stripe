@@ -23,11 +23,11 @@ class LaravelStripe
     public static $runMigrations = true;
 
     /**
-     * The class name of the account adapter.
+     * The class name of the Stripe Connect adapter.
      *
      * @var string
      */
-    public static $accounts = Connect\Adapter::class;
+    public static $connect = Connect\Adapter::class;
 
     /**
      * The class name of the webhook processor.
@@ -56,9 +56,9 @@ class LaravelStripe
      * @param string $fqn
      * @return LaravelStripe
      */
-    public static function accounts($fqn)
+    public static function connect($fqn)
     {
-        self::$accounts = $fqn;
+        self::$connect = $fqn;
 
         return new self();
     }

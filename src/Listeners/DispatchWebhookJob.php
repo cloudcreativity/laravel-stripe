@@ -47,7 +47,7 @@ class DispatchWebhookJob
     }
 
     /**
-     * Dispatched the named job.
+     * Dispatch the named job.
      *
      * Jobs are dispatched to the same queue and connection as the webhook.
      *

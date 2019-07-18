@@ -18,7 +18,7 @@
 namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Connect\Adapter;
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountAdapterInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Events\ClientReceivedResult;
 use CloudCreativity\LaravelStripe\Events\ClientWillSend;
@@ -78,7 +78,7 @@ class ServiceProvider extends BaseServiceProvider
             $this->publishes([
                 __DIR__ . '/../database/factories' => database_path('factories'),
                 __DIR__ . '/../database/migrations' => database_path('migrations'),
-            ], 'stripe.models');
+            ], 'stripe-migrations');
         }
     }
 
@@ -118,11 +118,11 @@ class ServiceProvider extends BaseServiceProvider
      */
     private function bindConnect()
     {
-        $this->app->singleton(AccountAdapterInterface::class, function (Application $app) {
-            return $app->make(LaravelStripe::$accounts);
+        $this->app->singleton(AdapterInterface::class, function (Application $app) {
+            return $app->make(LaravelStripe::$connect);
         });
 
-        $this->app->alias(AccountAdapterInterface::class, 'stripe.connect');
+        $this->app->alias(AdapterInterface::class, 'stripe.connect');
 
         $this->app->bind(Adapter::class, function () {
             return new Adapter(Config::connectModel());

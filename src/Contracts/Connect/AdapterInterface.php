@@ -17,7 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Contracts\Connect;
 
-interface AccountAdapterInterface
+interface AdapterInterface
 {
 
     /**

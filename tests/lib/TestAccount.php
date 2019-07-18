@@ -21,6 +21,12 @@ use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Connect\ConnectedAccount;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class TestAccount
+ *
+ * Tests that we can have our own model that does not
+ * extend this package's `StripeAccount` model.
+ */
 class TestAccount extends Model implements AccountInterface
 {
 
@@ -30,4 +36,5 @@ class TestAccount extends Model implements AccountInterface
     public $incrementing = false;
 
     use ConnectedAccount;
+
 }

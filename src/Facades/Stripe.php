@@ -37,7 +37,6 @@ use Stripe\StripeObject;
  * @method static AccountInterface connectAccount(string $accountId)
  * @method static void log(string $message, StripeObject|mixed $data, array $context = [])
  *
- * @method static void withQueue(StripeObject ...$objects)
  * @method static void assertInvoked(string $class, string $method, \Closure $args = null)
  * @method static void assertInvokedAt(int $index, string $class, string $method, \Closure $args = null)
  */
@@ -47,9 +46,10 @@ class Stripe extends Facade
     /**
      * Fake static calls to Stripe.
      *
+     * @param StripeObject ...$queue
      * @return void
      */
-    public static function fake()
+    public static function fake(StripeObject ...$queue)
     {
         /**
          * Swapping the client stubs static calls to Stripe. This allows the entire Laravel
@@ -66,7 +66,9 @@ class Stripe extends Facade
          * This extends the real Stripe service and doesn't overload anything on it,
          * so the service will operate exactly as expected.
          */
-        static::swap(new StripeFake($client));
+        static::swap($fake = new StripeFake($client));
+
+        $fake->withQueue(...$queue);
     }
 
     /**

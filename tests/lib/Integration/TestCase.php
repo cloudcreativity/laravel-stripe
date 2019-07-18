@@ -46,9 +46,6 @@ abstract class TestCase extends BaseTestCase
         }
 
         $this->artisan('migrate', ['--database' => 'testbench']);
-
-        /** Fake Stripe so that we do not make any static calls to it. */
-        Stripe::fake();
     }
 
     /**
