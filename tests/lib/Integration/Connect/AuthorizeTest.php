@@ -41,7 +41,7 @@ class AuthorizeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Event::fake();
+        Event::fake(FetchedUserCredentials::class);
 
         $this->user = factory(TestUser::class)->create();
     }
@@ -77,15 +77,6 @@ class AuthorizeTest extends TestCase
 
         /** @var StripeAccount $model */
         $model = StripeAccount::find('acct_1234567890');
-
-        /**
-         * @TODO need to investigate why this isn't working.
-         *
-         * For some reason the connection is `null` on the created model, which means it does not
-         * pass the `is()` check. My best guess is it is related to having to fake all events
-         * (so the model boot isn't happening) but need to investigate further.
-         */
-        $this->markTestIncomplete("@todo assert model on event");
 
         Event::assertDispatched(FetchedUserCredentials::class, function ($event) use ($model, $token) {
             $this->assertTrue($model->is($event->account), 'event account');
