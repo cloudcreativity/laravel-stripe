@@ -44,6 +44,7 @@ return [
     */
     'connect' => [
         'model' => \CloudCreativity\LaravelStripe\Models\StripeAccount::class,
+        'owner' => \App\User::class,
         'queue' => env('STRIPE_CONNECT_QUEUE'),
         'queue_connection' => env('STRIPE_CONNECT_QUEUE_CONNECTION'),
         'views' => [

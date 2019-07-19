@@ -17,14 +17,14 @@
 
 namespace CloudCreativity\LaravelStripe\Tests;
 
-use CloudCreativity\LaravelStripe\Connect\HasStripeAccounts;
+use CloudCreativity\LaravelStripe\Connect\OwnsStripeAccounts;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
 use Illuminate\Foundation\Auth\User;
 
 class TestUser extends User implements AccountOwnerInterface
 {
 
-    use HasStripeAccounts;
+    use OwnsStripeAccounts;
 
     /**
      * @var string

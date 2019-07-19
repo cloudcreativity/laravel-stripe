@@ -21,6 +21,7 @@ use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Connect\ConnectedAccount;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -76,11 +77,25 @@ class StripeAccount extends Model implements AccountInterface
     {
         $model = Config::webhookModel();
 
-        return new HasMany(
-            $model->newQuery(),
-            $this,
-            $model->getQualifiedAccountIdKeyName(),
-            $this->getKeyName()
+        return $this->hasMany(
+            get_class($model),
+            $model->getAccountIdentifierName(),
+            $this->getStripeAccountIdentifierName()
+        );
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function owner()
+    {
+        $model = Config::connectOwner();
+
+        return $this->belongsTo(
+            get_class($model),
+            $this->getStripeOwnerIdentifierName(),
+            $model->getStripeIdentifierName(),
+            'owner'
         );
     }
 }

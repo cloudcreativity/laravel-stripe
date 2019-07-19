@@ -86,14 +86,6 @@ class StripeEvent extends Model
     }
 
     /**
-     * @return string
-     */
-    public function getQualifiedAccountIdentifierName()
-    {
-        return $this->getTable() . '.' . $this->getAccountIdentifierName();
-    }
-
-    /**
      * Get the Stripe connector for the account that this belongs to.
      *
      * @return Connector

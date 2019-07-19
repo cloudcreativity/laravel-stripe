@@ -17,9 +17,11 @@
 
 namespace CloudCreativity\LaravelStripe\Connect;
 
+use CloudCreativity\LaravelStripe\Config;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-trait HasStripeAccounts
+trait OwnsStripeAccounts
 {
 
     /**
@@ -44,5 +46,19 @@ trait HasStripeAccounts
         }
 
         return $this->getKeyName();
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function stripeAccounts()
+    {
+        $model = Config::connectModel();
+
+        return $this->hasMany(
+            get_class($model),
+            $this->getForeignKey(),
+            $this->getStripeIdentifierName()
+        );
     }
 }

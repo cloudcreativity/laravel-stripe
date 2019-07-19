@@ -17,8 +17,10 @@
 
 namespace CloudCreativity\LaravelStripe;
 
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
 use CloudCreativity\LaravelStripe\Models\StripeAccount;
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use RuntimeException;
@@ -68,6 +70,18 @@ class Config
     public static function connectModel()
     {
         $class = self::fqn('connect.model');
+
+        return new $class;
+    }
+
+    /**
+     * Get the Connect account owner model.
+     *
+     * @return AccountOwnerInterface|Model
+     */
+    public static function connectOwner()
+    {
+        $class = self::fqn('connect.owner');
 
         return new $class;
     }
