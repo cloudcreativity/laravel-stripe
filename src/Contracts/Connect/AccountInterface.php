@@ -26,4 +26,11 @@ interface AccountInterface
      * @return string
      */
     public function getStripeAccountId();
+
+    /**
+     * Get the Stripe refresh token for the connected account.
+     *
+     * @return string|null
+     */
+    public function getStripeRefreshToken();
 }

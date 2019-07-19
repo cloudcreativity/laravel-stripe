@@ -62,4 +62,35 @@ trait ConnectedAccount
         return 'stripe_account_id';
     }
 
+    /**
+     * Get the Stripe refresh token.
+     *
+     * @return string|null
+     */
+    public function getStripeRefreshToken()
+    {
+        return $this->{$this->getStripeRefreshTokenKeyName()};
+    }
+
+    /**
+     * Get the Stripe refresh token column name.
+     *
+     * If your model is using the key name as the Stripe account key name,
+     * we assume the refresh token is stored as `refresh_token`.
+     *
+     * Otherwise we assume it is stored as `stripe_refresh_token`.
+     *
+     * If you use a different name, just implement this method yourself.
+     *
+     * @return string
+     */
+    public function getStripeRefreshTokenKeyName()
+    {
+        if ($this->getKeyName() === $this->getStripeAccountKeyName()) {
+            return 'refresh_token';
+        }
+
+        return 'stripe_refresh_token';
+    }
+
 }

@@ -21,6 +21,7 @@ use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Stripe\Account;
 
 class Adapter implements AdapterInterface
 {
@@ -54,5 +55,29 @@ class Adapter implements AdapterInterface
             $accountId
         )->first();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function store($accountId, $refreshToken)
+    {
+        $account = $this->find($accountId) ?: $this->model->newInstance();
+
+        $account->forceFill([
+            $this->model->getStripeAccountKeyName() => $accountId,
+            $this->model->getStripeRefreshTokenKeyName() => $refreshToken,
+        ])->save();
+
+        return $account;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function update(Account $account)
+    {
+        // TODO: Implement update() method.
+    }
+
 
 }

@@ -1,6 +1,6 @@
 # Stripe Connect
 
-## OAuth
+## Authorization
 
 We provide the tools you need to set up the Stripe Connect
 [OAuth connection flow.](https://stripe.com/docs/connect/standard-accounts#oauth-flow)
@@ -121,7 +121,8 @@ code set to `laravel_stripe_forbidden`.
 
 ### Step 4: Fetch the User's Credentials from Stripe
 
-@todo
+The queued job will complete the process by fetching the user's credentials from Stripe,
+and ensuring that the Stripe account id and refresh tokens are stored.
 
 ## Models
 
