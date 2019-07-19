@@ -90,7 +90,7 @@ class Connector
      */
     public function accountId()
     {
-        return $this->account ? $this->account->getStripeAccountId() : null;
+        return $this->account ? $this->account->getStripeAccountIdentifier() : null;
     }
 
     /**

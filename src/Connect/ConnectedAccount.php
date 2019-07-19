@@ -28,16 +28,16 @@ trait ConnectedAccount
     public function stripe()
     {
         return app('stripe')->connect(
-            $this->getStripeAccountId()
+            $this->getStripeAccountIdentifier()
         );
     }
 
     /**
      * @return string
      */
-    public function getStripeAccountId()
+    public function getStripeAccountIdentifier()
     {
-        return $this->{$this->getStripeAccountKeyName()};
+        return $this->{$this->getStripeAccountIdentifierName()};
     }
 
     /**
@@ -53,13 +53,67 @@ trait ConnectedAccount
      *
      * @return string
      */
-    public function getStripeAccountKeyName()
+    public function getStripeAccountIdentifierName()
     {
         if (!$this->incrementing) {
             return $this->getKeyName();
         }
 
         return 'stripe_account_id';
+    }
+
+    /**
+     * Get the Stripe refresh token.
+     *
+     * @return string|null
+     */
+    public function getStripeRefreshToken()
+    {
+        return $this->{$this->getStripeRefreshTokenName()};
+    }
+
+    /**
+     * Get the Stripe refresh token column name.
+     *
+     * If your model is using the key name as the Stripe account key name,
+     * we assume the refresh token is stored as `refresh_token`.
+     *
+     * Otherwise we assume it is stored as `stripe_refresh_token`.
+     *
+     * If you use a different name, just implement this method yourself.
+     *
+     * @return string
+     */
+    public function getStripeRefreshTokenName()
+    {
+        if ($this->getKeyName() === $this->getStripeAccountIdentifierName()) {
+            return 'refresh_token';
+        }
+
+        return 'stripe_refresh_token';
+    }
+
+    /**
+     * Get the user id that the account is associated to.
+     *
+     * @return mixed|null
+     */
+    public function getStripeOwnerIdentifier()
+    {
+        return $this->{$this->getStripeOwnerIdentifierName()};
+    }
+
+    /**
+     * Get the user id column name.
+     *
+     * If this method returns null, the user will not be stored
+     * when an access token is fetched.
+     *
+     * @return string|null
+     */
+    public function getStripeOwnerIdentifierName()
+    {
+        return 'owner_id';
     }
 
 }

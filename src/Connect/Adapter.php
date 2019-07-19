@@ -17,10 +17,13 @@
 
 namespace CloudCreativity\LaravelStripe\Connect;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Stripe\Account;
 
 class Adapter implements AdapterInterface
 {
@@ -49,10 +52,41 @@ class Adapter implements AdapterInterface
      */
     public function find($accountId)
     {
+        return $this->query($accountId)->first();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function store($accountId, $refreshToken, AccountOwnerInterface $owner)
+    {
+        $account = $this->find($accountId) ?: $this->model->newInstance();
+        $account->{$this->model->getStripeAccountIdentifierName()} = $accountId;
+        $account->{$this->model->getStripeOwnerIdentifierName()} = $owner->getStripeIdentifier();
+        $account->{$this->model->getStripeRefreshTokenName()} = $refreshToken;
+        $account->save();
+
+        return $account;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function update(Account $account)
+    {
+        // TODO: Implement update() method.
+    }
+
+    /**
+     * @param $accountId
+     * @return Builder
+     */
+    protected function query($accountId)
+    {
         return $this->model->newQuery()->where(
-            $this->model->getStripeAccountKeyName(),
+            $this->model->getStripeAccountIdentifierName(),
             $accountId
-        )->first();
+        );
     }
 
 }

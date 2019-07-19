@@ -17,8 +17,10 @@
 
 namespace CloudCreativity\LaravelStripe;
 
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
 use CloudCreativity\LaravelStripe\Models\StripeAccount;
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use RuntimeException;
@@ -41,11 +43,23 @@ class Config
     }
 
     /**
+     * Get the Stripe API version used by this application.
+     *
      * @return string|null
      */
     public static function apiVersion()
     {
         return self::get('api_version') ?: null;
+    }
+
+    /**
+     * Get the Stripe Connect client id.
+     *
+     * @return string|null
+     */
+    public static function clientId()
+    {
+        return self::get('client_id') ?: null;
     }
 
     /**
@@ -58,6 +72,49 @@ class Config
         $class = self::fqn('connect.model');
 
         return new $class;
+    }
+
+    /**
+     * Get the Connect account owner model.
+     *
+     * @return AccountOwnerInterface|Model
+     */
+    public static function connectOwner()
+    {
+        $class = self::fqn('connect.owner');
+
+        return new $class;
+    }
+
+    /**
+     * Get the Connect queue config.
+     *
+     * @return array
+     */
+    public static function connectQueue()
+    {
+        return [
+            'connection' => self::get('connect.queue_connection'),
+            'queue' => self::get('connect.queue'),
+        ];
+    }
+
+    /**
+     * Get the view to render on OAuth success.
+     *
+     * @return string
+     */
+    public static function connectSuccessView()
+    {
+        return self::get('connect.views.success');
+    }
+
+    /**
+     * @return string
+     */
+    public static function connectErrorView()
+    {
+        return self::get('connect.views.error');
     }
 
     /**

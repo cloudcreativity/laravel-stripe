@@ -17,8 +17,8 @@
 
 namespace CloudCreativity\LaravelStripe\Repositories;
 
-use Stripe\PaymentIntent;
 use CloudCreativity\LaravelStripe\Assert;
+use Stripe\PaymentIntent;
 
 class PaymentIntentRepository extends AbstractRepository
 {

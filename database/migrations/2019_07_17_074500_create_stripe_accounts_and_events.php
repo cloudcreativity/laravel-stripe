@@ -1,4 +1,19 @@
 <?php
+/**
+ * Copyright 2019 Cloud Creativity Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 use CloudCreativity\LaravelStripe\LaravelStripe;
 use Illuminate\Database\Migrations\Migration;
@@ -23,18 +38,20 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->string('business_type')->nullable();
             $table->json('capabilities')->nullable();
             $table->json('company')->nullable();
-            $table->string('country', 3);
+            $table->string('country', 3)->nullable();
             $table->timestamp('created')->nullable();
-            $table->string('default_currency', 3);
-            $table->boolean('details_submitted');
-            $table->string('email');
+            $table->string('default_currency', 3)->nullable();
+            $table->boolean('details_submitted')->nullable();
+            $table->string('email')->nullable();
             $table->json('individual')->nullable();
             $table->json('metadata')->nullable();
-            $table->boolean('payouts_enabled');
+            $table->unsignedInteger('owner_id')->nullable();
+            $table->boolean('payouts_enabled')->nullable();
+            $table->string('refresh_token')->nullable();
             $table->json('requirements')->nullable();
             $table->json('settings')->nullable();
             $table->json('tos_acceptance')->nullable();
-            $table->string('type');
+            $table->string('type')->nullable();
         });
 
         Schema::create('stripe_events', function (Blueprint $table) {

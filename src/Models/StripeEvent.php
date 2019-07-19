@@ -71,8 +71,8 @@ class StripeEvent extends Model
         return new BelongsTo(
             $model->newQuery(),
             $this,
-            $this->getAccountIdKeyName(),
-            $model->getStripeAccountKeyName(),
+            $this->getAccountIdentifierName(),
+            $model->getStripeAccountIdentifierName(),
             'account'
         );
     }
@@ -80,17 +80,9 @@ class StripeEvent extends Model
     /**
      * @return string
      */
-    public function getAccountIdKeyName()
+    public function getAccountIdentifierName()
     {
         return 'account_id';
-    }
-
-    /**
-     * @return string
-     */
-    public function getQualifiedAccountIdKeyName()
-    {
-        return $this->getTable() . '.' . $this->getAccountIdKeyName();
     }
 
     /**

@@ -60,7 +60,7 @@ class Test extends TestCase
 
         $result = $this->artisan('stripe', [
             'resource' => $resource,
-            '--account' => $account->getStripeAccountId(),
+            '--account' => $account->getStripeAccountIdentifier(),
         ]);
 
         $this->assertSame(0, $result, 'success');
@@ -69,7 +69,7 @@ class Test extends TestCase
             $this->assertNull($params, 'params');
 
             $this->assertSame([
-                'stripe_account' => $account->getStripeAccountId()
+                'stripe_account' => $account->getStripeAccountIdentifier()
             ], $options, 'options');
 
             return true;
@@ -118,7 +118,7 @@ class Test extends TestCase
         $result = $this->artisan('stripe', [
             'resource' => $resource,
             'id' => $id,
-            '--account' => $account->getStripeAccountId(),
+            '--account' => $account->getStripeAccountIdentifier(),
         ]);
 
         $this->assertSame(0, $result, 'success');
@@ -127,7 +127,7 @@ class Test extends TestCase
             $this->assertSame(compact('id'), $params, 'params');
 
             $this->assertSame([
-                'stripe_account' => $account->getStripeAccountId()
+                'stripe_account' => $account->getStripeAccountIdentifier()
             ], $options, 'options');
 
             return true;

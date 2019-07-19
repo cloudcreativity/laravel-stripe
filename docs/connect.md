@@ -1,6 +1,35 @@
 # Stripe Connect
 
-## Models
+## Account Owners
+
+Each Stripe account that is connected to your application must have an account *owner*.
+The owner is the model in your application that the Stripe account belongs to.
+
+A typical example would be your `\App\User` model, however you can choose whatever model
+you need as long as you apply our account owner interface and trait.
+
+For example, if our account owner was our application's user:
+
+```php
+namespace App;
+
+use CloudCreativity\LaravelStripe\Connect\OwnsStripeAccounts;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends User implements AccountOwnerInterface
+{
+
+    use OwnsStripeAccounts;
+
+    // ...
+}
+``` 
+
+Once you've done that, ensure the class name is set as the `stripe.connect.owner`
+config value.
+
+## Accounts
 
 We provide a `\CloudCreativity\LaravelStripe\Models\StripeAccount` model to store connected accounts.
 We store the majority of attributes provided by Stripe on their
@@ -24,6 +53,7 @@ The model's attributes are:
 | `email` | `string` | The primary user's email address. |
 | `individual` | `json` | Information about the person represented by the account. |
 | `metadata` | `json` | Set of key-value pairs that you have attached to the Stripe account resource. |
+| `owner_id` | `integer` | The key of the model that the Stripe account belongs to. |
 | `payouts_enabled` | `bool` | Whether Stripe can send payouts to this account. |
 | `requirements` | `json` | Information about the requirements for the account, including what information needs to be collected, and by when. |
 | `settings` | `json` | Account options for customizing how the account functions within Stripe. |
@@ -111,6 +141,147 @@ class StripeAccount extends Model implements AccountInterface
     }
 }
 ```
+
+## Authorization
+
+We provide the tools you need to set up the Stripe Connect
+[OAuth connection flow.](https://stripe.com/docs/connect/standard-accounts#oauth-flow)
+This allows you to connect `standard` accounts to your application.
+
+### Step 1: Create the OAuth Link
+
+Make sure you have set your application's client id as the `stripe.client_id` config value.
+
+You can then use our `Stripe::authorizeUrl()` method to create the Stripe Connect
+authorize URL - either for use as a string or a redirect. We take care of filling the `state`
+parameter in the URL with the CSRF token.
+
+For example, creating a `read_write` scope redirect in a controller action:
+
+```php
+return Stripe::authorizeUrl()->readWrite()->redirect();
+```
+
+Or in a Blade template:
+
+```blade
+<a href="{{ Stripe::authorizeUrl()->readWrite() }}">Connect to Stripe</a>
+```
+
+> Want to use a Connect button for your link? [Publish brand assets](./installation.md#brand-assets)
+and they will be available in the `public/vendor/stripe/brand/connect-button` folder.
+
+You can fluently call any of the following methods after `authorizeUrl()` to set
+[Connect OAuth parameters](https://stripe.com/docs/connect/oauth-reference#get-authorize)
+on the link:
+
+| Method | Description |
+| :-- | :-- |
+| `express()` | Use the `express` authorize URL. If not called then the `standard` URL will be used. |
+| `readOnly()` | Set the `scope` to `read_only` |
+| `readWrite()` | Set the `scope` to `read_write` |
+| `redirectUri($uri)` | Set the URI that the user is redirected back to. This **must** match a URI set in your Stripe account. |
+| `login()` | Expect your users to have a Stripe account already (e.g., most read-only applications, like analytics dashboards or accounting software). This sets the `stripe_landing` to `login`. |
+| `register()` | Set the `stripe_landing` to `register` (the default). |
+| `alwaysPrompt()` | Always ask the user to connect, even if they're already connected. Sets `always_prompt` to `true`. | 
+| `user($values)` | Set key/value pairs for the `stripe_user` parameter. This method accepts any value accepted by Laravel's `collect()` method. |
+
+For example, if we wanted a `read_write` scope and had passed a `$stripeUser` value into our template: 
+
+```blade
+<a href="{{ Stripe::authorizeUrl()->readWrite()->user($stripeUser) }}">Connect to Stripe</a>
+```
+
+### Step 2: User Creates or Connects their Account
+
+This step occurs on Stripe's website.
+
+### Step 3: User Redirected Back to Your Site
+
+Register a redirect URI (or multiple) in your Stripe application's settings (available via the
+Stripe dashboard).
+
+You will then need to create routes for each endpoint using our `Stripe::oauth()` helper:
+
+```php
+// e.g. in routes/web.php
+Stripe::oauth('stripe/connect/authorize');
+
+// can chain route methods, e.g.
+Stripe::oauth('stripe/connect/authorize')->middleware('auth');
+```
+
+#### Account Owner
+
+By default we assume that owner of the account being authorized is the user who is signed in 
+when we receive the request at this step. (We check the CSRF token to ensure the signed in
+user's session matches the one for which the link was created in Step 1.)
+
+If Stripe accounts belong to a different model in your application, you will need
+to set a *current user resolver* in the `register()` method of your application's service provider:
+
+```php
+namespace App\Providers;
+
+use CloudCreativity\LaravelStripe\LaravelStripe;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+
+  public function register()
+  {
+        LaravelStripe::currentOwnerResolver(function (\Illuminate\Http\Request $request) {
+            // return the current owner, ensuring it is an instance of 
+            // \CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface
+        });
+  }
+}
+```
+
+#### Views
+
+You can configure the views to use at this step in your `stripe.connect.views` array, as we
+do not provide views for you.
+
+We pass the account owner into all these views as the `$owner` property. We also dispatch
+event before rendering, and these events have a `with()` method, allowing you to attach
+additional data to pass into the view if you need. 
+
+> Make sure any listeners providing data for the views are not queued!
+
+#### Success
+
+Assuming no error occurred, we:
+
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\OAuthSuccess` event.
+- Dispatch a job to the queue to perform the next step.
+- Return a `200 OK` response with the view set in the `stripe.connect.views.success` key.
+
+#### Errors
+
+If Stripe indicates an error occurred, we:
+
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\OAuthError` event. This provides
+access to the error details provided from  Stripe.
+- Return a `422 Unprocessable Entity` response with the view set in the
+`stripe.connect.views.error` key.
+
+#### Forbidden
+
+If the `state` parameter from Step 1 does not match the state parameter in this step, we:
+ 
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\OAuthError` event, with the
+code set to `laravel_stripe_forbidden`.
+- Return a `403 Forbidden` response with the view set in the `stripe.connect.views.error` key.
+
+### Step 4: Fetch the User's Credentials from Stripe
+
+The job we queued at Step 3 will complete the process by fetching the user's credentials from Stripe,
+and ensuring that the Stripe account id and refresh tokens are stored.
+
+> If you need to customise the queue connection and queue name to use for this job, set the
+`stripe.connect.queue_connection` and `stripe.connect.queue` config values.
 
 ## Repositories
 

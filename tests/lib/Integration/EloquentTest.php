@@ -37,8 +37,8 @@ class EloquentTest extends TestCase
         /** @var TestAccount $model */
         $model = factory(TestAccount::class)->create();
 
-        $this->assertSame($model->getKeyName(), $model->getStripeAccountKeyName(), 'key name');
-        $this->assertSame($model->getKey(), $model->getStripeAccountId(), 'key');
+        $this->assertSame($model->getKeyName(), $model->getStripeAccountIdentifierName(), 'key name');
+        $this->assertSame($model->getKey(), $model->getStripeAccountIdentifier(), 'key');
         $this->assertTrue($model->stripe()->is($model), 'model connector');
         $this->assertTrue(Stripe::connect($model->id)->is($model), 'facade account connector');
     }
@@ -49,6 +49,6 @@ class EloquentTest extends TestCase
         $model = factory(TestAccount::class)->make();
         $model->incrementing = true;
 
-        $this->assertSame('stripe_account_id', $model->getStripeAccountKeyName());
+        $this->assertSame('stripe_account_id', $model->getStripeAccountIdentifierName());
     }
 }

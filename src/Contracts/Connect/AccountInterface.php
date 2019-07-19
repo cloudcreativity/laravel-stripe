@@ -25,5 +25,40 @@ interface AccountInterface
      *
      * @return string
      */
-    public function getStripeAccountId();
+    public function getStripeAccountIdentifier();
+
+    /**
+     * Get the name for the Stripe account id.
+     *
+     * @return string
+     */
+    public function getStripeAccountIdentifierName();
+
+    /**
+     * Get the Stripe refresh token for the connected account.
+     *
+     * @return string|null
+     */
+    public function getStripeRefreshToken();
+
+    /**
+     * Get the name for the Stripe refresh token.
+     *
+     * @return string
+     */
+    public function getStripeRefreshTokenName();
+
+    /**
+     * Get the unique identifier for the Stripe account owner.
+     *
+     * @return string|int
+     */
+    public function getStripeOwnerIdentifier();
+
+    /**
+     * Get the name for the Stripe account owner identifier.
+     *
+     * @return string
+     */
+    public function getStripeOwnerIdentifierName();
 }
