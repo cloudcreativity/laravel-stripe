@@ -41,11 +41,23 @@ class Config
     }
 
     /**
+     * Get the Stripe API version used by this application.
+     *
      * @return string|null
      */
     public static function apiVersion()
     {
         return self::get('api_version') ?: null;
+    }
+
+    /**
+     * Get the Stripe Connect client id.
+     *
+     * @return string|null
+     */
+    public static function clientId()
+    {
+        return self::get('client_id') ?: null;
     }
 
     /**
@@ -58,6 +70,18 @@ class Config
         $class = self::fqn('connect.model');
 
         return new $class;
+    }
+
+    /**
+     * Get the view to render if the OAuth state parameter is invalid.
+     *
+     * If no value is returned, then `abort(400)` is used.
+     *
+     * @return string|null
+     */
+    public static function connectInvalidState()
+    {
+        return self::fqn('connect.views.invalid_state');
     }
 
     /**

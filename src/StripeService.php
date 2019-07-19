@@ -17,6 +17,8 @@
 
 namespace CloudCreativity\LaravelStripe;
 
+use CloudCreativity\LaravelStripe\Connect\Authorizer;
+use CloudCreativity\LaravelStripe\Connect\AuthorizeUrl;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Exceptions\AccountNotConnectedException;
 use CloudCreativity\LaravelStripe\Http\Controllers\WebhookController;
@@ -83,6 +85,17 @@ class StripeService
         Assert::id(Assert::ACCOUNT_ID_PREFIX, $accountId);
 
         return app('stripe.connect')->find($accountId);
+    }
+
+    /**
+     * Create a Stripe Connect OAuth link.
+     *
+     * @param array|null $options
+     * @return AuthorizeUrl
+     */
+    public function authorizeUrl(array $options = null)
+    {
+        return app(Authorizer::class)->authorizeUrl($options);
     }
 
     /**

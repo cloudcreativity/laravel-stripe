@@ -19,6 +19,7 @@ namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Connect\Adapter;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\StateProviderInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Events\ClientReceivedResult;
 use CloudCreativity\LaravelStripe\Events\ClientWillSend;
@@ -48,6 +49,7 @@ class ServiceProvider extends BaseServiceProvider
     public function boot(Router $router, Events $events)
     {
         Stripe::setApiKey(Config::apiKey());
+        Stripe::setClientId(Config::clientId());
 
         if ($version = Config::apiVersion()) {
             Stripe::setApiVersion($version);
@@ -56,30 +58,24 @@ class ServiceProvider extends BaseServiceProvider
         $this->bootLogging($events);
         $this->bootWebhooks($events);
 
+        /** Config */
         $this->publishes([
             __DIR__ . '/../config/stripe.php' => config_path('stripe.php'),
         ], 'stripe');
 
+        /** Brand Assets */
+        $this->publishes([
+            __DIR__ . '/../resources' => public_path('vendor/stripe'),
+        ], 'stripe-brand');
+
+        /** Commands */
         $this->commands(Console\Commands\StripeQuery::class);
 
+        /** Middleware */
         $router->aliasMiddleware('stripe.verify', Http\Middleware\VerifySignature::class);
 
-        /**
-         * If this package is running migrations, we load them. Otherwise we
-         * make them publishable so that the developer can publish them and modify
-         * them as needed.
-         */
-        if (LaravelStripe::$runMigrations) {
-            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
-            $this->app->afterResolving(ModelFactory::class, function (ModelFactory $factory) {
-                $factory->load(__DIR__ . '/../database/factories');
-            });
-        } else {
-            $this->publishes([
-                __DIR__ . '/../database/factories' => database_path('factories'),
-                __DIR__ . '/../database/migrations' => database_path('migrations'),
-            ], 'stripe-migrations');
-        }
+        /** Migrations and Factories */
+        $this->loadStripeMigrations();
     }
 
     /**
@@ -126,6 +122,10 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->app->bind(Adapter::class, function () {
             return new Adapter(Config::connectModel());
+        });
+
+        $this->app->bind(StateProviderInterface::class, function (Application $app) {
+            return $app->make(LaravelStripe::$oauthState);
         });
     }
 
@@ -183,5 +183,29 @@ class ServiceProvider extends BaseServiceProvider
 
         $events->listen(ClientWillSend::class, Listeners\LogClientRequests::class);
         $events->listen(ClientReceivedResult::class, Listeners\LogClientResults::class);
+    }
+
+    /**
+     * Load or publish package migrations and factories.
+     *
+     * If this package is running migrations, we load them. Otherwise we
+     * make them publishable so that the developer can publish them and modify
+     * them as needed.
+     *
+     * @return void
+     */
+    private function loadStripeMigrations()
+    {
+        if (LaravelStripe::$runMigrations) {
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+            $this->app->afterResolving(ModelFactory::class, function (ModelFactory $factory) {
+                $factory->load(__DIR__ . '/../database/factories');
+            });
+        } else {
+            $this->publishes([
+                __DIR__ . '/../database/factories' => database_path('factories'),
+                __DIR__ . '/../database/migrations' => database_path('migrations'),
+            ], 'stripe-migrations');
+        }
     }
 }

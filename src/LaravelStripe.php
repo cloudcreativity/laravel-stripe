@@ -30,6 +30,13 @@ class LaravelStripe
     public static $connect = Connect\Adapter::class;
 
     /**
+     * The class name of the OAuth state provider.
+     *
+     * @var string
+     */
+    public static $oauthState = Connect\CsrfState::class;
+
+    /**
      * The class name of the webhook processor.
      *
      * @var string
@@ -59,6 +66,19 @@ class LaravelStripe
     public static function connect($fqn)
     {
         self::$connect = $fqn;
+
+        return new self();
+    }
+
+    /**
+     * Set the fully-qualified class name of the OAuth state parameter provider.
+     *
+     * @param string $fqn
+     * @return LaravelStripe
+     */
+    public static function oauthState($fqn)
+    {
+        self::$oauthState = $fqn;
 
         return new self();
     }

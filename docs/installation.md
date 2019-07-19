@@ -71,3 +71,14 @@ $ php artisan vendor:publish --tag=stripe-migrations
 
 > You must disable migrations **before** attempting to publish them, as they will only be publishable
 if migrations are disabled.
+
+## Brand Assets
+
+If you want to use *Powered by Stripe* badges, or *Connect with Stripe* buttons, publish
+[Stripe brand assets](https://stripe.com/gb/newsroom/brand-assets) using the following command:
+
+```bash
+$ php artisan vendor:publish --tag=stripe-brand
+``` 
+
+This will publish the files into the `public/vendor/stripe/brand` folder.

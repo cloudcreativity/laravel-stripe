@@ -1,5 +1,137 @@
 # Stripe Connect
 
+## OAuth
+
+We provide the tools you need to set up the Stripe Connect
+[OAuth connection flow.](https://stripe.com/docs/connect/standard-accounts#oauth-flow)
+This allows you to connect `standard` accounts to your application.
+
+### Step 1: Create the OAuth Link
+
+Make sure you have set your application's client id as the `stripe.client_id` config value.
+
+You can then use our `Stripe::authorizeUrl()` method to create the Stripe Connect
+authorize URL - either for use as a string or a redirect. We take care of filling the `state`
+parameter in the URL with the CSRF token.
+
+For example, creating a `read_write` scope redirect in a controller action:
+
+```php
+return Stripe::authorizeUrl()
+    ->readWrite()
+    ->redirect();
+```
+
+Or in a Blade template:
+
+```blade
+<a href="{{ Stripe::authorizeUrl()->readWrite() }}">Connect to Stripe</a>
+```
+
+> Want to use a Connect button for your link? [Publish brand assets](./installation.md#brand-assets)
+and they will be available in the `public/vendor/stripe/brand/connect-button` folder.
+
+You can fluently call any of the following methods after `authorizeUrl()` to set
+[Connect OAuth parameters](https://stripe.com/docs/connect/oauth-reference#get-authorize)
+on the link:
+
+| Method | Description |
+| :-- | :-- |
+| `express()` | Use the `express` authorize URL. If not called then the `standard` URL will be used. |
+| `readOnly()` | Set the `scope` to `read_only` |
+| `readWrite()` | Set the `scope` to `read_write` |
+| `redirectUri($uri)` | Set the URI that the user is redirected back to. This **must** match a URI set in your Stripe account. |
+| `login()` | Expect your users to have a Stripe account already (e.g., most read-only applications, like analytics dashboards or accounting software). This sets the `stripe_landing` to `login`. |
+| `register()` | Set the `stripe_landing` to `register` (the default). |
+| `alwaysPrompt()` | Always ask the user to connect, even if they're already connected. Sets `always_prompt` to `true`. | 
+| `user($values)` | Set key/value pairs for the `stripe_user` parameter. This method accepts any value accepted by Laravel's `collect()` method. |
+
+For example, if we wanted a `read_write` scope and had passed a `$stripeUser` value into our template: 
+
+```blade
+<a href="{{ Stripe::authorizeUrl()->readWrite()->user($stripeUser) }}">Connect to Stripe</a>
+```
+
+### Step 2: User Creates or Connects their Account
+
+This step occurs on Stripe's website.
+
+### Step 3: User Redirected Back to Your Site
+
+Register a redirect URI (or multiple) in your Stripe application's settings (available via the
+Stripe dashboard).
+
+You will then need to create routes for each endpoint using our `Stripe::oauth()` helper:
+
+```php
+// e.g. in routes/web.php
+Stripe::oauth('stripe/connect/authorize');
+```
+
+You will need to disable CSRF protection for all of these OAuth endpoints, as we check the CSRF
+token for you using the `state` parameter provided via Stripe.
+
+#### Views
+
+You can configure the views to use at this step in your `stripe.connect.views` array, as we
+do not provide views for you:
+
+```php
+return [
+    // ...
+    
+    'connect' => [
+        // ...
+        
+        'views' => [
+            'invalid_state' => 'stripe.oauth.invalid_state',
+            'error' => 'stripe.oauth.error',
+            'success' => 'stripe.oauth.success',
+        ],
+    ],
+];
+```
+
+We pass the current user (if there is one) into all these views. We also dispatch events before
+rendering each view. All the events have a `with($values)` method, allowing you to use listeners to attach
+additional data to pass into the view if you need. 
+
+> Make sure any listeners providing data for the views are not queued! However ideally you should queue
+any listeners that do not attach data for the view.
+
+#### Success
+
+Assuming no error occurred, we:
+
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\AuthorizationCodeReceived` event.
+- Dispatch a job to the queue to perform the next step.
+- Return a `200 OK` response with the view set in the `success` key.
+
+#### Invalid State
+
+As we passed the CSRF token as the `state` parameter in Step 1, we will take care of checking it is
+the expected value when the controller action is invoked.
+
+If the CSRF token is invalid, we:
+ 
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\InvalidOAuthState` event.
+- Return a `400 Bad Request` response, with the view set in the `invalid_state` key.
+ 
+If you want to render a specific view to the user for the `400` response, set the
+`stripe.connect.views.invalid_state` to the view's name. We pass the current user into the view as `$user`.
+
+#### Errors
+
+If Stripe indicates an error occurred, we:
+
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\AccountAuthorizationError` event. This provides
+access to the error details provided from Stripe.
+- Return a `422 Unprocessable Entity` response with the view set in the `error` key.
+
+### Step 4: Fetch the User's Credentials from Stripe
+
+@todo
+
 ## Models
 
 We provide a `\CloudCreativity\LaravelStripe\Models\StripeAccount` model to store connected accounts.

@@ -44,6 +44,7 @@ helper method. Provide the URI as the first argument, and the name of the signin
 For example:
 
 ```php
+// e.g. in routes/api.php
 \Stripe::webhook('/stripe/webhooks/connect', 'connect');
 ``` 
 

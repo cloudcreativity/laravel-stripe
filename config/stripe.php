@@ -22,13 +22,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Client ID
+    |--------------------------------------------------------------------------
+    |
+    | The Client ID used in the Stripe Connect OAuth process.
+    |
+    */
+    'client_id' => env('STRIPE_CLIENT_ID'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Stripe Connect
     |--------------------------------------------------------------------------
     |
-    | Settings for your Stripe Connect integration.
+    | Settings for your Stripe Connect integration. Refer to the Connect
+    | chapter in the documentation.
+    |
+    | You will need to set the `views` values to views that actually exist
+    | in your application.
+    |
     */
     'connect' => [
         'model' => \CloudCreativity\LaravelStripe\Models\StripeAccount::class,
+        'queue' => env('STRIPE_CONNECT_QUEUE'),
+        'queue_connection' => env('STRIPE_CONNECT_QUEUE_CONNECTION'),
+        'views' => [
+            'invalid_state' => 'stripe.oauth.invalid_state',
+            'error' => 'stripe.oauth.error',
+            'success' => 'stripe.oauth.success',
+        ],
     ],
 
     /*
