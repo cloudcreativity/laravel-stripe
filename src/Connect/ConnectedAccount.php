@@ -28,16 +28,16 @@ trait ConnectedAccount
     public function stripe()
     {
         return app('stripe')->connect(
-            $this->getStripeAccountId()
+            $this->getStripeAccountIdentifier()
         );
     }
 
     /**
      * @return string
      */
-    public function getStripeAccountId()
+    public function getStripeAccountIdentifier()
     {
-        return $this->{$this->getStripeAccountKeyName()};
+        return $this->{$this->getStripeAccountIdentifierName()};
     }
 
     /**
@@ -53,7 +53,7 @@ trait ConnectedAccount
      *
      * @return string
      */
-    public function getStripeAccountKeyName()
+    public function getStripeAccountIdentifierName()
     {
         if (!$this->incrementing) {
             return $this->getKeyName();
@@ -69,7 +69,7 @@ trait ConnectedAccount
      */
     public function getStripeRefreshToken()
     {
-        return $this->{$this->getStripeRefreshTokenKeyName()};
+        return $this->{$this->getStripeRefreshTokenName()};
     }
 
     /**
@@ -84,9 +84,9 @@ trait ConnectedAccount
      *
      * @return string
      */
-    public function getStripeRefreshTokenKeyName()
+    public function getStripeRefreshTokenName()
     {
-        if ($this->getKeyName() === $this->getStripeAccountKeyName()) {
+        if ($this->getKeyName() === $this->getStripeAccountIdentifierName()) {
             return 'refresh_token';
         }
 
@@ -98,9 +98,9 @@ trait ConnectedAccount
      *
      * @return mixed|null
      */
-    public function getUserId()
+    public function getStripeOwnerIdentifier()
     {
-        return $this->{$this->getUserIdKeyName()};
+        return $this->{$this->getStripeOwnerIdentifierName()};
     }
 
     /**
@@ -111,9 +111,9 @@ trait ConnectedAccount
      *
      * @return string|null
      */
-    public function getUserIdKeyName()
+    public function getStripeOwnerIdentifierName()
     {
-        return 'user_id';
+        return 'owner_id';
     }
 
 }

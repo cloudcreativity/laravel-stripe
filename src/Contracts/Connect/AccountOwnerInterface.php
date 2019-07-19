@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-namespace CloudCreativity\LaravelStripe\Testing;
+namespace CloudCreativity\LaravelStripe\Contracts\Connect;
 
-use CloudCreativity\LaravelStripe\StripeService;
-use CloudCreativity\LaravelStripe\Testing\Concerns\MakesStripeAssertions;
-
-class StripeFake extends StripeService
+interface AccountOwnerInterface
 {
 
-    use MakesStripeAssertions;
+    /**
+     * Get the name of the unique identifier for the Stripe account owner.
+     *
+     * @return string
+     */
+    public function getStripeIdentifierName();
 
     /**
-     * StripeFake constructor.
+     * Get the unique identifier for the Stripe account owner.
      *
-     * @param ClientFake $client
+     * @return string|int
      */
-    public function __construct(ClientFake $client)
-    {
-        $this->stripeClient = $client;
-    }
+    public function getStripeIdentifier();
 }

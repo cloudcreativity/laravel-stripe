@@ -1,4 +1,19 @@
 <?php
+/**
+ * Copyright 2019 Cloud Creativity Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 namespace CloudCreativity\LaravelStripe\Http\Controllers;
 
@@ -45,7 +60,7 @@ class OAuthController extends Controller
             'error_description',
         ]);
 
-        $user = $state->user();
+        $owner = $request->owner();
 
         $this->log->log('Received OAuth redirect.', $data->all());
 
@@ -54,7 +69,7 @@ class OAuthController extends Controller
             return $this->error(Response::HTTP_FORBIDDEN, [
                 'error' => OAuthError::LARAVEL_STRIPE_FORBIDDEN,
                 'error_description' => 'Invalid authorization token.',
-            ], $user);
+            ], $owner);
         }
 
         /** If Stripe has told there is an error, return an error response. */
@@ -62,12 +77,12 @@ class OAuthController extends Controller
             return $this->error(
                 Response::HTTP_UNPROCESSABLE_ENTITY,
                 $data,
-                $user
+                $owner
             );
         }
 
         /** Otherwise return our success view. */
-        return $this->success($data, $user);
+        return $this->success($data, $owner);
     }
 
     /**

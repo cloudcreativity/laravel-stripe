@@ -1,11 +1,26 @@
 <?php
+/**
+ * Copyright 2019 Cloud Creativity Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 namespace CloudCreativity\LaravelStripe\Events;
 
-use Illuminate\Contracts\Auth\Authenticatable;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
 use Illuminate\Queue\SerializesModels;
 
-class OAuthError extends AbstractConnectEvent
+class OAuthError extends AbstractOAuthEvent
 {
 
     use SerializesModels;
@@ -61,13 +76,13 @@ class OAuthError extends AbstractConnectEvent
      *
      * @param string $code
      * @param string $description
-     * @param Authenticatable|null $user
+     * @param AccountOwnerInterface $owner
      * @param string $view
      * @param array $data
      */
-    public function __construct($code, $description, $user, $view, $data = [])
+    public function __construct($code, $description, $owner, $view, $data = [])
     {
-        parent::__construct($user, $view, $data);
+        parent::__construct($owner, $view, $data);
         $this->error = $code;
         $this->message = $description;
     }

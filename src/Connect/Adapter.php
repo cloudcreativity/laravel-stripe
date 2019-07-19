@@ -17,13 +17,12 @@
 
 namespace CloudCreativity\LaravelStripe\Connect;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
-use Illuminate\Contracts\Auth\Authenticatable;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
-use RuntimeException;
 use Stripe\Account;
 
 class Adapter implements AdapterInterface
@@ -59,10 +58,12 @@ class Adapter implements AdapterInterface
     /**
      * @inheritDoc
      */
-    public function store($accountId, $refreshToken, $user)
+    public function store($accountId, $refreshToken, AccountOwnerInterface $owner)
     {
-        $account = $this->find($accountId) ?: $this->newInstance($accountId, $user);
-        $account->{$this->model->getStripeRefreshTokenKeyName()} = $refreshToken;
+        $account = $this->find($accountId) ?: $this->model->newInstance();
+        $account->{$this->model->getStripeAccountIdentifierName()} = $accountId;
+        $account->{$this->model->getStripeOwnerIdentifierName()} = $owner->getStripeIdentifier();
+        $account->{$this->model->getStripeRefreshTokenName()} = $refreshToken;
         $account->save();
 
         return $account;
@@ -83,53 +84,9 @@ class Adapter implements AdapterInterface
     protected function query($accountId)
     {
         return $this->model->newQuery()->where(
-            $this->model->getStripeAccountKeyName(),
+            $this->model->getStripeAccountIdentifierName(),
             $accountId
         );
-    }
-
-    /**
-     * Make a new instance.
-     *
-     * @param string|null $accountId
-     * @param mixed|null $user
-     * @return Model|ConnectedAccount
-     */
-    protected function newInstance($accountId, $user)
-    {
-        $account = $this->model->newInstance();
-        $account->{$this->model->getStripeAccountKeyName()} = $accountId;
-
-        $userKey = $this->model->getUserIdKeyName();
-
-        if ($userKey && $userId = $this->userId($user)) {
-            $account->{$userKey} = $userId;
-        }
-
-        return $account;
-    }
-
-    /**
-     * Get the user id.
-     *
-     * @param mixed|null $user
-     * @return string|int|null
-     */
-    protected function userId($user)
-    {
-        if (is_null($user)) {
-            return null;
-        }
-
-        if ($user instanceof Model) {
-            return $user->getKey();
-        }
-
-        if ($user instanceof Authenticatable) {
-            return $user->getAuthIdentifier();
-        }
-
-        throw new RuntimeException('Cannot determine user id to store with Stripe account.');
     }
 
 }

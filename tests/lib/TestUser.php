@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-namespace CloudCreativity\LaravelStripe\Testing;
+namespace CloudCreativity\LaravelStripe\Tests;
 
-use CloudCreativity\LaravelStripe\StripeService;
-use CloudCreativity\LaravelStripe\Testing\Concerns\MakesStripeAssertions;
+use CloudCreativity\LaravelStripe\Connect\HasStripeAccounts;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
+use Illuminate\Foundation\Auth\User;
 
-class StripeFake extends StripeService
+class TestUser extends User implements AccountOwnerInterface
 {
 
-    use MakesStripeAssertions;
+    use HasStripeAccounts;
 
     /**
-     * StripeFake constructor.
-     *
-     * @param ClientFake $client
+     * @var string
      */
-    public function __construct(ClientFake $client)
-    {
-        $this->stripeClient = $client;
-    }
+    protected $table = 'users';
 }

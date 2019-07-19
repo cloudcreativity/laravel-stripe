@@ -1,11 +1,27 @@
 <?php
+/**
+ * Copyright 2019 Cloud Creativity Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 namespace CloudCreativity\LaravelStripe\Events;
 
-use Illuminate\Contracts\Auth\Authenticatable;
+use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Queue\SerializesModels;
 
-abstract class AbstractConnectEvent
+abstract class AbstractOAuthEvent
 {
 
     use SerializesModels;
@@ -13,9 +29,9 @@ abstract class AbstractConnectEvent
     /**
      * The signed in user at the time of the event.
      *
-     * @var Authenticatable|mixed|null
+     * @var AccountOwnerInterface|Model
      */
-    public $user;
+    public $owner;
 
     /**
      * The view that will be rendered.
@@ -41,13 +57,13 @@ abstract class AbstractConnectEvent
     /**
      * AbstractConnectEvent constructor.
      *
-     * @param Authenticatable|mixed|null $user
+     * @param AccountOwnerInterface $owner
      * @param string $view
      * @param array $data
      */
-    public function __construct($user, $view, $data = [])
+    public function __construct(AccountOwnerInterface $owner, $view, $data = [])
     {
-        $this->user = $user;
+        $this->owner = $owner;
         $this->view = $view;
         $this->data = $data;
     }
@@ -77,7 +93,7 @@ abstract class AbstractConnectEvent
     {
         return collect($this->data)
             ->merge($this->defaults())
-            ->put('user', $this->user)
+            ->put('owner', $this->owner)
             ->all();
     }
 }
