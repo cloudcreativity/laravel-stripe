@@ -5,7 +5,6 @@ namespace CloudCreativity\LaravelStripe\Connect;
 use CloudCreativity\LaravelStripe\Client;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\StateProviderInterface;
-use CloudCreativity\LaravelStripe\Exceptions\InvalidOAuthStateException;
 use RuntimeException;
 use Stripe\OAuth;
 use Stripe\StripeObject;
@@ -62,18 +61,12 @@ class Authorizer
      * Authorize access to an account.
      *
      * @param string $code
-     * @param string|null $state
      * @param array|null $options
      * @return StripeObject
-     * @throws InvalidOAuthStateException
      * @see https://stripe.com/docs/connect/standard-accounts#token-request
      */
-    public function authorize($code, $state, array $options = null)
+    public function authorize($code, array $options = null)
     {
-        if (true !== $this->state->check($state)) {
-            throw new InvalidOAuthStateException($this->state->get(), $state);
-        }
-
         $params = [
             self::CODE => $code,
             self::GRANT_TYPE => self::GRANT_TYPE_AUTHORIZATION_CODE,

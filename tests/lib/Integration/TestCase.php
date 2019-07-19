@@ -45,6 +45,8 @@ abstract class TestCase extends BaseTestCase
             $this->withoutMockingConsoleOutput();
         }
 
+        $this->app['view']->addNamespace('test', __DIR__ . '/../../resources/views');
+
         $this->artisan('migrate', ['--database' => 'testbench']);
     }
 
@@ -112,6 +114,12 @@ abstract class TestCase extends BaseTestCase
     {
         /** Include our default config. */
         $app['config']->set('stripe', require __DIR__ . '/../../../config/stripe.php');
+
+        /** Override views to use our test namespace */
+        $app['config']->set('stripe.connect.views', [
+            'success' => 'test::oauth.success',
+            'error' => 'test::oauth.error',
+        ]);
 
         /** Setup a test database. */
         $app['config']->set('database.default', 'testbench');

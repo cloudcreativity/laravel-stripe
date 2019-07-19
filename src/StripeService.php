@@ -21,6 +21,7 @@ use CloudCreativity\LaravelStripe\Connect\Authorizer;
 use CloudCreativity\LaravelStripe\Connect\AuthorizeUrl;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Exceptions\AccountNotConnectedException;
+use CloudCreativity\LaravelStripe\Http\Controllers\OAuthController;
 use CloudCreativity\LaravelStripe\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,17 @@ class StripeService
         return Route::post($uri, '\\' . WebhookController::class)->middleware(
             "stripe.verify:{$signingSecret}"
         );
+    }
+
+    /**
+     * Register an Connect OAuth endpoint.
+     *
+     * @param $uri
+     * @return \Illuminate\Routing\Route
+     */
+    public function oauth($uri)
+    {
+        return Route::get($uri, OAuthController::class);
     }
 
     /**

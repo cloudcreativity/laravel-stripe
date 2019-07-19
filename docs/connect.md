@@ -17,9 +17,7 @@ parameter in the URL with the CSRF token.
 For example, creating a `read_write` scope redirect in a controller action:
 
 ```php
-return Stripe::authorizeUrl()
-    ->readWrite()
-    ->redirect();
+return Stripe::authorizeUrl()->readWrite()->redirect();
 ```
 
 Or in a Blade template:
@@ -66,10 +64,10 @@ You will then need to create routes for each endpoint using our `Stripe::oauth()
 ```php
 // e.g. in routes/web.php
 Stripe::oauth('stripe/connect/authorize');
-```
 
-You will need to disable CSRF protection for all of these OAuth endpoints, as we check the CSRF
-token for you using the `state` parameter provided via Stripe.
+// can chain route methods, e.g.
+Stripe::oauth('stripe/connect/authorize')->middleware('auth');
+```
 
 #### Views
 
@@ -84,7 +82,6 @@ return [
         // ...
         
         'views' => [
-            'invalid_state' => 'stripe.oauth.invalid_state',
             'error' => 'stripe.oauth.error',
             'success' => 'stripe.oauth.success',
         ],
@@ -93,40 +90,34 @@ return [
 ```
 
 We pass the current user (if there is one) into all these views. We also dispatch events before
-rendering each view. All the events have a `with($values)` method, allowing you to use listeners to attach
+rendering each view. All the events have a `with()` method, allowing you to use listeners to attach
 additional data to pass into the view if you need. 
 
-> Make sure any listeners providing data for the views are not queued! However ideally you should queue
-any listeners that do not attach data for the view.
+> Make sure any listeners providing data for the views are not queued!
 
 #### Success
 
 Assuming no error occurred, we:
 
-- Dispatch the `\CloudCreativity\LaravelStripe\Events\AuthorizationCodeReceived` event.
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\OAuthSuccess` event.
 - Dispatch a job to the queue to perform the next step.
 - Return a `200 OK` response with the view set in the `success` key.
-
-#### Invalid State
-
-As we passed the CSRF token as the `state` parameter in Step 1, we will take care of checking it is
-the expected value when the controller action is invoked.
-
-If the CSRF token is invalid, we:
- 
-- Dispatch the `\CloudCreativity\LaravelStripe\Events\InvalidOAuthState` event.
-- Return a `400 Bad Request` response, with the view set in the `invalid_state` key.
- 
-If you want to render a specific view to the user for the `400` response, set the
-`stripe.connect.views.invalid_state` to the view's name. We pass the current user into the view as `$user`.
 
 #### Errors
 
 If Stripe indicates an error occurred, we:
 
-- Dispatch the `\CloudCreativity\LaravelStripe\Events\AccountAuthorizationError` event. This provides
-access to the error details provided from Stripe.
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\OAuthError` event. This provides
+access to the error details provided from  Stripe.
 - Return a `422 Unprocessable Entity` response with the view set in the `error` key.
+
+#### Forbidden
+
+If the `state` parameter from Step 1 does not match the state parameter in this step, we:
+ 
+- Dispatch the `\CloudCreativity\LaravelStripe\Events\OAuthError` event, with the
+code set to `laravel_stripe_forbidden`.
+- Return a `403 Forbidden` response with the view set in the `error` key.
 
 ### Step 4: Fetch the User's Credentials from Stripe
 

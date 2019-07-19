@@ -3,8 +3,9 @@
 namespace CloudCreativity\LaravelStripe\Events;
 
 use CloudCreativity\LaravelStripe\Connect\Authorizer;
+use Illuminate\Contracts\Auth\Authenticatable;
 
-class AuthorizationCodeReceived extends AbstractConnectEvent
+class OAuthSuccess extends AbstractConnectEvent
 {
 
     /**
@@ -20,15 +21,16 @@ class AuthorizationCodeReceived extends AbstractConnectEvent
     /**
      * AuthorizationCodeReceived constructor.
      *
-     * @param $code
-     * @param $scope
-     * @param $user
-     * @param $view
+     * @param string $code
+     * @param string $scope
+     * @param string $state
+     * @param Authenticatable|null $user
+     * @param string $view
      * @param array $data
      */
-    public function __construct($code, $scope, $user, $view, $data = [])
+    public function __construct($code, $scope, $state, $user, $view, $data = [])
     {
-        parent::__construct($user, $view, $data);
+        parent::__construct($state, $user, $view, $data);
         $this->code = $code;
         $this->scope = $scope;
     }

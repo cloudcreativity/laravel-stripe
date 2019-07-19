@@ -3,6 +3,7 @@
 namespace CloudCreativity\LaravelStripe\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -23,9 +24,14 @@ class FetchUserCredentials implements ShouldQueue
     public $scope;
 
     /**
+     * @var string
+     */
+    public $state;
+
+    /**
      * The signed in user when the code was acquired, if any.
      *
-     * @var mixed|null
+     * @var Authenticatable|null
      */
     public $user;
 
@@ -34,13 +40,15 @@ class FetchUserCredentials implements ShouldQueue
      *
      * @param string $code
      * @param string $scope
-     * @param mixed|null $user
+     * @param string $state
+     * @param Authenticatable|null $user
      *      the signed in user when the code was acquired, if any.
      */
-    public function __construct($code, $scope, $user)
+    public function __construct($code, $scope, $state, $user)
     {
         $this->code = $code;
         $this->scope = $scope;
+        $this->state = $state;
         $this->user = $user;
     }
 }

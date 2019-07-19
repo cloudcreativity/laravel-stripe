@@ -47,7 +47,6 @@ return [
         'queue' => env('STRIPE_CONNECT_QUEUE'),
         'queue_connection' => env('STRIPE_CONNECT_QUEUE_CONNECTION'),
         'views' => [
-            'invalid_state' => 'stripe.oauth.invalid_state',
             'error' => 'stripe.oauth.error',
             'success' => 'stripe.oauth.success',
         ],

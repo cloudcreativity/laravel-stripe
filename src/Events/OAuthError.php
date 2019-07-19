@@ -2,9 +2,10 @@
 
 namespace CloudCreativity\LaravelStripe\Events;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Queue\SerializesModels;
 
-class AccountAuthorizationError extends AbstractConnectEvent
+class OAuthError extends AbstractConnectEvent
 {
 
     use SerializesModels;
@@ -37,33 +38,39 @@ class AccountAuthorizationError extends AbstractConnectEvent
     const UNSUPPORTED_RESPONSE_TYPE = 'unsupported_response_type';
 
     /**
+     * The state parameter was incorrect and the request was forbidden.
+     */
+    const LARAVEL_STRIPE_FORBIDDEN = 'laravel_stripe_forbidden';
+
+    /**
      * The unique Stripe error code.
      *
      * @var string
      */
-    public $code;
+    public $error;
 
     /**
      * The human-readable description of the error.
      *
      * @var string
      */
-    public $description;
+    public $message;
 
     /**
      * AccountAuthorizationError constructor.
      *
      * @param string $code
      * @param string $description
-     * @param mixed|null $user
+     * @param string $state
+     * @param Authenticatable|null $user
      * @param string $view
      * @param array $data
      */
-    public function __construct($code, $description, $user, $view, $data = [])
+    public function __construct($code, $description, $state, $user, $view, $data = [])
     {
-        parent::__construct($user, $view, $data);
-        $this->code = $code;
-        $this->description = $description;
+        parent::__construct($state, $user, $view, $data);
+        $this->error = $code;
+        $this->message = $description;
     }
 
     /**
@@ -71,7 +78,7 @@ class AccountAuthorizationError extends AbstractConnectEvent
      */
     protected function defaults()
     {
-        return ['code' => $this->code, 'description' => $this->description];
+        return ['error' => $this->error, 'message' => $this->message];
     }
 
 }

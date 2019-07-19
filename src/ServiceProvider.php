@@ -23,6 +23,8 @@ use CloudCreativity\LaravelStripe\Contracts\Connect\StateProviderInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
 use CloudCreativity\LaravelStripe\Events\ClientReceivedResult;
 use CloudCreativity\LaravelStripe\Events\ClientWillSend;
+use CloudCreativity\LaravelStripe\Events\OAuthSuccess;
+use CloudCreativity\LaravelStripe\Listeners\DispatchAuthorizeJob;
 use CloudCreativity\LaravelStripe\Listeners\DispatchWebhookJob;
 use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\Webhooks\Processor;
@@ -57,6 +59,7 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->bootLogging($events);
         $this->bootWebhooks($events);
+        $this->bootConnect($events);
 
         /** Config */
         $this->publishes([
@@ -127,6 +130,17 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->bind(StateProviderInterface::class, function (Application $app) {
             return $app->make(LaravelStripe::$oauthState);
         });
+    }
+
+    /**
+     * Boot the Connect implementation.
+     *
+     * @param Events $events
+     * @return void
+     */
+    private function bootConnect(Events $events)
+    {
+        $events->listen(OAuthSuccess::class, DispatchAuthorizeJob::class);
     }
 
     /**

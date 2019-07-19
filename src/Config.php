@@ -73,15 +73,34 @@ class Config
     }
 
     /**
-     * Get the view to render if the OAuth state parameter is invalid.
+     * Get the Connect queue config.
      *
-     * If no value is returned, then `abort(400)` is used.
-     *
-     * @return string|null
+     * @return array
      */
-    public static function connectInvalidState()
+    public static function connectQueue()
     {
-        return self::fqn('connect.views.invalid_state');
+        return [
+            'connection' => self::get('connect.queue_connection'),
+            'queue' => self::get('connect.queue'),
+        ];
+    }
+
+    /**
+     * Get the view to render on OAuth success.
+     *
+     * @return string
+     */
+    public static function connectSuccessView()
+    {
+        return self::get('connect.views.success');
+    }
+
+    /**
+     * @return string
+     */
+    public static function connectErrorView()
+    {
+        return self::get('connect.views.error');
     }
 
     /**
