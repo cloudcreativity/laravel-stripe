@@ -18,6 +18,7 @@
 use CloudCreativity\LaravelStripe\Tests\TestAccount;
 use Faker\Generator as Faker;
 use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Foundation\Auth\User;
 
 /** @var Factory $factory */
 
@@ -25,5 +26,16 @@ $factory->define(TestAccount::class, function (Faker $faker) {
     return [
         'id' => $faker->unique()->lexify('acct_????????????'),
         'name' => $faker->company,
+    ];
+});
+
+$factory->define(User::class, function (Faker $faker) {
+    static $password;
+
+    return [
+        'name' => $faker->name,
+        'email' => $faker->unique()->safeEmail,
+        'password' => $password ?: $password = bcrypt('secret'),
+        'remember_token' => str_random(10),
     ];
 });

@@ -22,7 +22,6 @@ class DispatchAuthorizeJob
         $job = new FetchUserCredentials(
             $event->code,
             $event->scope,
-            $event->state,
             $event->user
         );
 

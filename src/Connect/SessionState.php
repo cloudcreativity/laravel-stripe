@@ -4,8 +4,9 @@ namespace CloudCreativity\LaravelStripe\Connect;
 
 use CloudCreativity\LaravelStripe\Contracts\Connect\StateProviderInterface;
 use Illuminate\Contracts\Session\Session;
+use Illuminate\Http\Request;
 
-class CsrfState implements StateProviderInterface
+class SessionState implements StateProviderInterface
 {
 
     /**
@@ -14,13 +15,20 @@ class CsrfState implements StateProviderInterface
     private $session;
 
     /**
-     * CsrfState constructor.
+     * @var Request
+     */
+    private $request;
+
+    /**
+     * SessionState constructor.
      *
      * @param Session $session
+     * @param Request $request
      */
-    public function __construct(Session $session)
+    public function __construct(Session $session, Request $request)
     {
         $this->session = $session;
+        $this->request = $request;
     }
 
     /**
@@ -37,6 +45,14 @@ class CsrfState implements StateProviderInterface
     public function check($value)
     {
         return $this->get() === $value;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function user()
+    {
+        return $this->request->user();
     }
 
 }

@@ -34,7 +34,7 @@ class LaravelStripe
      *
      * @var string
      */
-    public static $oauthState = Connect\CsrfState::class;
+    public static $oauthState = Connect\SessionState::class;
 
     /**
      * The class name of the webhook processor.

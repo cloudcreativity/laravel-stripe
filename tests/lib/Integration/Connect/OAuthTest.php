@@ -8,14 +8,15 @@ use CloudCreativity\LaravelStripe\Events\OAuthSuccess;
 use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\Jobs\FetchUserCredentials;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Queue;
 
 class OAuthTest extends TestCase
 {
 
     /**
-     * @var Authenticatable|\PHPUnit_Framework_MockObject_MockObject
+     * @var User
      */
     private $user;
 
@@ -35,13 +36,17 @@ class OAuthTest extends TestCase
             $state = $this->createMock(StateProviderInterface::class)
         );
 
+        $this->user = factory(User::class)->create();
+
         $state->method('get')->willReturn('session_token');
+
         $state->method('check')->willReturnCallback(function ($v) {
             return 'session_token' === $v;
         });
 
-        $this->user = $this->createMock(Authenticatable::class);
-        $this->user->method('getAuthIdentifier')->willReturn(123);
+        $state->method('user')->willReturnCallback(function () {
+            return Auth::user();
+        });
     }
 
     public function test()
@@ -64,7 +69,6 @@ class OAuthTest extends TestCase
         $this->app['events']->listen(OAuthSuccess::class, function (OAuthSuccess $event) {
             $this->assertSame('access_code', $event->code, 'event code');
             $this->assertSame('read_write', $event->scope, 'event scope');
-            $this->assertSame('session_token', $event->state, 'event state');
             $this->assertSame($this->user, $event->user, 'event user');
             $this->assertSame('test::oauth.success', $event->view);
             $event->with('foo', 'bar');
@@ -101,7 +105,6 @@ class OAuthTest extends TestCase
         $this->app['events']->listen(OAuthError::class, function (OAuthError $event) {
             $this->assertSame('invalid_scope', $event->error, 'event error');
             $this->assertSame('Invalid scope!', $event->message, 'event message');
-            $this->assertSame('session_token', $event->state, 'event state');
             $this->assertSame($this->user, $event->user, 'event user');
             $this->assertSame('test::oauth.error', $event->view);
             $event->with('foo', 'bar');
@@ -135,13 +138,13 @@ class OAuthTest extends TestCase
         $this->app['events']->listen(OAuthError::class, function (OAuthError $event) {
             $this->assertSame('laravel_stripe_forbidden', $event->error, 'event error');
             $this->assertSame('Invalid authorization token.', $event->message, 'event message');
-            $this->assertSame('foobar', $event->state, 'event state');
             $this->assertSame($this->user, $event->user, 'event user');
             $this->assertSame('test::oauth.error', $event->view);
             $event->with('foo', 'bar');
         });
 
-        $this->actingAs($this->user)
+        $this->withoutExceptionHandling()
+            ->actingAs($this->user)
             ->get('/test/authorize?' . http_build_query($params))
             ->assertStatus(403)
             ->assertViewIs('test::oauth.error')

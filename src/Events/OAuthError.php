@@ -57,18 +57,17 @@ class OAuthError extends AbstractConnectEvent
     public $message;
 
     /**
-     * AccountAuthorizationError constructor.
+     * OAuthError constructor.
      *
      * @param string $code
      * @param string $description
-     * @param string $state
      * @param Authenticatable|null $user
      * @param string $view
      * @param array $data
      */
-    public function __construct($code, $description, $state, $user, $view, $data = [])
+    public function __construct($code, $description, $user, $view, $data = [])
     {
-        parent::__construct($state, $user, $view, $data);
+        parent::__construct($user, $view, $data);
         $this->error = $code;
         $this->message = $description;
     }

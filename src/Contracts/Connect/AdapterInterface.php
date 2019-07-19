@@ -17,6 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Contracts\Connect;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Stripe\Account;
 
 interface AdapterInterface
@@ -40,12 +41,14 @@ interface AdapterInterface
      * - The `stripe_user_id`: $accountId
      * - The `refresh_token`: $refreshToken
      *
-     * @param $accountId
-     * @param $refreshToken
+     * @param string $accountId
+     * @param string $refreshToken
+     * @param Authenticatable|mixed|null $user
+     *      the user associated with the OAuth process.
      * @return AccountInterface
      * @see https://stripe.com/docs/connect/standard-accounts#token-request
      */
-    public function store($accountId, $refreshToken);
+    public function store($accountId, $refreshToken, $user);
 
     /**
      * Update an account from a Stripe account resource.

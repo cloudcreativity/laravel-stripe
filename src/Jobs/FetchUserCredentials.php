@@ -43,15 +43,13 @@ class FetchUserCredentials implements ShouldQueue
      *
      * @param string $code
      * @param string $scope
-     * @param string $state
-     * @param Authenticatable|null $user
+     * @param Authenticatable|mixed|null $user
      *      the signed in user when the code was acquired, if any.
      */
-    public function __construct($code, $scope, $state, $user)
+    public function __construct($code, $scope, $user)
     {
         $this->code = $code;
         $this->scope = $scope;
-        $this->state = $state;
         $this->user = $user;
     }
 
@@ -65,8 +63,13 @@ class FetchUserCredentials implements ShouldQueue
     public function handle(Authorizer $authorizer, AdapterInterface $adapter)
     {
         $token = $authorizer->authorize($this->code);
-        $account = $adapter->store($token['stripe_user_id'], $token['refresh_token']);
 
-        event(new FetchedUserCredentials($account, $token));
+        $account = $adapter->store(
+            $token['stripe_user_id'],
+            $token['refresh_token'],
+            $this->user
+        );
+
+        event(new FetchedUserCredentials($account, $token, $this->user));
     }
 }

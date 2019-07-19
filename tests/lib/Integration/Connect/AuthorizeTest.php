@@ -7,6 +7,7 @@ use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\Jobs\FetchUserCredentials;
 use CloudCreativity\LaravelStripe\Models\StripeAccount;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Event;
 use Stripe\OAuth;
 use Stripe\StripeObject;
@@ -25,6 +26,8 @@ class AuthorizeTest extends TestCase
 
     public function test()
     {
+        $user = factory(User::class)->create();
+
         Stripe::fake($token = StripeObject::constructFrom([
             'access_token' => 'secret_token',
             'scope' => 'read_write',
@@ -35,7 +38,7 @@ class AuthorizeTest extends TestCase
             'stripe_publishable_key' => 'publishable_key',
         ]));
 
-        dispatch(new FetchUserCredentials('auth_code', 'read_write', 'state', null));
+        dispatch(new FetchUserCredentials('auth_code', 'read_write', $user));
 
         Stripe::assertInvoked(OAuth::class, 'token', function ($params) {
             $this->assertEquals([
@@ -49,6 +52,7 @@ class AuthorizeTest extends TestCase
         $this->assertDatabaseHas('stripe_accounts', [
             'id' => 'acct_1234567890',
             'refresh_token' => 'storable_refresh_token',
+            'user_id' => $user->getKey(),
         ]);
 
         /** @var StripeAccount $model */
@@ -87,7 +91,7 @@ class AuthorizeTest extends TestCase
             'stripe_publishable_key' => 'publishable_key',
         ]));
 
-        dispatch(new FetchUserCredentials('auth_code', 'read_write', 'state', null));
+        dispatch(new FetchUserCredentials('auth_code', 'read_write', null));
 
         Stripe::assertInvoked(OAuth::class, 'token', function ($params) {
             $this->assertEquals([

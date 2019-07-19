@@ -2,14 +2,8 @@
 
 namespace CloudCreativity\LaravelStripe\Http\Requests;
 
-use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Connect\AuthorizeUrl;
-use CloudCreativity\LaravelStripe\Contracts\Connect\StateProviderInterface;
-use CloudCreativity\LaravelStripe\Events\OAuthError;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class AuthorizeConnect extends FormRequest
@@ -45,36 +39,13 @@ class AuthorizeConnect extends FormRequest
     }
 
     /**
-     * @param StateProviderInterface $provider
+     * Authorize the request.
+     *
      * @return bool
      */
-    public function authorize(StateProviderInterface $provider)
+    public function authorize()
     {
-        if (!$state = $this->query('state')) {
-            return false;
-        }
-
-        return $provider->check($state);
-    }
-
-    /**
-     * Handle the request not being authorized.
-     *
-     * @throws HttpResponseException
-     */
-    protected function failedAuthorization()
-    {
-        event($event = new OAuthError(
-            OAuthError::LARAVEL_STRIPE_FORBIDDEN,
-            'Invalid authorization token.',
-            $this->query('state'),
-            Auth::user(),
-            Config::connectErrorView()
-        ));
-
-        throw new HttpResponseException(
-            response()->view($event->view, $event->all(), Response::HTTP_FORBIDDEN)
-        );
+        return true;
     }
 
     /**

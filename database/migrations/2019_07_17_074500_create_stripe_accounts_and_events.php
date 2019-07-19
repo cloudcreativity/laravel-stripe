@@ -30,6 +30,7 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->string('email')->nullable();
             $table->json('individual')->nullable();
             $table->json('metadata')->nullable();
+            $table->unsignedInteger('user_id')->nullable();
             $table->boolean('payouts_enabled')->nullable();
             $table->string('refresh_token')->nullable();
             $table->json('requirements')->nullable();

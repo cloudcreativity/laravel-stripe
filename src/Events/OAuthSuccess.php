@@ -19,18 +19,17 @@ class OAuthSuccess extends AbstractConnectEvent
     public $scope;
 
     /**
-     * AuthorizationCodeReceived constructor.
+     * OAuthSuccess constructor.
      *
      * @param string $code
      * @param string $scope
-     * @param string $state
      * @param Authenticatable|null $user
      * @param string $view
      * @param array $data
      */
-    public function __construct($code, $scope, $state, $user, $view, $data = [])
+    public function __construct($code, $scope, $user, $view, $data = [])
     {
-        parent::__construct($state, $user, $view, $data);
+        parent::__construct($user, $view, $data);
         $this->code = $code;
         $this->scope = $scope;
     }

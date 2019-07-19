@@ -93,4 +93,27 @@ trait ConnectedAccount
         return 'stripe_refresh_token';
     }
 
+    /**
+     * Get the user id that the account is associated to.
+     *
+     * @return mixed|null
+     */
+    public function getUserId()
+    {
+        return $this->{$this->getUserIdKeyName()};
+    }
+
+    /**
+     * Get the user id column name.
+     *
+     * If this method returns null, the user will not be stored
+     * when an access token is fetched.
+     *
+     * @return string|null
+     */
+    public function getUserIdKeyName()
+    {
+        return 'user_id';
+    }
+
 }

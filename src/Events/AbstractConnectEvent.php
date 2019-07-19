@@ -11,16 +11,9 @@ abstract class AbstractConnectEvent
     use SerializesModels;
 
     /**
-     * The state parameter.
-     *
-     * @var string
-     */
-    public $state;
-
-    /**
      * The signed in user at the time of the event.
      *
-     * @var Authenticatable|null
+     * @var Authenticatable|mixed|null
      */
     public $user;
 
@@ -48,14 +41,12 @@ abstract class AbstractConnectEvent
     /**
      * AbstractConnectEvent constructor.
      *
-     * @param string $state
-     * @param Authenticatable|null $user
+     * @param Authenticatable|mixed|null $user
      * @param string $view
      * @param array $data
      */
-    public function __construct($state, $user, $view, $data = [])
+    public function __construct($user, $view, $data = [])
     {
-        $this->state = $state;
         $this->user = $user;
         $this->view = $view;
         $this->data = $data;
