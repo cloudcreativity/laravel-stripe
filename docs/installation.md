@@ -6,6 +6,25 @@ Install the package using Composer:
 $ composer require cloudcreativity/laravel-stripe:1.x-dev
 ```
 
+Add the service provider and facade to your app config file:
+
+```php
+// config/app.php
+return [
+    // ...
+    
+    'providers' => [
+        // ...
+        CloudCreativity\LaravelStripe\ServiceProvider::class,
+    ],
+    
+    'aliases' => [
+        // ...
+        'Stripe' => CloudCreativity\LaravelStripe\Facades\Stripe::class,
+    ],
+];
+```
+
 Then publish the package config:
 
 ```bash
@@ -45,7 +64,7 @@ are loaded by the package.**
 If you are customising any of the models in our implementation, you will need to disable migrations
 and publish the migrations instead.
 
-First, disable the migrations in your application's service provider:
+First, disable the migrations in the `register()` method of your application's service provider:
 
 ```php
 namespace App\Providers;
@@ -70,7 +89,7 @@ $ php artisan vendor:publish --tag=stripe-migrations
 ```
 
 > You must disable migrations **before** attempting to publish them, as they will only be publishable
-if migrations are disabled.
+if migrations are disabled. Plus you must use the `register()` method, not `boot()`.
 
 ## Brand Assets
 
