@@ -51,7 +51,7 @@ class StripeService
      */
     public function oauth($uri)
     {
-        return Route::get($uri, OAuthController::class);
+        return Route::get($uri, '\\' . OAuthController::class);
     }
 
     /**

@@ -28,6 +28,7 @@ use CloudCreativity\LaravelStripe\Webhooks\Verifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Route;
 use Stripe\Error\SignatureVerification;
 
 class ReceiveTest extends TestCase
@@ -56,7 +57,9 @@ class ReceiveTest extends TestCase
         $this->instance(Verifier::class, $this->verifier = $this->createMock(Verifier::class));
         $this->event = $this->stub('webhook');
 
-        Stripe::webhook('/test/webhook', 'foobar');
+        Route::group(['namespace' => 'App\Http\Controllers'], function () {
+            Stripe::webhook('/test/webhook', 'foobar')->name('test.webhook');
+        });
 
         config()->set('stripe.webhooks.default_queue_connection', 'stripe_connection');
         config()->set('stripe.webhooks.default_queue', 'stripe_queue');

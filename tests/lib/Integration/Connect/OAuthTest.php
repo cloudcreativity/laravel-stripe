@@ -27,6 +27,7 @@ use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
 use CloudCreativity\LaravelStripe\Tests\TestUser;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Route;
 
 class OAuthTest extends TestCase
 {
@@ -43,8 +44,6 @@ class OAuthTest extends TestCase
     {
         parent::setUp();
 
-        Stripe::oauth('/test/authorize');
-
         Queue::fake();
 
         $this->instance(
@@ -58,6 +57,10 @@ class OAuthTest extends TestCase
         });
 
         $this->user = factory(TestUser::class)->create();
+
+        Route::group(['namespace' => 'App\Http\Controllers'], function () {
+            Stripe::oauth('/test/authorize')->name('test.authorize');
+        });
     }
 
     /**
