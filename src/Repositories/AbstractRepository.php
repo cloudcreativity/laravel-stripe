@@ -162,7 +162,7 @@ abstract class AbstractRepository
      */
     public function expand(...$keys)
     {
-        $this->param(self::PARAM_EXPAND, $keys);
+        $this->param(self::PARAM_EXPAND, $keys ?: null);
 
         return $this;
     }

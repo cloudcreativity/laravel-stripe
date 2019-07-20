@@ -108,6 +108,8 @@ class ServiceProvider extends BaseServiceProvider
                 Config::logExclude()
             );
         });
+
+        $this->app->alias(Logger::class, 'stripe.log');
     }
 
     /**
