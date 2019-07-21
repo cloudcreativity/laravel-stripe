@@ -37,6 +37,7 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->json('business_profile')->nullable();
             $table->string('business_type')->nullable();
             $table->json('capabilities')->nullable();
+            $table->boolean('charges_enabled')->nullable();
             $table->json('company')->nullable();
             $table->string('country', 3)->nullable();
             $table->timestamp('created')->nullable();
