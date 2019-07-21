@@ -35,16 +35,6 @@ class ProcessTest extends TestCase
     {
         parent::setUp();
         Event::fake();
-        Carbon::setTestNow('now');
-    }
-
-    /**
-     * @return void
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-        Carbon::setTestNow();
     }
 
     public function test()

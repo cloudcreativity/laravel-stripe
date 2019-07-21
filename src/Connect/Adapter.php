@@ -20,6 +20,7 @@ namespace CloudCreativity\LaravelStripe\Connect;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
+use CloudCreativity\LaravelStripe\Exceptions\UnexpectedValueException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
@@ -58,13 +59,18 @@ class Adapter implements AdapterInterface
     /**
      * @inheritDoc
      */
-    public function store($accountId, $refreshToken, AccountOwnerInterface $owner)
+    public function store($accountId, $refreshToken, $scope, AccountOwnerInterface $owner)
     {
-        $account = $this->find($accountId) ?: $this->model->newInstance();
-        $account->{$this->model->getStripeAccountIdentifierName()} = $accountId;
-        $account->{$this->model->getStripeOwnerIdentifierName()} = $owner->getStripeIdentifier();
+        $account = $this->findWithTrashed($accountId) ?: $this->newInstance($accountId);
         $account->{$this->model->getStripeRefreshTokenName()} = $refreshToken;
-        $account->save();
+        $account->{$this->model->getStripeTokenScopeName()} = $scope;
+        $account->{$this->model->getStripeOwnerIdentifierName()} = $owner->getStripeIdentifier();
+
+        if ($account->exists && $this->softDeletes()) {
+            $account->restore();
+        } else {
+            $account->save();
+        }
 
         return $account;
     }
@@ -72,9 +78,35 @@ class Adapter implements AdapterInterface
     /**
      * @inheritDoc
      */
-    public function update(Account $account)
+    public function update(AccountInterface $account, Account $resource)
     {
-        // TODO: Implement update() method.
+        if (!$account instanceof $this->model) {
+            throw new UnexpectedValueException('Unexpected Stripe account model.');
+        }
+
+        if ($account->getStripeAccountIdentifier() !== $resource->id) {
+            throw new UnexpectedValueException('Unexpected Stripe account resource.');
+        }
+
+        $account->update($resource->jsonSerialize());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function remove(AccountInterface $account)
+    {
+        if (!$account instanceof $this->model) {
+            throw new UnexpectedValueException('Unexpected Stripe account model.');
+        }
+
+        $account->{$this->model->getStripeRefreshTokenName()} = null;
+        $account->{$this->model->getStripeTokenScopeName()} = null;
+        $account->save();
+
+        if ($this->softDeletes()) {
+            $account->delete();
+        }
     }
 
     /**
@@ -87,6 +119,45 @@ class Adapter implements AdapterInterface
             $this->model->getStripeAccountIdentifierName(),
             $accountId
         );
+    }
+
+    /**
+     * @param $accountId
+     * @return Model|null
+     */
+    protected function findWithTrashed($accountId)
+    {
+        $query = $this->query($accountId);
+
+        if ($this->softDeletes()) {
+            $query->withTrashed();
+        }
+
+        return $query->first();
+    }
+
+    /**
+     * Make a new instance of the account model.
+     *
+     * @param $accountId
+     * @return Model
+     */
+    protected function newInstance($accountId)
+    {
+        $account = $this->model->newInstance();
+        $account->{$this->model->getStripeAccountIdentifierName()} = $accountId;
+
+        return $account;
+    }
+
+    /**
+     * Does the model soft-delete?
+     *
+     * @return bool
+     */
+    protected function softDeletes()
+    {
+        return method_exists($this->model, 'forceDelete');
     }
 
 }

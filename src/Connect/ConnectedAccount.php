@@ -17,8 +17,6 @@
 
 namespace CloudCreativity\LaravelStripe\Connect;
 
-use CloudCreativity\LaravelStripe\Connector;
-
 trait ConnectedAccount
 {
 
@@ -63,6 +61,24 @@ trait ConnectedAccount
     }
 
     /**
+     * @return string|null
+     */
+    public function getStripeTokenScope()
+    {
+        return $this->{$this->getStripeTokenScopeName()};
+    }
+
+    /**
+     * Get the name for the Stripe token scope.
+     *
+     * @return string
+     */
+    public function getStripeTokenScopeName()
+    {
+        return $this->hasStripeKey() ? 'token_scope' : 'stripe_token_scope';
+    }
+
+    /**
      * Get the Stripe refresh token.
      *
      * @return string|null
@@ -75,22 +91,11 @@ trait ConnectedAccount
     /**
      * Get the Stripe refresh token column name.
      *
-     * If your model is using the key name as the Stripe account key name,
-     * we assume the refresh token is stored as `refresh_token`.
-     *
-     * Otherwise we assume it is stored as `stripe_refresh_token`.
-     *
-     * If you use a different name, just implement this method yourself.
-     *
      * @return string
      */
     public function getStripeRefreshTokenName()
     {
-        if ($this->getKeyName() === $this->getStripeAccountIdentifierName()) {
-            return 'refresh_token';
-        }
-
-        return 'stripe_refresh_token';
+        return $this->hasStripeKey() ? 'refresh_token' : 'stripe_refresh_token';
     }
 
     /**
@@ -114,6 +119,16 @@ trait ConnectedAccount
     public function getStripeOwnerIdentifierName()
     {
         return 'owner_id';
+    }
+
+    /**
+     * Is the model using the Stripe account identifier as its key?
+     *
+     * @return bool
+     */
+    protected function hasStripeKey()
+    {
+        return $this->getKeyName() === $this->getStripeAccountIdentifierName();
     }
 
 }

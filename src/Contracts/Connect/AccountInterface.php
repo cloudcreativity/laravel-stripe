@@ -35,6 +35,20 @@ interface AccountInterface
     public function getStripeAccountIdentifierName();
 
     /**
+     * Get the token scope for the Stripe account.
+     *
+     * @return string|null
+     */
+    public function getStripeTokenScope();
+
+    /**
+     * Get the name for the Stripe token scope.
+     *
+     * @return string
+     */
+    public function getStripeTokenScopeName();
+
+    /**
      * Get the Stripe refresh token for the connected account.
      *
      * @return string|null

@@ -17,6 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Tests\Integration;
 
+use Carbon\Carbon;
 use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\ServiceProvider;
 use CloudCreativity\LaravelStripe\Tests\TestExceptionHandler;
@@ -35,6 +36,8 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        Carbon::setTestNow('now');
+
         $this->counter = 0;
 
         /** Setup the test database */
@@ -48,6 +51,15 @@ abstract class TestCase extends BaseTestCase
         $this->app['view']->addNamespace('test', __DIR__ . '/../../resources/views');
 
         $this->artisan('migrate', ['--database' => 'testbench']);
+    }
+
+    /**
+     * @return void
+     */
+    protected function tearDown()
+    {
+        parent::tearDown();
+        Carbon::setTestNow();
     }
 
     /**

@@ -18,7 +18,6 @@
 namespace CloudCreativity\LaravelStripe\Connect;
 
 use CloudCreativity\LaravelStripe\Client;
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\StateProviderInterface;
 use RuntimeException;
 use Stripe\OAuth;
@@ -98,15 +97,15 @@ class Authorizer
     /**
      * Revoke access to an account.
      *
-     * @param AccountInterface $account
+     * @param string $accountId
      * @param array|null $options
      * @return StripeObject
      * @see https://stripe.com/docs/connect/standard-accounts#revoked-access
      */
-    public function deauthorize(AccountInterface $account, array $options = null)
+    public function deauthorize($accountId, array $options = null)
     {
         $params = [
-            self::STRIPE_USER_ID => $account->getStripeAccountId(),
+            self::STRIPE_USER_ID => $accountId,
         ];
 
         return call_user_func($this->client, OAuth::class, 'deauthorize', $params, $options);

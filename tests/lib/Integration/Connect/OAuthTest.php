@@ -179,4 +179,40 @@ class OAuthTest extends TestCase
 
         Queue::assertNotPushed(FetchUserCredentials::class);
     }
+
+    /**
+     * @return array
+     */
+    public function invalidProvider()
+    {
+        return [
+            'state' => ['state'],
+            'scope' => ['scope'],
+            'code' => ['code'],
+        ];
+    }
+
+    /**
+     * Checks that we handle any missing parameters from Stripe.
+     *
+     * In theory a user should never encounter this, as Stripe will send what
+     * we expect it to send. But it is good to handle the scenario just in case.
+     *
+     * @param string $missing
+     * @dataProvider invalidProvider
+     */
+    public function testInvalid($missing)
+    {
+        $params = collect([
+            'state' => 'session_token',
+            'scope' => 'read_write',
+            'code' => 'access_code',
+        ])->forget($missing)->all();
+
+        $this->actingAs($this->user)
+            ->get('/test/authorize?' . http_build_query($params))
+            ->assertStatus(400);
+
+        Queue::assertNotPushed(FetchUserCredentials::class);
+    }
 }

@@ -71,6 +71,13 @@ class StripeAccount extends Model implements AccountInterface
     ];
 
     /**
+     * @var array
+     */
+    protected $dates = [
+        'deleted_at',
+    ];
+
+    /**
      * @return HasMany
      */
     public function events()

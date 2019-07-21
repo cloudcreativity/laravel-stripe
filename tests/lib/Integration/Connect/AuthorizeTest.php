@@ -17,6 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Tests\Integration\Connect;
 
+use Carbon\Carbon;
 use CloudCreativity\LaravelStripe\Events\FetchedUserCredentials;
 use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\Jobs\FetchUserCredentials;
@@ -42,7 +43,6 @@ class AuthorizeTest extends TestCase
     {
         parent::setUp();
         Event::fake();
-
         $this->user = factory(TestUser::class)->create();
     }
 
@@ -72,6 +72,7 @@ class AuthorizeTest extends TestCase
         $this->assertDatabaseHas('stripe_accounts', [
             'id' => 'acct_1234567890',
             'refresh_token' => 'storable_refresh_token',
+            'token_scope' => 'read_write',
             'owner_id' => $this->user->getKey(),
         ]);
 
@@ -95,7 +96,10 @@ class AuthorizeTest extends TestCase
         });
     }
 
-    public function testAlreadyExists()
+    /**
+     * Test authorizing an account that is already authorized.
+     */
+    public function testReauthorize()
     {
         /** @var StripeAccount $model */
         $model = factory(StripeAccount::class)->create([
@@ -126,6 +130,55 @@ class AuthorizeTest extends TestCase
         $this->assertDatabaseHas('stripe_accounts', [
             $model->getKeyName() => $model->getKey(),
             'refresh_token' => 'storable_refresh_token',
+            'owner_id' => $this->user->getKey(),
+        ]);
+
+        Event::assertDispatched(FetchedUserCredentials::class, function ($event) use ($model, $token) {
+            $this->assertTrue($model->is($event->account), 'event account');
+            $this->assertSame($token, $event->token, 'event token');
+            $this->assertTrue($this->user->is($event->owner), 'event owner');
+            return true;
+        });
+    }
+
+    /**
+     * Test reauthorizing a deauthorized (trashed) account.
+     */
+    public function testReauthorizeDeauthorizedAccount()
+    {
+        /** @var StripeAccount $model */
+        $model = factory(StripeAccount::class)->create([
+            'deleted_at' => Carbon::yesterday(),
+            'refresh_token' => null,
+            'token_scope' => null,
+        ]);
+
+        Stripe::fake($token = StripeObject::constructFrom([
+            'access_token' => 'secret_token',
+            'scope' => 'read_write',
+            'livemode' => true,
+            'token_type' => 'bearer',
+            'refresh_token' => 'storable_refresh_token',
+            'stripe_user_id' => $model->getStripeAccountIdentifier(),
+            'stripe_publishable_key' => 'publishable_key',
+        ]));
+
+        dispatch(new FetchUserCredentials('auth_code', 'read_write', $this->user));
+
+        Stripe::assertInvoked(OAuth::class, 'token', function ($params) {
+            $this->assertEquals([
+                'code' => 'auth_code',
+                'grant_type' => 'authorization_code',
+            ], $params, 'params');
+
+            return true;
+        });
+
+        $this->assertDatabaseHas('stripe_accounts', [
+            $model->getKeyName() => $model->getKey(),
+            'deleted_at' => null,
+            'refresh_token' => 'storable_refresh_token',
+            'token_scope' => 'read_write',
             'owner_id' => $this->user->getKey(),
         ]);
 

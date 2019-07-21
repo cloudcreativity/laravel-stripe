@@ -17,30 +17,12 @@
 
 namespace CloudCreativity\LaravelStripe;
 
-use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Exceptions\UnexpectedValueException;
 use CloudCreativity\LaravelStripe\Repositories\AbstractRepository;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Stripe\Account;
 
 class Connector
 {
-
-    /**
-     * @var AccountInterface|Model
-     */
-    private $account;
-
-    /**
-     * RepositoryManager constructor.
-     *
-     * @param AccountInterface $account
-     */
-    public function __construct(AccountInterface $account = null)
-    {
-        $this->account = $account;
-    }
 
     /**
      * Get a resource repository by resource type.
@@ -53,7 +35,7 @@ class Connector
         $method = Str::camel($resource);
         $repository = null;
 
-        if (method_exists($this, $method) && !in_array($method, ['account'])) {
+        if (method_exists($this, $method) && !in_array($method, ['retrieve'])) {
             $repository = call_user_func([$this, $method]);
         }
 
@@ -65,38 +47,9 @@ class Connector
     }
 
     /**
-     * Is the connector for the provided account?
-     *
-     * @param AccountInterface $account
-     * @return bool
-     */
-    public function is(AccountInterface $account)
-    {
-        if (!$this->account) {
-            return false;
-        }
-
-        if ($account instanceof Model) {
-            return $account->is($this->account);
-        }
-
-        return $account === $this->account;
-    }
-
-    /**
-     * Get the account id of the connected account.
-     *
-     * @return string|null
-     */
-    public function accountId()
-    {
-        return $this->account ? $this->account->getStripeAccountIdentifier() : null;
-    }
-
-    /**
      * Retrieve the Stripe account object that this connector belongs to.
      *
-     * @return Account
+     * @return \Stripe\Account
      */
     public function retrieve()
     {
@@ -159,4 +112,15 @@ class Connector
             $this->accountId()
         );
     }
+
+    /**
+     * Get the account id to use when creating a repository.
+     *
+     * @return string|null
+     */
+    protected function accountId()
+    {
+        return null;
+    }
+
 }

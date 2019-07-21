@@ -50,6 +50,7 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->string('refresh_token')->nullable();
             $table->json('requirements')->nullable();
             $table->json('settings')->nullable();
+            $table->string('token_scope')->nullable();
             $table->json('tos_acceptance')->nullable();
             $table->string('type')->nullable();
         });
