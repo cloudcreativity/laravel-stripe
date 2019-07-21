@@ -85,7 +85,7 @@ class AuthorizeConnect extends FormRequest
     /**
      * @return array
      */
-    protected function validationData()
+    public function validationData()
     {
         return $this->query();
     }
