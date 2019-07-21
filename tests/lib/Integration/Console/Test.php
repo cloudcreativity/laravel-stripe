@@ -35,7 +35,7 @@ class Test extends TestCase
     {
         Stripe::fake(new Collection());
 
-        $result = $this->artisan('stripe', compact('resource'));
+        $result = $this->artisan('stripe:query', compact('resource'));
 
         $this->assertSame(0, $result, 'success');
 
@@ -58,7 +58,7 @@ class Test extends TestCase
 
         Stripe::fake(new Collection());
 
-        $result = $this->artisan('stripe', [
+        $result = $this->artisan('stripe:query', [
             'resource' => $resource,
             '--account' => $account->getStripeAccountIdentifier(),
         ]);
@@ -85,7 +85,7 @@ class Test extends TestCase
     {
         Stripe::fake(new StripeObject($id = 'foo_bazbat'));
 
-        $result = $this->artisan('stripe', [
+        $result = $this->artisan('stripe:query', [
             'resource' => $resource,
             'id' => $id,
             '--expand' => ['foo', 'bar'],
@@ -115,7 +115,7 @@ class Test extends TestCase
 
         Stripe::fake(new StripeObject($id = 'foo_bazbat'));
 
-        $result = $this->artisan('stripe', [
+        $result = $this->artisan('stripe:query', [
             'resource' => $resource,
             'id' => $id,
             '--account' => $account->getStripeAccountIdentifier(),

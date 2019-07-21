@@ -33,9 +33,9 @@ class StripeQuery extends Command
      *
      * @var string
      */
-    protected $signature = "stripe 
-        {resource : The resource name } 
-        {id? : The resource id } 
+    protected $signature = "stripe:query
+        {resource : The resource name }
+        {id? : The resource id }
         {--A|account= : The connected account }
         {--e|expand=* : The paths to expand }
     ";

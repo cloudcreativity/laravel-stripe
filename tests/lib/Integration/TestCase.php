@@ -17,6 +17,7 @@
 
 namespace CloudCreativity\LaravelStripe\Tests\Integration;
 
+use Carbon\Carbon;
 use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
@@ -34,7 +35,7 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->counter = 0;
+        Carbon::setTestNow('now');
 
         /** Setup the test database */
         $this->app['migrator']->path(__DIR__ . '/../../database/migrations');
@@ -47,6 +48,15 @@ abstract class TestCase extends BaseTestCase
         $this->app['view']->addNamespace('test', __DIR__ . '/../../resources/views');
 
         $this->artisan('migrate', ['--database' => 'testbench']);
+    }
+
+    /**
+     * @return void
+     */
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        Carbon::setTestNow();
     }
 
     /**

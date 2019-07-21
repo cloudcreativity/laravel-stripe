@@ -151,25 +151,45 @@ To implement your application logic, you can either:
 
 ### Events
 
-Add listeners by binding to any of the following events:
+Add listeners by binding to any of our webhook events.
+
+#### Account Webhooks
+
+The following events are dispatched for account webhooks:
 
 | Event Name | Description |
 | :-- | :-- | 
-| `stripe.webhooks` | Bind to every webhook. |
-| `stripe.webhooks:<object>` | Listen for webhooks for the specified Stripe object. |
-| `stripe.webhooks:<event_name>` | Listen for a specific webhook. |
+| `stripe.webhooks` | Bind to every account webhook. |
+| `stripe.webhooks:<object>` | Listen for account webhooks for the specified Stripe object. |
+| `stripe.webhooks:<event_name>` | Listen for the named account webhook. |
 
-For example, when processing a `payment_intent.succeeded` webhook, the following three events will be
-fired in this order:
+For example, when processing a `payment_intent.succeeded` webhook for your application's account,
+the following three events will be fired in this order:
 
 - `stripe.webhooks`
 - `stripe.webhooks:payment_intent`
 - `stripe.webhooks:payment_intent.succeeded`
 
-Arguments will receive an instance of either:
+Account webhook listeners will receive an instance of `\CloudCreativity\LaravelStripe\Webhooks\Webhook`.
 
-- `\CloudCreativity\LaravelStripe\Webhooks\Webhook`: for account webhooks.
-- `\CloudCreativity\LaravelStripe\Webhooks\ConnectWebhook`: for Connect webhooks.
+#### Connect Webhook Events
+
+The following events are dispatched for Connect account webhooks:
+
+| Event Name | Description |
+| :-- | :-- | 
+| `stripe.connect.webhooks` | Bind to every Connect webhook. |
+| `stripe.connect.webhooks:<object>` | Listen for Connect webhooks for the specified Stripe object. |
+| `stripe.connect.webhooks:<event_name>` | Listen for the named Connect webhook. |
+
+For example, when processing a `payment_intent.succeeded` webhook for a connected account,
+the following three events will be fired in this order:
+
+- `stripe.connect.webhooks`
+- `stripe.connect.webhooks:payment_intent`
+- `stripe.connect.webhooks:payment_intent.succeeded`
+
+Connect webhook listeners will receive an instance of `\CloudCreativity\LaravelStripe\Webhooks\ConnectWebhook`.
 
 > The `ConnectWebhook` extends `Webhook`, so if your listener is for both account and Connect webhooks,
 type-hint `Webhook`. If you need to check, use the `$webhook->connect()` method, which returns `true`

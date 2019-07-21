@@ -51,7 +51,7 @@ class StripeService
      */
     public function oauth($uri)
     {
-        return Route::get($uri, OAuthController::class);
+        return Route::get($uri, '\\' . OAuthController::class);
     }
 
     /**
@@ -67,20 +67,18 @@ class StripeService
     /**
      * Access a connected account.
      *
-     * This method is a short-hand alias for `connectedAccount()`.
-     *
      * @param AccountInterface|string $accountId
-     * @return Connector
+     * @return Connect\Connector
      * @throws AccountNotConnectedException
      */
     public function connect($accountId)
     {
         if ($accountId instanceof AccountInterface) {
-            return new Connector($accountId);
+            return new Connect\Connector($accountId);
         }
 
         if ($account = $this->connectAccount($accountId)) {
-            return new Connector($account);
+            return new Connect\Connector($account);
         }
 
         throw new AccountNotConnectedException($accountId);

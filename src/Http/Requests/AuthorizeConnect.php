@@ -20,8 +20,11 @@ namespace CloudCreativity\LaravelStripe\Http\Requests;
 use CloudCreativity\LaravelStripe\Connect\AuthorizeUrl;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
 use CloudCreativity\LaravelStripe\LaravelStripe;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthorizeConnect extends FormRequest
 {
@@ -85,5 +88,23 @@ class AuthorizeConnect extends FormRequest
     protected function validationData()
     {
         return $this->query();
+    }
+
+    /**
+     * Handle validation failing.
+     *
+     * We do not expect this scenario to occur, because Stripe has defined
+     * the parameter it sends us. However we handle the scenario just in case.
+     *
+     * We do not throw the Laravel validation exception, because by default
+     * Laravel turns this into a redirect response to send the user back...
+     * but this does not make sense in our scenario.
+     *
+     * @param Validator $validator
+     * @throws HttpException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpException(Response::HTTP_BAD_REQUEST);
     }
 }

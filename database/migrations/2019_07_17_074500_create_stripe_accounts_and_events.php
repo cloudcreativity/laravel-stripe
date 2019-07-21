@@ -37,6 +37,7 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->json('business_profile')->nullable();
             $table->string('business_type')->nullable();
             $table->json('capabilities')->nullable();
+            $table->boolean('charges_enabled')->nullable();
             $table->json('company')->nullable();
             $table->string('country', 3)->nullable();
             $table->timestamp('created')->nullable();
@@ -50,6 +51,7 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->string('refresh_token')->nullable();
             $table->json('requirements')->nullable();
             $table->json('settings')->nullable();
+            $table->string('token_scope')->nullable();
             $table->json('tos_acceptance')->nullable();
             $table->string('type')->nullable();
         });
@@ -58,7 +60,7 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->string('id', 255)->primary()->collate(LaravelStripe::ID_DATABASE_COLLATION);
             $table->timestamps();
             $table->string('account_id', 255)->nullable()->collate(LaravelStripe::ID_DATABASE_COLLATION);
-            $table->string('api_version');
+            $table->date('api_version');
             $table->timestamp('created');
             $table->boolean('livemode');
             $table->unsignedInteger('pending_webhooks');

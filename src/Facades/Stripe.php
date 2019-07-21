@@ -19,6 +19,7 @@ namespace CloudCreativity\LaravelStripe\Facades;
 
 use CloudCreativity\LaravelStripe\Client;
 use CloudCreativity\LaravelStripe\Connect\AuthorizeUrl;
+use CloudCreativity\LaravelStripe\Connect\Connector as ConnectConnector;
 use CloudCreativity\LaravelStripe\Connector;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use CloudCreativity\LaravelStripe\Testing\ClientFake;
@@ -35,7 +36,7 @@ use Stripe\StripeObject;
  * @method static Route webhook(string $uri, string $signingSecret)
  * @method static Route oauth(string $uri)
  * @method static Connector account()
- * @method static Connector connect(string $accountId)
+ * @method static ConnectConnector connect(AccountInterface|string $accountId)
  * @method static AccountInterface connectAccount(string $accountId)
  * @method static AuthorizeUrl authorizeUrl(array $options = null)
  * @method static void log(string $message, StripeObject|mixed $data, array $context = [])

@@ -44,6 +44,7 @@ class StripeAccount extends Model implements AccountInterface
         'business_profile',
         'business_type',
         'capabilities',
+        'charges_enabled',
         'country',
         'default_currency',
         'details_submitted',
@@ -52,6 +53,7 @@ class StripeAccount extends Model implements AccountInterface
         'metadata',
         'payouts_enabled',
         'requirements',
+        'settings',
         'tos_acceptance',
         'type',
     ];
@@ -62,12 +64,21 @@ class StripeAccount extends Model implements AccountInterface
     protected $casts = [
         'business_profile' => 'json',
         'capabilities' => 'json',
+        'charges_enabled' => 'boolean',
         'details_submitted' => 'boolean',
         'individual' => 'json',
         'metadata' => 'json',
         'payouts_enabled' => 'boolean',
         'requirements' => 'json',
+        'settings' => 'json',
         'tos_acceptance' => 'json',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $dates = [
+        'deleted_at',
     ];
 
     /**

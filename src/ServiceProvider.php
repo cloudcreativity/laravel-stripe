@@ -21,11 +21,13 @@ use CloudCreativity\LaravelStripe\Connect\Adapter;
 use CloudCreativity\LaravelStripe\Contracts\Connect\AdapterInterface;
 use CloudCreativity\LaravelStripe\Contracts\Connect\StateProviderInterface;
 use CloudCreativity\LaravelStripe\Contracts\Webhooks\ProcessorInterface;
+use CloudCreativity\LaravelStripe\Events\AccountDeauthorized;
 use CloudCreativity\LaravelStripe\Events\ClientReceivedResult;
 use CloudCreativity\LaravelStripe\Events\ClientWillSend;
 use CloudCreativity\LaravelStripe\Events\OAuthSuccess;
 use CloudCreativity\LaravelStripe\Listeners\DispatchAuthorizeJob;
 use CloudCreativity\LaravelStripe\Listeners\DispatchWebhookJob;
+use CloudCreativity\LaravelStripe\Listeners\RemoveAccountOnDeauthorize;
 use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\Webhooks\Processor;
 use Illuminate\Contracts\Bus\Dispatcher;
@@ -108,6 +110,8 @@ class ServiceProvider extends BaseServiceProvider
                 Config::logExclude()
             );
         });
+
+        $this->app->alias(Logger::class, 'stripe.log');
     }
 
     /**
@@ -141,6 +145,7 @@ class ServiceProvider extends BaseServiceProvider
     private function bootConnect(Events $events)
     {
         $events->listen(OAuthSuccess::class, DispatchAuthorizeJob::class);
+        $events->listen(AccountDeauthorized::class, RemoveAccountOnDeauthorize::class);
     }
 
     /**

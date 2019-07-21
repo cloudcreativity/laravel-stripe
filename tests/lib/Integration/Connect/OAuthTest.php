@@ -27,6 +27,7 @@ use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
 use CloudCreativity\LaravelStripe\Tests\TestUser;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Route;
 
 class OAuthTest extends TestCase
 {
@@ -43,8 +44,6 @@ class OAuthTest extends TestCase
     {
         parent::setUp();
 
-        Stripe::oauth('/test/authorize');
-
         Queue::fake();
 
         $this->instance(
@@ -58,6 +57,10 @@ class OAuthTest extends TestCase
         });
 
         $this->user = factory(TestUser::class)->create();
+
+        Route::group(['namespace' => 'App\Http\Controllers'], function () {
+            Stripe::oauth('/test/authorize')->name('test.authorize');
+        });
     }
 
     /**
@@ -173,6 +176,42 @@ class OAuthTest extends TestCase
             ->assertStatus(403)
             ->assertViewIs('test::oauth.error')
             ->assertViewHas($expected);
+
+        Queue::assertNotPushed(FetchUserCredentials::class);
+    }
+
+    /**
+     * @return array
+     */
+    public function invalidProvider()
+    {
+        return [
+            'state' => ['state'],
+            'scope' => ['scope'],
+            'code' => ['code'],
+        ];
+    }
+
+    /**
+     * Checks that we handle any missing parameters from Stripe.
+     *
+     * In theory a user should never encounter this, as Stripe will send what
+     * we expect it to send. But it is good to handle the scenario just in case.
+     *
+     * @param string $missing
+     * @dataProvider invalidProvider
+     */
+    public function testInvalid($missing)
+    {
+        $params = collect([
+            'state' => 'session_token',
+            'scope' => 'read_write',
+            'code' => 'access_code',
+        ])->forget($missing)->all();
+
+        $this->actingAs($this->user)
+            ->get('/test/authorize?' . http_build_query($params))
+            ->assertStatus(400);
 
         Queue::assertNotPushed(FetchUserCredentials::class);
     }

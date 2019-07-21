@@ -40,22 +40,34 @@ interface AdapterInterface
      * - The `stripe_user_id`: $accountId
      * - The `refresh_token`: $refreshToken
      *
+     * We also pass the token scope, so that you can store whether you have
+     * read_only or read_write access to the Stripe account.
+     *
      * @param string $accountId
      * @param string $refreshToken
+     * @param string $scope
      * @param AccountOwnerInterface|null $owner
      *      the user associated with the OAuth process.
      * @return AccountInterface
      * @see https://stripe.com/docs/connect/standard-accounts#token-request
      */
-    public function store($accountId, $refreshToken, AccountOwnerInterface $owner);
+    public function store($accountId, $refreshToken, $scope, AccountOwnerInterface $owner);
 
     /**
      * Update an account from a Stripe account resource.
      *
-     * @param Account $account
+     * @param AccountInterface $account
+     * @param Account $resource
      *      the Stripe account resource.
-     * @return AccountInterface|null
-     *      the updated account, or null if no account was updated.
+     * @return void
      */
-    public function update(Account $account);
+    public function update(AccountInterface $account, Account $resource);
+
+    /**
+     * Remove an account when it is de-authorized.
+     *
+     * @param AccountInterface $account
+     * @return void
+     */
+    public function remove(AccountInterface $account);
 }

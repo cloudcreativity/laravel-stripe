@@ -75,6 +75,7 @@ class FetchUserCredentials implements ShouldQueue
         $account = $adapter->store(
             $token['stripe_user_id'],
             $token['refresh_token'],
+            $token['scope'],
             $this->owner
         );
 

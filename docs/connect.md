@@ -76,6 +76,9 @@ Whichever approach you use, you will need to set the `stripe.webhooks.model` con
 fully-qualified class name of your custom model. You will also need to follow the instructions
 about [package migrations.](./installation.md#migrations)
 
+Finally, if you do not want to use Eloquent models, or need to store models in a completely different
+way to how we do it, you can [write your own storage adapter.](#custom-storage)
+
 #### Extension
 
 This is an example of extending our own class to change the database connection:
@@ -139,6 +142,31 @@ class StripeAccount extends Model implements AccountInterface
     {
         return 'account_id';
     }
+}
+```
+
+#### Custom Storage
+
+If you need to complete customise how connected accounts are stored, create an adapter that implements our
+[adapter interface](../src/Contracts/Connect/AdapterInterface.php), or extends
+[our adapter implementation](../src/Connect/Adapter.php).
+
+You will then need to register your adapter in the `register()` method of your application's
+service provider:
+
+```php
+namespace App\Providers;
+
+use CloudCreativity\LaravelStripe\LaravelStripe;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+
+  public function register()
+  {
+        LaravelStripe::connect(\App\Stripe\Connect\Adapter::class);
+  }
 }
 ```
 
@@ -301,27 +329,27 @@ Refer to the [Repositories](./repositories.md) chapter for more details.
 Our [Webhook](./webhooks.md) implementation is fully compatible for Connect webhooks. Refer
 to that chapter for details.
 
-## Custom Implementation
+## Deauthorizing Accounts
 
-If you need to customise the Stripe Connect implementation, create your own class that implements our
-[adapter interface](../src/Contracts/Connect/AdapterInterface.php), or extend
-[our adapter implementation](../src/Connect/Adapter.php).
-
-You will then need to register your adapter in the `register()` method of your application's
-service provider:
+An account can be deauthorized as follows:
 
 ```php
-namespace App\Providers;
+// via the facade...
+Stripe::connect($accountId)->deauthorize();
 
-use CloudCreativity\LaravelStripe\LaravelStripe;
-use Illuminate\Support\ServiceProvider;
-
-class AppServiceProvider extends ServiceProvider
-{
-
-  public function register()
-  {
-        LaravelStripe::connect(\App\Stripe\Connect\Adapter::class);
-  }
-}
+// or if you have access to the account model...
+$account->stripe()->deauthorize();
 ```
+
+This will fire a `\CloudCreativity\LaravelStripe\Events\AccountDeauthorized` event. Additionally,
+the connected account model will:
+
+- have its refresh token set to `null`;
+- have its token scope set to `null`; and
+- if it is soft-deleteable, it will be soft-deleted.
+
+> We do not delete the model from the database because this would prevent you from queuing any
+listeners or jobs that need access to the account model. If you want to remove the account from
+your database when it is deauthorized, you should implement that logic yourself via a queued
+event listener. 
+

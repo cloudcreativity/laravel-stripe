@@ -100,7 +100,7 @@ class LaravelStripe
      * @param string $fqn
      * @return LaravelStripe
      */
-    public static function oauthState($fqn)
+    public static function connectState($fqn)
     {
         self::$oauthState = $fqn;
 
