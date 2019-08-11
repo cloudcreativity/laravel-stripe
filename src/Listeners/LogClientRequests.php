@@ -47,7 +47,7 @@ class LogClientRequests
     public function handle(ClientWillSend $event)
     {
         $this->log->log(
-            "Stripe: sending {$event->name}.{$event->method}",
+            "Sending {$event->name}.{$event->method}",
             $event->toArray()
         );
     }
