@@ -56,7 +56,7 @@ developed against as guide. You may find the package works with older versions o
 
 | Laravel | Stripe PHP | Stripe API | Laravel-Stripe | Cashier |
 | :-- | :-- | :-- | :-- |:-- |
-| `5.4.x` | `^6.40` | `>=2019-05-16` | `0.x` | n/a |
+| `5.4.x` | `^6.40` | `>=2019-05-16` | `^0.1` | n/a |
 
 > Installing version `0.x` of this package and Cashier is not supported, because Cashier required
 an older version of the `stripe/stripe-php` package for Laravel 5.4.
