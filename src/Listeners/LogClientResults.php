@@ -44,7 +44,7 @@ class LogClientResults
      */
     public function handle(ClientReceivedResult $event)
     {
-        $message = "Stripe: result for {$event->name}.{$event->method}";
+        $message = "Result for {$event->name}.{$event->method}";
         $context = $event->toArray();
 
         if (!$event->result instanceof JsonSerializable) {

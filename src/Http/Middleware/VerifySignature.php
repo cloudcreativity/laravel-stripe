@@ -17,7 +17,6 @@
 
 namespace CloudCreativity\LaravelStripe\Http\Middleware;
 
-use CloudCreativity\LaravelStripe\Config;
 use CloudCreativity\LaravelStripe\Events\SignatureVerificationFailed;
 use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\Webhooks\Verifier;
@@ -65,9 +64,7 @@ class VerifySignature
      */
     public function handle($request, \Closure $next, $signingSecret = 'default')
     {
-        if ($level = Config::logLevel()) {
-            $this->log->log("Verifying Stripe webhook using signing secret: {$signingSecret}");
-        }
+        $this->log->log("Verifying Stripe webhook using signing secret: {$signingSecret}");
 
         try {
             $this->verifier->verify($request, $signingSecret);
