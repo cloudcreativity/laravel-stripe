@@ -14,11 +14,19 @@
     "require": {
         "php": "^5.6|^7.0",
         "ext-json": "*",
-        "illuminate/support": "^5.4"
+        "illuminate/console": "5.4.*",
+        "illuminate/contracts": "5.4.*",
+        "illuminate/database": "5.4.*",
+        "illuminate/http": "5.4.*",
+        "illuminate/queue": "5.4.*",
+        "illuminate/routing": "5.4.*",
+        "illuminate/support": "5.4.*",
+        "psr/log": "^1.0",
+        "stripe/stripe-php": "^6.40"
     },
     "require-dev": {
-        "orchestra/testbench": "^3.4",
-        "phpunit/phpunit": "^5.7|^6.5|^7.0"
+        "orchestra/testbench": "3.4.*",
+        "phpunit/phpunit": "^5.7"
     },
     "autoload": {
         "psr-4": {
@@ -32,7 +40,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "1.x-dev"
+            "dev-develop": "1.x-dev",
+            "dev-release/0.1.0": "0.x-dev"
         },
         "laravel": {
             "providers": [
