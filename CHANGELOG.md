@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. This project adheres to
 [Semantic Versioning](http://semver.org/) and [this changelog format](http://keepachangelog.com/).
 
-## Unreleased
+## [0.1.1] - 2020-01-04
 
 ### Fixed
 - [#3](git@github.com:cloudcreativity/laravel-stripe.git)
