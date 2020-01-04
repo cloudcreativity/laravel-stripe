@@ -48,7 +48,7 @@
                 "CloudCreativity\\LaravelStripe\\ServiceProvider"
             ],
             "aliases": {
-                "JsonApi": "CloudCreativity\\LaravelStripe\\Facades\\Stripe"
+                "Stripe": "CloudCreativity\\LaravelStripe\\Facades\\Stripe"
             }
         }
     },
