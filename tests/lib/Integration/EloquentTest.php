@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2019 Cloud Creativity Limited
+ * Copyright 2020 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ class EloquentTest extends TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         config()->set('stripe.connect.model', TestAccount::class);

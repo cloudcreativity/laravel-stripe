@@ -9,24 +9,25 @@
             "email": "info@cloudcreativity.co.uk"
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^5.6|^7.0",
+        "php": "^7.1",
         "ext-json": "*",
-        "illuminate/console": "5.4.*",
-        "illuminate/contracts": "5.4.*",
-        "illuminate/database": "5.4.*",
-        "illuminate/http": "5.4.*",
-        "illuminate/queue": "5.4.*",
-        "illuminate/routing": "5.4.*",
-        "illuminate/support": "5.4.*",
+        "illuminate/console": "^5.5|^6.0",
+        "illuminate/contracts": "^5.5|^6.0",
+        "illuminate/database": "^5.5|^6.0",
+        "illuminate/http": "^5.5|^6.0",
+        "illuminate/queue": "^5.5|^6.0",
+        "illuminate/routing": "^5.5|^6.0",
+        "illuminate/support": "^5.5|^6.0",
         "psr/log": "^1.0",
         "stripe/stripe-php": "^6.40"
     },
     "require-dev": {
-        "orchestra/testbench": "3.4.*",
-        "phpunit/phpunit": "^5.7"
+        "laravel/cashier": "^8.0|^9.0|^10.0|^11.0|^12.0",
+        "orchestra/testbench": "^3.5|^4.0",
+        "phpunit/phpunit": "^6.0|^7.0|^8.0"
     },
     "autoload": {
         "psr-4": {
@@ -40,8 +41,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "1.x-dev",
-            "dev-release/0.1.0": "0.x-dev"
+            "dev-develop": "1.x-dev"
         },
         "laravel": {
             "providers": [

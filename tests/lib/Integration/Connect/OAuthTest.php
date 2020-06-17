@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2019 Cloud Creativity Limited
+ * Copyright 2020 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class OAuthTest extends TestCase
     /**
      * @return void
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -66,7 +66,7 @@ class OAuthTest extends TestCase
     /**
      * @return void
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         LaravelStripe::currentOwnerResolver(null);

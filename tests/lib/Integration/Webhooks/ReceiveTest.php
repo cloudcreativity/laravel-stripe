@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2019 Cloud Creativity Limited
+ * Copyright 2020 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ use CloudCreativity\LaravelStripe\Webhooks\Verifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\MockObject\MockObject;
 use Illuminate\Support\Facades\Route;
 use Stripe\Error\SignatureVerification;
 
@@ -35,7 +36,7 @@ class ReceiveTest extends TestCase
 {
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var MockObject
      */
     private $verifier;
 
@@ -47,7 +48,7 @@ class ReceiveTest extends TestCase
     /**
      * @return void
      */
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
