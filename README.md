@@ -5,7 +5,7 @@
 ## Overview
 
 A Laravel integration for [Stripe's official PHP package.](https://github.com/stripe/stripe-php)
- 
+
 This package allows you to fluently query the Stripe API via repositories.
 Repositories can be for either your application's Stripe account, or connected Stripe accounts.
 
@@ -56,16 +56,16 @@ developed against as guide. You may find the package works with older versions o
 
 | Laravel | Stripe PHP | Stripe API | Laravel-Stripe | Cashier |
 | :-- | :-- | :-- | :-- |:-- |
-| `5.9.x` | `^6.40` | `>=2019-05-16` | `1.x-dev` | `^9.0` |
-| `5.8.x` | `^6.40` | `>=2019-05-16` | `1.x-dev` | `^9.0` |
-| `5.7.x` | `^6.40` | `>=2019-05-16` | `1.x-dev` | `^9.0` |
-| `5.6.x` | `^6.40` | `>=2019-05-16` | `1.x-dev` | `^8.0` |
-| `5.5.x` | `^6.40` | `>=2019-05-16` | `1.x-dev` | `^8.0` |
+| `6.x` | `^6.40` | `>=2019-05-16` | `0.2.x` | `^9.0|^10.0|^11.0|^12.0` |
+| `5.8.x` | `^6.40` | `>=2019-05-16` | `0.2.x` | `^8.0|^9.0|^10.0` |
+| `5.7.x` | `^6.40` | `>=2019-05-16` | `0.2.x` | `^8.0|^9.0` |
+| `5.6.x` | `^6.40` | `>=2019-05-16` | `0.2.x` | `^8.0` |
+| `5.5.x` | `^6.40` | `>=2019-05-16` | `0.2.x` | `^8.0` |
 
 ## Contributing
 
 We have only implemented the repositories for the Stripe resources we are using in our application.
-Repositories are very easy to implement - for example, the 
+Repositories are very easy to implement - for example, the
 [payment intent repository](./src/Repositories/PaymentIntentRepository.php) -
 because they are predominantly composed of traits. Then they just need to be added to
 [the connector class](./src/Connector.php).

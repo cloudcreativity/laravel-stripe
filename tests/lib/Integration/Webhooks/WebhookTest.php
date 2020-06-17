@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2019 Cloud Creativity Limited
+ * Copyright 2020 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace CloudCreativity\LaravelStripe\Tests\Webhooks;
+namespace CloudCreativity\LaravelStripe\Tests\Integration\Webhooks;
 
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
