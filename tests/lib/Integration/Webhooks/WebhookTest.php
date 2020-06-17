@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-namespace CloudCreativity\LaravelStripe\Tests\Webhooks;
+namespace CloudCreativity\LaravelStripe\Tests\Integration\Webhooks;
 
 use CloudCreativity\LaravelStripe\Models\StripeEvent;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
