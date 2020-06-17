@@ -22,7 +22,7 @@ use CloudCreativity\LaravelStripe\Log\Logger;
 use CloudCreativity\LaravelStripe\Webhooks\Verifier;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Response;
-use Stripe\Error\SignatureVerification;
+use Stripe\Exception\SignatureVerificationException;
 
 class VerifySignature
 {
@@ -68,7 +68,7 @@ class VerifySignature
 
         try {
             $this->verifier->verify($request, $signingSecret);
-        } catch (SignatureVerification $ex) {
+        } catch (SignatureVerificationException $ex) {
             $event = new SignatureVerificationFailed(
                 $ex->getMessage(),
                 $ex->getSigHeader(),

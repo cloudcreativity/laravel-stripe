@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\MockObject\MockObject;
 use Illuminate\Support\Facades\Route;
-use Stripe\Error\SignatureVerification;
+use Stripe\Exception\SignatureVerificationException;
 
 class ReceiveTest extends TestCase
 {
@@ -177,7 +177,7 @@ class ReceiveTest extends TestCase
     public function testInvalidSignature()
     {
         $this->verifier->method('verify')->willThrowException(
-            new SignatureVerification('Invalid.', 'Header')
+            SignatureVerificationException::factory('Invalid.', null, 'Header')
         );
 
         $this->postJson('/test/webhook', $this->event)->assertStatus(400)->assertExactJson([
