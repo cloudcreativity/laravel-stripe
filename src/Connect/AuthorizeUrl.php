@@ -264,7 +264,7 @@ class AuthorizeUrl implements Arrayable
     {
         return collect($this->all())->reject(function ($value) {
             return is_null($value);
-        });
+        })->toArray();
     }
 
 }
