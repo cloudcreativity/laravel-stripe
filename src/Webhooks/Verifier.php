@@ -19,7 +19,7 @@ namespace CloudCreativity\LaravelStripe\Webhooks;
 
 use CloudCreativity\LaravelStripe\Config;
 use Illuminate\Http\Request;
-use Stripe\Error\SignatureVerification;
+use Stripe\Exception\SignatureVerificationException;
 use Stripe\WebhookSignature;
 
 class Verifier
@@ -34,13 +34,14 @@ class Verifier
      * @param string $name
      *      the signing secret key name.
      * @return void
-     * @throws SignatureVerification
+     * @throws SignatureVerificationException
      */
     public function verify($request, $name)
     {
         if (!$header = $request->header(self::SIGNATURE_HEADER)) {
-            throw new SignatureVerification(
+            throw SignatureVerificationException::factory(
                 'Expecting ' . self::SIGNATURE_HEADER . ' header.',
+                $request->getContent(),
                 $header
             );
         }
