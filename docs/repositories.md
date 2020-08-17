@@ -22,7 +22,7 @@ For example, to list `charge` resources:
 
 ```php
 // Facade
-$charges = Stripe::account()->charges()->all(); 
+$charges = Stripe::account()->charges()->all();
 
 // Container
 $charges = app('stripe')->account()->charges()->all();
@@ -70,6 +70,7 @@ The available repositories are as follows:
 | `event` | `\Stripe\Event` | `events()` | `EventRepository` |
 | `payment_intent` | `\Stripe\PaymentIntent` | `paymentIntents()` | `PaymentIntentRepository` |
 | `refund` | `\Stripe\Refund` | `refunds()` | `RefundRepository` |
+| `balance` | `\Stripe\Balance` | `balances()` | `BalanceRepository` |
 
 Repository classes are in the [`\CloudCreativity\LaravelStripe\Repositories`](../src/Repositories)
 namespace.
