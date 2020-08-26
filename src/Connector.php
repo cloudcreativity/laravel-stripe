@@ -114,6 +114,17 @@ class Connector
     }
 
     /**
+     * @return Repositories\BalanceRepository
+     */
+    public function balances()
+    {
+        return new Repositories\BalanceRepository(
+            app(Client::class),
+            $this->accountId()
+        );
+    }
+
+    /**
      * Get the account id to use when creating a repository.
      *
      * @return string|null
