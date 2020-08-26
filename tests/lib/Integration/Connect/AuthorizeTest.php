@@ -86,6 +86,9 @@ class AuthorizeTest extends TestCase
             $this->assertTrue($this->user->is($event->owner), 'event owner');
             return true;
         });
+
+        $this->assertNotNull($relationship = $this->user->stripeAccounts->first());
+        $this->assertInstanceOf(StripeAccount::class, $relationship);
     }
 
     /**

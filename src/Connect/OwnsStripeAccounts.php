@@ -57,7 +57,7 @@ trait OwnsStripeAccounts
 
         return $this->hasMany(
             get_class($model),
-            $this->getForeignKey(),
+            'owner_id',
             $this->getStripeIdentifierName()
         );
     }
