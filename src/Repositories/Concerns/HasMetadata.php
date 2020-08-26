@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories\Concerns;
 
 use CloudCreativity\LaravelStripe\Repositories\AbstractRepository;
-use Illuminate\Support\Collection;
 
 trait HasMetadata
 {
@@ -26,10 +27,10 @@ trait HasMetadata
     /**
      * Set metadata.
      *
-     * @param Collection|iterable|array $meta
+     * @param iterable $meta
      * @return $this
      */
-    public function metadata($meta)
+    public function metadata(iterable $meta): self
     {
         $this->param(
             AbstractRepository::PARAM_METADATA,

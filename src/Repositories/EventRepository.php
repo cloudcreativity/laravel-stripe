@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories;
 
 use Stripe\Event;
@@ -28,7 +30,7 @@ class EventRepository extends AbstractRepository
     /**
      * @inheritDoc
      */
-    protected function fqn()
+    protected function fqn(): string
     {
         return Event::class;
     }

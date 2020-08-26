@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories;
 
 use CloudCreativity\LaravelStripe\Assert;
@@ -38,7 +40,7 @@ class PaymentIntentRepository extends AbstractRepository
      *      additional optional parameters.
      * @return PaymentIntent
      */
-    public function create($currency, $amount, $params = [])
+    public function create(string $currency, int $amount, iterable $params = [])
     {
         Assert::chargeAmount($currency, $amount);
 
@@ -52,7 +54,7 @@ class PaymentIntentRepository extends AbstractRepository
     /**
      * @inheritDoc
      */
-    protected function fqn()
+    protected function fqn(): string
     {
         return PaymentIntent::class;
     }

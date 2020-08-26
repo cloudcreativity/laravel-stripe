@@ -20,18 +20,19 @@ namespace CloudCreativity\LaravelStripe\Tests\Integration\Console;
 use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\Models\StripeAccount;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
+use Stripe\Balance;
+use Stripe\Charge;
 use Stripe\Collection;
-use Stripe\StripeObject;
 
-class Test extends TestCase
+class StripeQueryTest extends TestCase
 {
 
     /**
-     * @param $fqn
-     * @param $resource
+     * @param string $fqn
+     * @param string $resource
      * @dataProvider classProvider
      */
-    public function testAll($fqn, $resource)
+    public function testAll(string $fqn, string $resource): void
     {
         Stripe::fake(new Collection());
 
@@ -47,11 +48,29 @@ class Test extends TestCase
     }
 
     /**
-     * @param $fqn
-     * @param $resource
+     * The console command should handle the singular of the resource name.
+     */
+    public function testAllSingular(): void
+    {
+        Stripe::fake(new Collection());
+
+        $result = $this->artisan('stripe:query', ['resource' => 'charge']);
+
+        $this->assertSame(0, $result, 'success');
+
+        Stripe::assertInvoked(Charge::class, 'all', function ($params, $options) {
+            $this->assertNull($params, 'params');
+            $this->assertNull($options, 'options');
+            return true;
+        });
+    }
+
+    /**
+     * @param string $fqn
+     * @param string $resource
      * @dataProvider classProvider
      */
-    public function testAllConnect($fqn, $resource)
+    public function testAllConnect(string $fqn, string $resource): void
     {
         /** @var StripeAccount $account */
         $account = factory(StripeAccount::class)->create();
@@ -77,13 +96,13 @@ class Test extends TestCase
     }
 
     /**
-     * @param $fqn
-     * @param $resource
+     * @param string $fqn
+     * @param string $resource
      * @dataProvider classProvider
      */
-    public function testRetrieveAndExpand($fqn, $resource)
+    public function testRetrieveAndExpand(string $fqn, string $resource): void
     {
-        Stripe::fake(new StripeObject($id = 'foo_bazbat'));
+        Stripe::fake(new $fqn($id = 'foo_bazbat'));
 
         $result = $this->artisan('stripe:query', [
             'resource' => $resource,
@@ -104,6 +123,31 @@ class Test extends TestCase
     }
 
     /**
+     * The console command should handle the singular version of the resource name.
+     */
+    public function testRetrieveSingular(): void
+    {
+        Stripe::fake(new Charge($id = 'foo_bazbat'));
+
+        $result = $this->artisan('stripe:query', [
+            'resource' => 'charge',
+            'id' => $id,
+            '--expand' => ['foo', 'bar'],
+        ]);
+
+        $this->assertSame(0, $result, 'success');
+
+        Stripe::assertInvoked(Charge::class, 'retrieve', function ($params, $options) use ($id) {
+            $this->assertEquals([
+                'id' => $id,
+                'expand' => ['foo', 'bar'],
+            ], $params, 'params');
+            $this->assertNull($options, 'options');
+            return true;
+        });
+    }
+
+    /**
      * @param $fqn
      * @param $resource
      * @dataProvider classProvider
@@ -113,7 +157,7 @@ class Test extends TestCase
         /** @var StripeAccount $account */
         $account = factory(StripeAccount::class)->create();
 
-        Stripe::fake(new StripeObject($id = 'foo_bazbat'));
+        Stripe::fake(new $fqn($id = 'foo_bazbat'));
 
         $result = $this->artisan('stripe:query', [
             'resource' => $resource,
@@ -130,6 +174,23 @@ class Test extends TestCase
                 'stripe_account' => $account->getStripeAccountIdentifier()
             ], $options, 'options');
 
+            return true;
+        });
+    }
+
+    /**
+     * The 'balance' resource does not have an id - it is a singleton.
+     */
+    public function testBalance(): void
+    {
+        Stripe::fake(new Balance());
+
+        $result = $this->artisan('stripe:query', ['resource' => 'balances']);
+
+        $this->assertSame(0, $result, 'success');
+
+        Stripe::assertInvoked(Balance::class, 'retrieve', function ($options) {
+            $this->assertNull($options, 'options');
             return true;
         });
     }

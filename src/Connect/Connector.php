@@ -88,7 +88,7 @@ class Connector extends BaseConnector
     /**
      * @return string
      */
-    protected function accountId()
+    protected function accountId(): string
     {
         return $this->id();
     }

@@ -66,11 +66,11 @@ The available repositories are as follows:
 | Stripe Resource | Stripe Class | Method | Repository Class |
 | :-- | :-- | :-- | :-- |
 | `account` | `\Stripe\Account` | `accounts()` | `AccountRepository` |
+| `balance` | `\Stripe\Balance` | `balances()` | `BalanceRepository` |
 | `charge` | `\Stripe\Charge` | `charges()` | `ChargeRepository` |
 | `event` | `\Stripe\Event` | `events()` | `EventRepository` |
 | `payment_intent` | `\Stripe\PaymentIntent` | `paymentIntents()` | `PaymentIntentRepository` |
 | `refund` | `\Stripe\Refund` | `refunds()` | `RefundRepository` |
-| `balance` | `\Stripe\Balance` | `balances()` | `BalanceRepository` |
 
 Repository classes are in the [`\CloudCreativity\LaravelStripe\Repositories`](../src/Repositories)
 namespace.

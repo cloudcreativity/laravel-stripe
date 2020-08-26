@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories;
 
 use CloudCreativity\LaravelStripe\Client;
@@ -49,7 +51,7 @@ abstract class AbstractRepository
      *
      * @return string
      */
-    abstract protected function fqn();
+    abstract protected function fqn(): string;
 
     /**
      * AbstractRepository constructor.
@@ -73,7 +75,7 @@ abstract class AbstractRepository
      *
      * @return string|null
      */
-    public function accountId()
+    public function accountId(): ?string
     {
         return isset($this->options[self::OPT_STRIPE_ACCOUNT]) ?
             $this->options[self::OPT_STRIPE_ACCOUNT] : null;
@@ -85,7 +87,7 @@ abstract class AbstractRepository
      * @param string $value
      * @return $this
      */
-    public function idempotent($value)
+    public function idempotent($value): self
     {
         if (!is_string($value) || empty($value)) {
             throw new InvalidArgumentException('Expecting a non-empty string.');
@@ -99,11 +101,11 @@ abstract class AbstractRepository
     /**
      * Set a parameter.
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param mixed $value
      * @return $this
      */
-    public function param($key, $value)
+    public function param(string $key, $value): self
     {
         $this->params[$key] = $value;
 
@@ -116,7 +118,7 @@ abstract class AbstractRepository
      * @param iterable $values
      * @return $this
      */
-    public function params($values)
+    public function params(iterable $values): self
     {
         foreach ($values as $key => $value) {
             $this->param($key, $value);
@@ -128,11 +130,11 @@ abstract class AbstractRepository
     /**
      * Set an option.
      *
-     * @param $key
-     * @param $value
+     * @param string $key
+     * @param mixed $value
      * @return $this
      */
-    public function option($key, $value)
+    public function option(string $key, $value): self
     {
         $this->options[$key] = $value;
 
@@ -145,7 +147,7 @@ abstract class AbstractRepository
      * @param iterable $values
      * @return $this
      */
-    public function options($values)
+    public function options(iterable $values): self
     {
         foreach ($values as $key => $value) {
             $this->option($key, $value);
@@ -160,7 +162,7 @@ abstract class AbstractRepository
      * @param string ...$keys
      * @return $this
      */
-    public function expand(...$keys)
+    public function expand(string ...$keys): self
     {
         if (!empty($keys)) {
             $this->param(self::PARAM_EXPAND, $keys);
@@ -181,7 +183,7 @@ abstract class AbstractRepository
      * @param mixed ...$args
      * @return mixed
      */
-    protected function send($method, ...$args)
+    protected function send(string $method, ...$args)
     {
         $result = call_user_func(
             $this->client,
@@ -198,7 +200,7 @@ abstract class AbstractRepository
     /**
      * @return void
      */
-    protected function reset()
+    protected function reset(): void
     {
         $this->params = [];
         $this->options = collect($this->options)->only(self::OPT_STRIPE_ACCOUNT)->all();

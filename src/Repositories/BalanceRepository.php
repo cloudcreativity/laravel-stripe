@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories;
 
 use Stripe\Balance;
 
 class BalanceRepository extends AbstractRepository
 {
+
     /**
      * Retrieve the balance object of an account.
      *
      * @return Balance
      * @link https://stripe.com/docs/api/balance/balance_retrieve
      */
-    public function retrieve()
+    public function retrieve(): Balance
     {
         return $this->send('retrieve', $this->options ?: null);
     }
@@ -35,10 +38,9 @@ class BalanceRepository extends AbstractRepository
     /**
      * @inheritDoc
      */
-    protected function fqn()
+    protected function fqn(): string
     {
         return Balance::class;
     }
-
 
 }

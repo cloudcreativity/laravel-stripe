@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories\Concerns;
 
 use Illuminate\Support\Collection as IlluminateCollection;
@@ -34,7 +36,7 @@ trait All
      * @param iterable|array $params
      * @return StripeCollection
      */
-    public function all($params = [])
+    public function all($params = []): StripeCollection
     {
         $this->params($params);
 
@@ -47,7 +49,7 @@ trait All
      * @param iterable|array $params
      * @return IlluminateCollection
      */
-    public function collect($params = [])
+    public function collect($params = []): IlluminateCollection
     {
         return collect($this->all($params));
     }

@@ -23,7 +23,8 @@ use CloudCreativity\LaravelStripe\Repositories\AbstractRepository;
 use CloudCreativity\LaravelStripe\StripeService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use Stripe\Error\Base as StripeException;
+use JsonSerializable;
+use Stripe\Exception\ApiErrorException;
 
 class StripeQuery extends Command
 {
@@ -55,13 +56,17 @@ class StripeQuery extends Command
      */
     public function handle(StripeService $stripe)
     {
-        $resource = Str::snake($this->argument('resource'));
+        $resource = Str::snake(Str::plural($this->argument('resource')));
         $id = $this->argument('id');
         $account = $this->option('account');
 
         try {
             /** @var Connector $connector */
             $connector = $account ? $stripe->connect($account) : $stripe->account();
+
+            if (('balances' === $resource) && $id) {
+                throw new UnexpectedValueException('The id parameter is not supported for the balances resource.');
+            }
 
             /** @var AbstractRepository $repository */
             $repository = call_user_func($connector, $resource);
@@ -77,7 +82,7 @@ class StripeQuery extends Command
         } catch (UnexpectedValueException $ex) {
             $this->error($ex->getMessage());
             return 1;
-        } catch (StripeException $ex) {
+        } catch (ApiErrorException $ex) {
             $this->error('Stripe Error: ' . $ex->getMessage());
             return 2;
         }
@@ -91,10 +96,10 @@ class StripeQuery extends Command
      * @param AbstractRepository $repository
      * @param string $resource
      * @param string $id
-     * @return \JsonSerializable
-     * @throws StripeException
+     * @return JsonSerializable
+     * @throws ApiErrorException
      */
-    private function retrieve(AbstractRepository $repository, $resource, $id)
+    private function retrieve(AbstractRepository $repository, $resource, $id): JsonSerializable
     {
         if (!method_exists($repository, 'retrieve')) {
             throw new UnexpectedValueException("Retrieving resource '{$resource}' is not supported.");
@@ -108,12 +113,16 @@ class StripeQuery extends Command
     /**
      * @param AbstractRepository $repository
      * @param $resource
-     * @return \JsonSerializable
-     * @throws StripeException
+     * @return JsonSerializable
+     * @throws ApiErrorException
      * @todo add support for pagination.
      */
-    private function query(AbstractRepository $repository, $resource)
+    private function query(AbstractRepository $repository, $resource): JsonSerializable
     {
+        if ('balances' === $resource) {
+            return $repository->retrieve();
+        }
+
         if (!method_exists($repository, 'all')) {
             throw new UnexpectedValueException("Querying resource '{$resource}' is not supported.");
         }
