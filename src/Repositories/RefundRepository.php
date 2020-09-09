@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories;
 
 use CloudCreativity\LaravelStripe\Assert;
@@ -33,11 +35,11 @@ class RefundRepository extends AbstractRepository
     /**
      * Create a full refund.
      *
-     * @param Charge|null $charge
-     * @param iterable|array $params
+     * @param Charge|string $charge
+     * @param iterable $params
      * @return Refund
      */
-    public function full($charge, $params = [])
+    public function full($charge, iterable $params = []): Refund
     {
         if (isset($params['amount'])) {
             throw new InvalidArgumentException('Not expecting an amount for a full refund.');
@@ -54,7 +56,7 @@ class RefundRepository extends AbstractRepository
      * @param iterable|array $params
      * @return Refund
      */
-    public function partial($charge, $amount, $params = [])
+    public function partial($charge, int $amount, iterable $params = []): Refund
     {
         Assert::zeroDecimal($amount);
 
@@ -70,7 +72,7 @@ class RefundRepository extends AbstractRepository
      * @param iterable|array $params
      * @return Refund
      */
-    public function create($charge, $params = [])
+    public function create($charge, iterable $params = []): Refund
     {
         if ($charge instanceof Charge) {
             $charge = $charge->id;
@@ -96,7 +98,7 @@ class RefundRepository extends AbstractRepository
      * @param Collection|iterable|array $metadata
      * @return Refund
      */
-    public function update($id, $metadata)
+    public function update(string $id, iterable $metadata): Refund
     {
         $this->metadata($metadata);
 
@@ -111,7 +113,7 @@ class RefundRepository extends AbstractRepository
     /**
      * @inheritDoc
      */
-    protected function fqn()
+    protected function fqn(): string
     {
         return Refund::class;
     }

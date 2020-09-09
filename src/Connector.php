@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe;
 
 use CloudCreativity\LaravelStripe\Exceptions\UnexpectedValueException;
 use CloudCreativity\LaravelStripe\Repositories\AbstractRepository;
 use Illuminate\Support\Str;
+use Stripe\Account;
 
 class Connector
 {
@@ -30,28 +33,24 @@ class Connector
      * @param string $resource
      * @return AbstractRepository
      */
-    public function __invoke($resource)
+    public function __invoke($resource): AbstractRepository
     {
         $method = Str::camel($resource);
         $repository = null;
 
         if (method_exists($this, $method) && !in_array($method, ['retrieve'])) {
-            $repository = call_user_func([$this, $method]);
+            return call_user_func([$this, $method]);
         }
 
-        if (!$repository instanceof AbstractRepository) {
-            throw new UnexpectedValueException("Invalid resource type: {$resource}");
-        }
-
-        return $repository;
+        throw new UnexpectedValueException("Invalid resource type: {$resource}");
     }
 
     /**
      * Retrieve the Stripe account object that this connector belongs to.
      *
-     * @return \Stripe\Account
+     * @return Account
      */
-    public function retrieve()
+    public function retrieve(): Account
     {
         return $this->accounts()->retrieve();
     }
@@ -59,7 +58,7 @@ class Connector
     /**
      * @return Repositories\AccountRepository
      */
-    public function accounts()
+    public function accounts(): Repositories\AccountRepository
     {
         return new Repositories\AccountRepository(
             app(Client::class),
@@ -68,9 +67,20 @@ class Connector
     }
 
     /**
+     * @return Repositories\BalanceRepository
+     */
+    public function balances(): Repositories\BalanceRepository
+    {
+        return new Repositories\BalanceRepository(
+            app(Client::class),
+            $this->accountId()
+        );
+    }
+
+    /**
      * @return Repositories\ChargeRepository
      */
-    public function charges()
+    public function charges(): Repositories\ChargeRepository
     {
         return new Repositories\ChargeRepository(
             app(Client::class),
@@ -81,7 +91,7 @@ class Connector
     /**
      * @return Repositories\EventRepository
      */
-    public function events()
+    public function events(): Repositories\EventRepository
     {
         return new Repositories\EventRepository(
             app(Client::class),
@@ -94,7 +104,7 @@ class Connector
      *
      * @return Repositories\PaymentIntentRepository
      */
-    public function paymentIntents()
+    public function paymentIntents(): Repositories\PaymentIntentRepository
     {
         return new Repositories\PaymentIntentRepository(
             app(Client::class),
@@ -105,7 +115,7 @@ class Connector
     /**
      * @return Repositories\RefundRepository
      */
-    public function refunds()
+    public function refunds(): Repositories\RefundRepository
     {
         return new Repositories\RefundRepository(
             app(Client::class),
@@ -118,7 +128,7 @@ class Connector
      *
      * @return string|null
      */
-    protected function accountId()
+    protected function accountId(): ?string
     {
         return null;
     }

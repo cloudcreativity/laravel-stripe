@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Foundation\Application;
 use Laravel\Cashier\CashierServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use function collect;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -62,9 +63,11 @@ abstract class TestCase extends BaseTestCase
     /**
      * Provider for all Stripe classes that are implemented via repositories.
      *
+     * Balances are omitted because they do not have an id.
+     *
      * @return array
      */
-    public function classProvider()
+    public function classProvider(): array
     {
         return [
             'accounts' => [\Stripe\Account::class, 'accounts'],

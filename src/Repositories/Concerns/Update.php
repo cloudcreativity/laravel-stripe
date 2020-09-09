@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories\Concerns;
 
 use Stripe\StripeObject;
@@ -27,11 +29,11 @@ trait Update
     /**
      * Update a Stripe object.
      *
-     * @param $id
-     * @param iterable|array $params
+     * @param string $id
+     * @param iterable $params
      * @return StripeObject
      */
-    public function update($id, $params = [])
+    public function update(string $id, iterable $params = []): StripeObject
     {
         $this->params($params);
 

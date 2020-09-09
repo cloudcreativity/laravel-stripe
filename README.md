@@ -56,7 +56,7 @@ developed against as guide. You may find the package works with older versions o
 
 | Laravel | Stripe PHP | Stripe API | Laravel-Stripe | Cashier |
 | :-- | :-- | :-- | :-- |:-- |
-| `7.x` | `^7.0` | `>=2020-03-02` | `0.3.x` | `^12.0` |
+| `7.x` | `^7.0` | `>=2020-03-02` | `0.4.x` | `^12.0` |
 | `6.x` | `^6.40` | `>=2019-05-16` | `0.2.x` | `^9.0|^10.0|^11.0|^12.0` |
 | `5.8.x` | `^6.40` | `>=2019-05-16` | `0.2.x` | `^8.0|^9.0|^10.0` |
 

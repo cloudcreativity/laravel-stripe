@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories;
 
 use InvalidArgumentException;
@@ -28,11 +30,11 @@ class AccountRepository extends AbstractRepository
 
     /**
      * @param string $type
-     * @param iterable|array $params
+     * @param iterable $params
      *      additional optional parameters.
      * @return Account
      */
-    public function create($type = 'custom', $params = [])
+    public function create(string $type = 'custom', iterable $params = []): Account
     {
         if (!is_string($type) || empty($type)) {
             throw new InvalidArgumentException('Expecting a non-empty string.');
@@ -49,10 +51,10 @@ class AccountRepository extends AbstractRepository
      * If the id is not provided, the account associated with this
      * repository is returned.
      *
-     * @param string $id
+     * @param string|null $id
      * @return Account
      */
-    public function retrieve($id = null)
+    public function retrieve(string $id = null): Account
     {
         if (!is_string($id) && !is_null($id)) {
             throw new InvalidArgumentException('Expecting a string or null.');
@@ -68,10 +70,9 @@ class AccountRepository extends AbstractRepository
     /**
      * @inheritDoc
      */
-    protected function fqn()
+    protected function fqn(): string
     {
         return Account::class;
     }
-
 
 }

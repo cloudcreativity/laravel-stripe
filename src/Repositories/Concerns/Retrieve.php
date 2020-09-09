@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+declare(strict_types=1);
+
 namespace CloudCreativity\LaravelStripe\Repositories\Concerns;
 
 use InvalidArgumentException;
@@ -29,7 +31,7 @@ trait Retrieve
      * @param string $id
      * @return StripeObject
      */
-    public function retrieve($id)
+    public function retrieve(string $id): StripeObject
     {
         if (!is_string($id) || empty($id)) {
             throw new InvalidArgumentException('Expecting a non-empty resource id.');

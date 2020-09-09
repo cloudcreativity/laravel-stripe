@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file. This project adheres to
 [Semantic Versioning](http://semver.org/) and [this changelog format](http://keepachangelog.com/).
 
+## [0.4.0] - 2020-09-09
+
+### Added
+- Added balance repository.
+- The `stripe:query` Artisan command now accepts resource names in either singular or plural form.
+
+### Fixed
+- **BREAKING:** The Stripe accounts relationship on the `Connect\OwnsStripeAccounts` trait now correctly
+uses the `Contracts\Connect\AccountOwnerInterface::getStripeIdentifierName()` method to determine the
+column name on the inverse model. This means the column name now defaults to `owner_id`. This
+change could potentially break implementations. If you use a different column from `owner_id`, then
+overload the `getStripeIdentifierName()` method on the model that owns Stripe accounts.
+- Fixed catching API exceptions in the `stripe:query` Artisan command.
+
 ## [0.3.0] - 2020-07-27
 
 ### Changed

@@ -22,7 +22,7 @@ For example, to list `charge` resources:
 
 ```php
 // Facade
-$charges = Stripe::account()->charges()->all(); 
+$charges = Stripe::account()->charges()->all();
 
 // Container
 $charges = app('stripe')->account()->charges()->all();
@@ -66,6 +66,7 @@ The available repositories are as follows:
 | Stripe Resource | Stripe Class | Method | Repository Class |
 | :-- | :-- | :-- | :-- |
 | `account` | `\Stripe\Account` | `accounts()` | `AccountRepository` |
+| `balance` | `\Stripe\Balance` | `balances()` | `BalanceRepository` |
 | `charge` | `\Stripe\Charge` | `charges()` | `ChargeRepository` |
 | `event` | `\Stripe\Event` | `events()` | `EventRepository` |
 | `payment_intent` | `\Stripe\PaymentIntent` | `paymentIntents()` | `PaymentIntentRepository` |

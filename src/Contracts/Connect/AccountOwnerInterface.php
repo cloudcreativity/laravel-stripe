@@ -21,11 +21,11 @@ interface AccountOwnerInterface
 {
 
     /**
-     * Get the name of the unique identifier for the Stripe account owner.
+     * Get the column name of the unique identifier for the Stripe account owner.
      *
      * @return string
      */
-    public function getStripeIdentifierName();
+    public function getStripeIdentifierName(): string;
 
     /**
      * Get the unique identifier for the Stripe account owner.

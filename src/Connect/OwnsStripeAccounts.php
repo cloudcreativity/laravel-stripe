@@ -20,6 +20,8 @@ namespace CloudCreativity\LaravelStripe\Connect;
 use CloudCreativity\LaravelStripe\Config;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use LogicException;
+use function get_class;
 
 trait OwnsStripeAccounts
 {
@@ -35,11 +37,11 @@ trait OwnsStripeAccounts
     }
 
     /**
-     * Get the name of the unique identifier for the Stripe account owner.
+     * Get the column name of the unique identifier for the Stripe account owner.
      *
      * @return string
      */
-    public function getStripeIdentifierName()
+    public function getStripeIdentifierName(): string
     {
         if ($this instanceof Authenticatable) {
             return $this->getAuthIdentifierName();
@@ -51,13 +53,17 @@ trait OwnsStripeAccounts
     /**
      * @return HasMany
      */
-    public function stripeAccounts()
+    public function stripeAccounts(): HasMany
     {
         $model = Config::connectModel();
 
+        if (!$owner = $model->getStripeOwnerIdentifierName()) {
+            throw new LogicException('Stripe account model must have an owner column.');
+        }
+
         return $this->hasMany(
             get_class($model),
-            $this->getForeignKey(),
+            $owner,
             $this->getStripeIdentifierName()
         );
     }

@@ -19,20 +19,28 @@ declare(strict_types=1);
 
 namespace CloudCreativity\LaravelStripe\Repositories;
 
-use Stripe\Event;
+use Stripe\Balance;
 
-class EventRepository extends AbstractRepository
+class BalanceRepository extends AbstractRepository
 {
 
-    use Concerns\All;
-    use Concerns\Retrieve;
+    /**
+     * Retrieve the balance object of an account.
+     *
+     * @return Balance
+     * @link https://stripe.com/docs/api/balance/balance_retrieve
+     */
+    public function retrieve(): Balance
+    {
+        return $this->send('retrieve', $this->options ?: null);
+    }
 
     /**
      * @inheritDoc
      */
     protected function fqn(): string
     {
-        return Event::class;
+        return Balance::class;
     }
 
 }
