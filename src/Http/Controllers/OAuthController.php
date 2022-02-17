@@ -96,7 +96,7 @@ class OAuthController extends Controller
     {
         event($success = new OAuthSuccess(
             $data['code'],
-            $data['scope'],
+            $data['scope']?? 'express', // No scope is present when using express, so we need to manually set it here
             $user,
             Config::connectSuccessView()
         ));
