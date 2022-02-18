@@ -187,7 +187,6 @@ class OAuthTest extends TestCase
     {
         return [
             'state' => ['state'],
-            'scope' => ['scope'],
             'code' => ['code'],
         ];
     }
@@ -214,5 +213,27 @@ class OAuthTest extends TestCase
             ->assertStatus(400);
 
         Queue::assertNotPushed(FetchUserCredentials::class);
+    }
+
+
+    /**
+     * Checks that we handle missing scope parameter from Stripe.
+     *
+     * A null scope should be used and
+     * a job to fetch the user credetials should be queued.
+     */
+    public function testScopeIsOptional()
+    {
+        $params = collect([
+            'state' => 'session_token',
+            'scope' => 'read_write',
+            'code' => 'access_code',
+        ])->forget('scope')->all();
+
+        $this->actingAs($this->user)
+            ->get('/test/authorize?' . http_build_query($params))
+            ->assertStatus(200);
+
+        Queue::assertPushed(FetchUserCredentials::class);
     }
 }
