@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Unreleased
 
+### Added
+
+- Package now supports Laravel 9.
+
 ### Changed
 
 - Minimum PHP version is now PHP 7.4.
