@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. This project adheres to
 [Semantic Versioning](http://semver.org/) and [this changelog format](http://keepachangelog.com/).
 
+## Unreleased
+
+### Fixed
+
+- [#12](https://github.com/cloudcreativity/laravel-stripe/issues/12) Fixed oAuth process note returning a scope for a
+  Stripe Express account.
+
 ## [0.5.1] - 2021-03-17
 
 ### Added

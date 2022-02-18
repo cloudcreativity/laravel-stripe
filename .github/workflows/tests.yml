@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: ['7.3', '7.4', '8.0']
-        laravel: ['^8.0']
+        php: [7.3, 7.4, '8.0', 8.1]
+        laravel: [8]
 
     steps:
     - name: Checkout Code
@@ -30,14 +30,14 @@ jobs:
         coverage: none
 
     - name: Set Laravel Version
-      run: composer require "laravel/framework:${{ matrix.laravel }}" --no-update -n
+      run: composer require "laravel/framework:^${{ matrix.laravel }}" --no-update
 
     - name: Install dependencies
       uses: nick-invision/retry@v1
       with:
         timeout_minutes: 5
         max_attempts: 5
-        command: composer install --no-suggest --prefer-dist -n -o
+        command: composer update --prefer-dist --no-interaction --no-progress
 
     - name: Execute tests
       run: vendor/bin/phpunit

@@ -29,7 +29,7 @@ class OAuthSuccess extends AbstractOAuthEvent
     public $code;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $scope;
 
@@ -37,7 +37,7 @@ class OAuthSuccess extends AbstractOAuthEvent
      * OAuthSuccess constructor.
      *
      * @param string $code
-     * @param string $scope
+     * @param string|null $scope
      * @param AccountOwnerInterface $owner
      * @param string $view
      * @param array $data
