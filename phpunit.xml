@@ -8,6 +8,7 @@
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
+         convertDeprecationsToExceptions="true"
          processIsolation="false"
          stopOnError="false"
          stopOnFailure="false"
@@ -28,6 +29,7 @@
     </testsuite>
   </testsuites>
   <php>
+    <ini name="error_reporting" value="E_ALL"/>
     <env name="APP_KEY" value="base64:BMfTqJC1cFk6A/jTPsjQgC+cROx7TDaEeGIAat6CuqY="/>
   </php>
 </phpunit>

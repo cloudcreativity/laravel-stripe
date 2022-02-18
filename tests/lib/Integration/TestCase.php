@@ -22,12 +22,13 @@ use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Testing\Concerns\InteractsWithDeprecationHandling;
 use Laravel\Cashier\CashierServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use function collect;
 
 abstract class TestCase extends BaseTestCase
 {
+    use InteractsWithDeprecationHandling;
 
     /**
      * @return void
