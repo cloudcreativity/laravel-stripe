@@ -96,7 +96,7 @@ class OAuthController extends Controller
     {
         event($success = new OAuthSuccess(
             $data['code'],
-            $data['scope'],
+            $data['scope'] ?? null,
             $user,
             Config::connectSuccessView()
         ));

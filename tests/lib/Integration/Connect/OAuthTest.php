@@ -110,6 +110,34 @@ class OAuthTest extends TestCase
         });
     }
 
+    /**
+     * Checks that we handle missing scope parameter from Stripe.
+     *
+     * A null scope should be used and
+     * a job to fetch the user credetials should be queued.
+     */
+    public function testScopeIsOptional(): void
+    {
+        $params = [
+            'state' => 'session_token',
+            'code' => 'access_code',
+        ];
+
+        $this->actingAs($this->user)
+            ->get('/test/authorize?' . http_build_query($params))
+            ->assertStatus(200);
+
+        $this->app['events']->listen(OAuthSuccess::class, function (OAuthSuccess $event) {
+            $this->assertSame('access_code', $event->code, 'event code');
+            $this->assertNull($event->scope, 'event scope');
+            $this->assertTrue($this->user->is($event->owner), 'event user');
+            $this->assertSame('test::oauth.success', $event->view);
+            $event->with('foo', 'bar');
+        });
+
+        Queue::assertPushed(FetchUserCredentials::class);
+    }
+
     public function testError()
     {
         /** This checks we can override the owner resolver as we're not using `actingAs` */
@@ -187,10 +215,10 @@ class OAuthTest extends TestCase
     {
         return [
             'state' => ['state'],
-            'scope' => ['scope'],
             'code' => ['code'],
         ];
     }
+
 
     /**
      * Checks that we handle any missing parameters from Stripe.
