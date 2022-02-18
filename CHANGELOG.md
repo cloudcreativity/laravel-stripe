@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. This project adheres to
 [Semantic Versioning](http://semver.org/) and [this changelog format](http://keepachangelog.com/).
 
+## Unreleased
+
+### Changed
+
+- Minimum PHP version is now PHP 7.4.
+
 ## [0.5.2] - 2022-02-18
 
 ### Fixed
