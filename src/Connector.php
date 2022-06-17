@@ -89,11 +89,44 @@ class Connector
     }
 
     /**
+     * @return Repositories\CustomerRepository
+     */
+    public function customers(): Repositories\CustomerRepository
+    {
+        return new Repositories\CustomerRepository(
+            app(Client::class),
+            $this->accountId()
+        );
+    }
+
+    /**
      * @return Repositories\EventRepository
      */
     public function events(): Repositories\EventRepository
     {
         return new Repositories\EventRepository(
+            app(Client::class),
+            $this->accountId()
+        );
+    }
+
+    /**
+     * @return Repositories\InvoiceRepository
+     */
+    public function invoices(): Repositories\InvoiceRepository
+    {
+        return new Repositories\InvoiceRepository(
+            app(Client::class),
+            $this->accountId()
+        );
+    }
+
+    /**
+     * @return Repositories\InvoiceItemRepository
+     */
+    public function invoiceItems(): Repositories\InvoiceItemRepository
+    {
+        return new Repositories\InvoiceItemRepository(
             app(Client::class),
             $this->accountId()
         );
