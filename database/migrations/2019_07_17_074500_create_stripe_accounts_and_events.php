@@ -61,7 +61,7 @@ class CreateStripeAccountsAndEvents extends Migration
             $table->timestamps();
             $table->string('account_id', 255)->nullable()->collate(LaravelStripe::ID_DATABASE_COLLATION);
             $table->date('api_version');
-            $table->timestamp('created');
+            $table->timestamp('created')->nullable();
             $table->boolean('livemode');
             $table->unsignedInteger('pending_webhooks');
             $table->string('type');
