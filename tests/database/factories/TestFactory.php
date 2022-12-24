@@ -26,7 +26,7 @@ use Illuminate\Support\Str;
 $factory->define(TestAccount::class, function (Faker $faker) {
     return [
         'id' => $faker->unique()->lexify('acct_????????????'),
-        'name' => $faker->company,
+        'name' => $faker->company(),
     ];
 });
 
@@ -34,8 +34,8 @@ $factory->define(TestUser::class, function (Faker $faker) {
     static $password;
 
     return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
+        'name' => $faker->name(),
+        'email' => $faker->unique()->safeEmail(),
         'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => Str::random(10),
     ];
