@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Changed
 
 - Minimum PHP version is now 8.1.
+- Upgraded to Laravel 10, dropping support for Laravel 8 and 9.
 
 ## [0.6.0] - 2022-02-18
 

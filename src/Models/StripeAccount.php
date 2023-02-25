@@ -65,6 +65,7 @@ class StripeAccount extends Model implements AccountInterface
         'business_profile' => 'json',
         'capabilities' => 'json',
         'charges_enabled' => 'boolean',
+        'deleted_at' => 'datetime',
         'details_submitted' => 'boolean',
         'individual' => 'json',
         'metadata' => 'json',
@@ -72,13 +73,6 @@ class StripeAccount extends Model implements AccountInterface
         'requirements' => 'json',
         'settings' => 'json',
         'tos_acceptance' => 'json',
-    ];
-
-    /**
-     * @var array
-     */
-    protected $dates = [
-        'deleted_at',
     ];
 
     /**
