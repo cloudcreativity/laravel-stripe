@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2020 Cloud Creativity Limited
+/*
+ * Copyright 2023 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,8 @@ class StripeEvent extends Model
     /**
      * @var array
      */
-    protected $dates = [
-        'created',
-    ];
-
-    /**
-     * @var array
-     */
     protected $casts = [
+        'created' => 'datetime',
         'livemode' => 'boolean',
         'pending_webhooks' => 'integer',
         'request' => 'json',

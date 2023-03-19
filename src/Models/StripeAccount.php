@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2020 Cloud Creativity Limited
+/*
+ * Copyright 2023 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,7 @@ class StripeAccount extends Model implements AccountInterface
         'business_profile' => 'json',
         'capabilities' => 'json',
         'charges_enabled' => 'boolean',
+        'deleted_at' => 'datetime',
         'details_submitted' => 'boolean',
         'individual' => 'json',
         'metadata' => 'json',
@@ -72,13 +73,6 @@ class StripeAccount extends Model implements AccountInterface
         'requirements' => 'json',
         'settings' => 'json',
         'tos_acceptance' => 'json',
-    ];
-
-    /**
-     * @var array
-     */
-    protected $dates = [
-        'deleted_at',
     ];
 
     /**

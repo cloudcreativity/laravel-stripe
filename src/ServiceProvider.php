@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2020 Cloud Creativity Limited
+/*
+ * Copyright 2023 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,7 +195,7 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->app->afterResolving(StripeService::class, function () {
             app(Logger::class)->log("Service booted.", [
-                'api_key' => substr(Stripe::getApiKey(), 3, 4),
+                'api_key' => substr(Stripe::getApiKey() ?? '', 3, 4),
                 'api_version' => Stripe::getApiVersion(),
             ]);
         });

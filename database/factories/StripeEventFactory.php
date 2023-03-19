@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2020 Cloud Creativity Limited
+/*
+ * Copyright 2023 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ $factory->define(StripeEvent::class, function (Faker $faker) {
         'id' => $faker->unique()->lexify('evt_????????????????'),
         'api_version' => $faker->date(),
         'created' => $faker->dateTimeBetween('-1 hour', 'now'),
-        'livemode' => $faker->boolean,
+        'livemode' => $faker->boolean(),
         'pending_webhooks' => $faker->numberBetween(0, 100),
         'type' => $faker->randomElement([
             'charge.failed',
@@ -38,6 +38,6 @@ $factory->define(StripeEvent::class, function (Faker $faker) {
 
 $factory->state(StripeEvent::class, 'connect', function () {
     return [
-        'account_id' => factory(StripeAccount::class)->create()->getKey(),
+        'account_id' => factory(StripeAccount::class),
     ];
 });

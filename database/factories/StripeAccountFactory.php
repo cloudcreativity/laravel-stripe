@@ -1,6 +1,6 @@
 <?php
-/**
- * Copyright 2020 Cloud Creativity Limited
+/*
+ * Copyright 2023 Cloud Creativity Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ $factory->define(StripeAccount::class, function (Faker $faker) {
         'country' => $faker->randomElement(['AU', 'GB', 'US']),
         'default_currency' => $faker->randomElement(Config::currencies()->all()),
         'details_submitted' => $faker->boolean(75),
-        'email' => $faker->email,
+        'email' => $faker->email(),
         'payouts_enabled' => $faker->boolean(75),
         'type' => $faker->randomElement(['standard', 'express', 'custom']),
     ];
