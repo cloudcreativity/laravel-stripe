@@ -195,7 +195,7 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->app->afterResolving(StripeService::class, function () {
             app(Logger::class)->log("Service booted.", [
-                'api_key' => substr(Stripe::getApiKey(), 3, 4),
+                'api_key' => substr(Stripe::getApiKey() ?? '', 3, 4),
                 'api_version' => Stripe::getApiVersion(),
             ]);
         });

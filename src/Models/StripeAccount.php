@@ -72,13 +72,7 @@ class StripeAccount extends Model implements AccountInterface
         'requirements' => 'json',
         'settings' => 'json',
         'tos_acceptance' => 'json',
-    ];
-
-    /**
-     * @var array
-     */
-    protected $dates = [
-        'deleted_at',
+        'deleted_at' => 'datetime',
     ];
 
     /**

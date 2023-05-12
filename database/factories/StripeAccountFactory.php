@@ -28,7 +28,7 @@ $factory->define(StripeAccount::class, function (Faker $faker) {
         'country' => $faker->randomElement(['AU', 'GB', 'US']),
         'default_currency' => $faker->randomElement(Config::currencies()->all()),
         'details_submitted' => $faker->boolean(75),
-        'email' => $faker->email,
+        'email' => $faker->email(),
         'payouts_enabled' => $faker->boolean(75),
         'type' => $faker->randomElement(['standard', 'express', 'custom']),
     ];
