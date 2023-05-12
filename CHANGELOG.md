@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
-- Package now supports Laravel 9.
+- Package now supports Laravel 10.
 
 ### Changed
 

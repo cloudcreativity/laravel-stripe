@@ -27,7 +27,7 @@ $factory->define(StripeEvent::class, function (Faker $faker) {
         'id' => $faker->unique()->lexify('evt_????????????????'),
         'api_version' => $faker->date(),
         'created' => $faker->dateTimeBetween('-1 hour', 'now'),
-        'livemode' => $faker->boolean,
+        'livemode' => $faker->boolean(),
         'pending_webhooks' => $faker->numberBetween(0, 100),
         'type' => $faker->randomElement([
             'charge.failed',
