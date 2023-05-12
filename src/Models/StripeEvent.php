@@ -48,17 +48,11 @@ class StripeEvent extends Model
     /**
      * @var array
      */
-    protected $dates = [
-        'created',
-    ];
-
-    /**
-     * @var array
-     */
     protected $casts = [
         'livemode' => 'boolean',
         'pending_webhooks' => 'integer',
         'request' => 'json',
+        'created' => 'datetime',
     ];
 
     /**
