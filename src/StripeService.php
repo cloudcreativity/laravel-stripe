@@ -92,8 +92,6 @@ class StripeService
      */
     public function connectAccount($accountId)
     {
-        Assert::id(Assert::ACCOUNT_ID_PREFIX, $accountId);
-
         return app('stripe.connect')->find($accountId);
     }
 
