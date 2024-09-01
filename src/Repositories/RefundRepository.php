@@ -76,8 +76,6 @@ class RefundRepository extends AbstractRepository
     {
         if ($charge instanceof Charge) {
             $charge = $charge->id;
-        } else {
-            Assert::id(Assert::CHARGE_ID_PREFIX, $charge);
         }
 
         $this->params($params)->param('charge', $charge);

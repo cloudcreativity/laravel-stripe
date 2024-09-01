@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file. This project adheres to
 [Semantic Versioning](http://semver.org/) and [this changelog format](http://keepachangelog.com/).
 
+## Unreleased
+
+### Removed
+
+- Removed checking the prefix of account and charge ids, as Stripe does not consider changing these as
+  a [breaking change.](https://docs.stripe.com/upgrades#what-changes-does-stripe-consider-to-be-backwards-compatible)
+  This was causing issues in the refund repository, as it was expecting a charge id starting `ch_`. However, Stripe now
+  also uses `py_` for some refundable payments.
+
 ## [0.7.0] - 2023-03-19
 
 ### Changed
