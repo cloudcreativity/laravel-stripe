@@ -1,6 +1,16 @@
-[![Build Status](https://travis-ci.org/cloudcreativity/laravel-stripe.svg?branch=master)](https://travis-ci.org/cloudcreativity/laravel-stripe)
-
 # Laravel Stripe
+
+## Status
+
+**This package no longer has active support beyond upgrading to the latest Laravel version. Please note however, that we
+cannot guarantee that we will be able to maintain support for all Laravel versions going forward. The package is also on
+an old version of the Stripe SDK which limits its usefulness.**
+
+Unfortunately due to only having limited time for open source work, we are unable to maintain this package to the
+standard we would like. We would however accept pull requests from anyone who does want to contribute upgrades or new
+features.
+
+However, if you are starting a new project it is probably best not to use this package.
 
 ## Overview
 
@@ -54,13 +64,13 @@ instructions.
 The following table shows which version to install. We have provided the Stripe API version that we
 developed against as guide. You may find the package works with older versions of the API.
 
-| Laravel | Stripe PHP | Stripe API | Laravel-Stripe | Cashier |
-| :-- | :-- | :-- | :-- |:-- |
-| `10.x` | `^7.52` | `>=2020-03-02` | `0.7.x` | `^14.8` |
-| `9.x` | `^7.52` | `>=2020-03-02` | `0.6.x` | `^12.3` |
-| `8.x` | `^7.52` | `>=2020-03-02` | `0.5.x\|0.6.x` | `^12.3` |
-| `7.x` | `^7.0` | `>=2020-03-02` | `0.4.x` | `^12.0` |
-| `6.x` | `^6.40` | `>=2019-05-16` | `0.2.x` | `^9.0\|^10.0\|^11.0\|^12.0` |
+| Laravel | Stripe PHP | Stripe API     | Laravel-Stripe | Cashier                     |
+|:--------|:-----------|:---------------|:---------------|:----------------------------|
+| `10.x`  | `^7.52`    | `>=2020-03-02` | `0.7.x`        | `^14.8`                     |
+| `9.x`   | `^7.52`    | `>=2020-03-02` | `0.6.x`        | `^12.3`                     |
+| `8.x`   | `^7.52`    | `>=2020-03-02` | `0.5.x\|0.6.x` | `^12.3`                     |
+| `7.x`   | `^7.0`     | `>=2020-03-02` | `0.4.x`        | `^12.0`                     |
+| `6.x`   | `^6.40`    | `>=2019-05-16` | `0.2.x`        | `^9.0\|^10.0\|^11.0\|^12.0` |
 
 ## Contributing
 
