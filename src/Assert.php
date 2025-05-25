@@ -22,11 +22,6 @@ use Illuminate\Support\Str;
 
 class Assert
 {
-    /** @deprecated */
-    const ACCOUNT_ID_PREFIX = 'acct_';
-    /** @deprecated */
-    const CHARGE_ID_PREFIX = 'ch_';
-
     /**
      * @param string $expected
      *      the expected prefix.
