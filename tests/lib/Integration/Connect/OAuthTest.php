@@ -28,6 +28,7 @@ use CloudCreativity\LaravelStripe\Tests\TestUser;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class OAuthTest extends TestCase
 {
@@ -208,10 +209,7 @@ class OAuthTest extends TestCase
         Queue::assertNotPushed(FetchUserCredentials::class);
     }
 
-    /**
-     * @return array
-     */
-    public function invalidProvider()
+    public static function invalidProvider(): array
     {
         return [
             'state' => ['state'],
@@ -227,9 +225,9 @@ class OAuthTest extends TestCase
      * we expect it to send. But it is good to handle the scenario just in case.
      *
      * @param string $missing
-     * @dataProvider invalidProvider
      */
-    public function testInvalid($missing)
+    #[DataProvider('invalidProvider')]
+    public function testInvalid(string $missing): void
     {
         $params = collect([
             'state' => 'session_token',

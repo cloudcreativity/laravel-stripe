@@ -62,7 +62,7 @@ class Authorizer
      * @return AuthorizeUrl
      * @see https://stripe.com/docs/connect/standard-accounts#integrating-oauth
      */
-    public function authorizeUrl(array $options = null)
+    public function authorizeUrl(?array $options = null)
     {
         if (!$state = $this->state->get()) {
             throw new RuntimeException('State parameter cannot be empty.');
@@ -79,7 +79,7 @@ class Authorizer
      * @return StripeObject
      * @see https://stripe.com/docs/connect/standard-accounts#token-request
      */
-    public function authorize($code, array $options = null)
+    public function authorize(string $code, ?array $options = null)
     {
         $params = [
             self::CODE => $code,
@@ -102,7 +102,7 @@ class Authorizer
      * @return StripeObject
      * @see https://stripe.com/docs/connect/standard-accounts#revoked-access
      */
-    public function deauthorize($accountId, array $options = null)
+    public function deauthorize(string $accountId, ?array $options = null)
     {
         $params = [
             self::STRIPE_USER_ID => $accountId,

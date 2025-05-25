@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Unreleased
 
+### Changed
+
+- Minimum PHP version is now 8.2, previously was 8.1.
+- Upgraded to Laravel 11 and 12, dropping support for Laravel 10.
+
+## [0.7.1] - 2024-09-01
+
 ### Removed
 
 - Removed checking the prefix of account and charge ids, as Stripe does not consider changing these as

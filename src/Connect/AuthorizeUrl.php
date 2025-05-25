@@ -80,7 +80,7 @@ class AuthorizeUrl implements Arrayable
      * @param string $state
      * @param array|null $options
      */
-    public function __construct($state, array $options = null)
+    public function __construct(string $state, ?array $options = null)
     {
         $this->state = $state;
         $this->options = $options ?: [];

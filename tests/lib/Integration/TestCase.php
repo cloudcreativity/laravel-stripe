@@ -68,7 +68,7 @@ abstract class TestCase extends BaseTestCase
      *
      * @return array
      */
-    public function classProvider(): array
+    public static function classProvider(): array
     {
         return [
             'accounts' => [\Stripe\Account::class, 'accounts'],

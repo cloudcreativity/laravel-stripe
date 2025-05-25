@@ -18,6 +18,7 @@
 namespace CloudCreativity\LaravelStripe\Tests\Unit\Connect;
 
 use CloudCreativity\LaravelStripe\Connect\AuthorizeUrl;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Stripe\Stripe;
 use Stripe\Util\Util;
@@ -52,7 +53,7 @@ class AuthorizeUrlTest extends TestCase
     /**
      * @return array
      */
-    public function valueProvider()
+    public static function valueProvider(): array
     {
         return [
             'read_only' => [
@@ -93,13 +94,8 @@ class AuthorizeUrlTest extends TestCase
         ];
     }
 
-    /**
-     * @param array $expected
-     * @param string $method
-     * @param mixed|null $value
-     * @dataProvider valueProvider
-     */
-    public function testStandard(array $expected, $method, $value = null)
+    #[DataProvider('valueProvider')]
+    public function testStandard(array $expected, string $method, mixed $value = null): void
     {
         $args = !is_null($value) ? [$value] : [];
         $result = call_user_func_array([$this->url, $method], $args);
@@ -108,13 +104,8 @@ class AuthorizeUrlTest extends TestCase
         $this->assertUrl('https://connect.stripe.com/oauth/authorize', $expected, "{$method}");
     }
 
-    /**
-     * @param array $expected
-     * @param string $method
-     * @param mixed|null $value
-     * @dataProvider valueProvider
-     */
-    public function testExpress(array $expected, $method, $value = null)
+    #[DataProvider('valueProvider')]
+    public function testExpress(array $expected, string $method, mixed $value = null): void
     {
         $this->assertSame($this->url, $this->url->express(), 'express is fluent');
 
@@ -125,13 +116,7 @@ class AuthorizeUrlTest extends TestCase
         $this->assertUrl('https://connect.stripe.com/express/oauth/authorize', $expected, "{$method}");
     }
 
-    /**
-     * @param string $uri
-     * @param array $params
-     * @param string $message
-     * @return void
-     */
-    private function assertUrl($uri, array $params, $message = '')
+    private function assertUrl(string $uri, array $params, string $message = ''): void
     {
         $params = array_replace([
             'state' => 'state_secret',
