@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,7 +23,6 @@ use Stripe\Event;
 
 interface ProcessorInterface
 {
-
     /**
      * Receive a Stripe webhook.
      *
@@ -33,7 +33,6 @@ interface ProcessorInterface
      * Therefore the process method should do the minimum required and delay timely
      * processing to a later point. E.g. adding a job to an asynchronous queue.
      *
-     * @param Event $event
      * @return void
      * @see https://stripe.com/docs/webhooks/best-practices#acknowledge-events-immediately
      */
@@ -46,7 +45,6 @@ interface ProcessorInterface
      * Stripe advise to guard against duplicated event receipts by making event
      * processing idempotent.
      *
-     * @param Event $event
      * @return bool
      * @see https://stripe.com/docs/webhooks/best-practices#duplicate-events
      */
@@ -55,8 +53,7 @@ interface ProcessorInterface
     /**
      * Dispatch a processed webhook.
      *
-     * @param Event $event
-     * @param StripeEvent|mixed $model
+     * @param mixed|StripeEvent $model
      *      the stored webhook.
      * @return void
      */

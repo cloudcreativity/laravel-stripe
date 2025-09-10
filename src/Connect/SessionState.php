@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,7 +24,6 @@ use Illuminate\Http\Request;
 
 class SessionState implements StateProviderInterface
 {
-
     /**
      * @var Session
      */
@@ -36,9 +36,6 @@ class SessionState implements StateProviderInterface
 
     /**
      * SessionState constructor.
-     *
-     * @param Session $session
-     * @param Request $request
      */
     public function __construct(Session $session, Request $request)
     {
@@ -46,25 +43,16 @@ class SessionState implements StateProviderInterface
         $this->request = $request;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function get()
     {
         return $this->session->token();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function check($value)
     {
         return $this->get() === $value;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function user()
     {
         return $this->request->user();

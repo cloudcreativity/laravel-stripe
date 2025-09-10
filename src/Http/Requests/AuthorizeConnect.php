@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -28,7 +29,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthorizeConnect extends FormRequest
 {
-
     /**
      * @return array
      */
@@ -100,7 +100,6 @@ class AuthorizeConnect extends FormRequest
      * Laravel turns this into a redirect response to send the user back...
      * but this does not make sense in our scenario.
      *
-     * @param Validator $validator
      * @throws HttpException
      */
     protected function failedValidation(Validator $validator)

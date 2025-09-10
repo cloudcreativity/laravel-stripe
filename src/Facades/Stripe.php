@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -29,7 +30,7 @@ use Illuminate\Support\Facades\Facade;
 use Stripe\StripeObject;
 
 /**
- * Class Stripe
+ * Class Stripe.
  *
  * @package CloudCreativity\LaravelStripe
  *
@@ -46,11 +47,9 @@ use Stripe\StripeObject;
  */
 class Stripe extends Facade
 {
-
     /**
      * Fake static calls to Stripe.
      *
-     * @param StripeObject ...$queue
      * @return void
      */
     public static function fake(StripeObject ...$queue)
@@ -62,7 +61,7 @@ class Stripe extends Facade
          */
         static::$app->instance(
             Client::class,
-            $client = new ClientFake(static::$app->make('events'))
+            $client = new ClientFake(static::$app->make('events')),
         );
 
         /**

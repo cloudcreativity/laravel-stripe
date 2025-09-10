@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -27,17 +28,14 @@ use Stripe\Refund;
 
 class RefundRepository extends AbstractRepository
 {
-
     use Concerns\All;
-    use Concerns\Retrieve;
     use Concerns\HasMetadata;
+    use Concerns\Retrieve;
 
     /**
      * Create a full refund.
      *
      * @param Charge|string $charge
-     * @param iterable $params
-     * @return Refund
      */
     public function full($charge, iterable $params = []): Refund
     {
@@ -52,9 +50,7 @@ class RefundRepository extends AbstractRepository
      * Create a partial refund.
      *
      * @param Charge|string $charge
-     * @param int $amount
-     * @param iterable|array $params
-     * @return Refund
+     * @param array|iterable $params
      */
     public function partial($charge, int $amount, iterable $params = []): Refund
     {
@@ -69,8 +65,7 @@ class RefundRepository extends AbstractRepository
      * Create a refund.
      *
      * @param Charge|string $charge
-     * @param iterable|array $params
-     * @return Refund
+     * @param array|iterable $params
      */
     public function create($charge, iterable $params = []): Refund
     {
@@ -83,7 +78,7 @@ class RefundRepository extends AbstractRepository
         return $this->send(
             'create',
             $this->params ?: null,
-            $this->options ?: null
+            $this->options ?: null,
         );
     }
 
@@ -92,9 +87,7 @@ class RefundRepository extends AbstractRepository
      *
      * This request only accepts the `metadata` as an argument.
      *
-     * @param string $id
-     * @param Collection|iterable|array $metadata
-     * @return Refund
+     * @param array|Collection|iterable $metadata
      */
     public function update(string $id, iterable $metadata): Refund
     {
@@ -104,13 +97,10 @@ class RefundRepository extends AbstractRepository
             'update',
             $id,
             $this->params ?: null,
-            $this->options ?: null
+            $this->options ?: null,
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function fqn(): string
     {
         return Refund::class;

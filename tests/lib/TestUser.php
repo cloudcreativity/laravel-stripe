@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,7 +24,6 @@ use Illuminate\Foundation\Auth\User;
 
 class TestUser extends User implements AccountOwnerInterface
 {
-
     use OwnsStripeAccounts;
 
     /**

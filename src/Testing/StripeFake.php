@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,13 +23,10 @@ use CloudCreativity\LaravelStripe\Testing\Concerns\MakesStripeAssertions;
 
 class StripeFake extends StripeService
 {
-
     use MakesStripeAssertions;
 
     /**
      * StripeFake constructor.
-     *
-     * @param ClientFake $client
      */
     public function __construct(ClientFake $client)
     {

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -42,7 +43,6 @@ class Assert
     /**
      * Assert that the currency is supported by the application.
      *
-     * @param $currency
      * @return void
      */
     public static function supportedCurrency($currency)
@@ -59,8 +59,6 @@ class Assert
     /**
      * Assert that the currency and amount are chargeable.
      *
-     * @param $currency
-     * @param $amount
      * @return void
      * @see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
      */
@@ -82,7 +80,6 @@ class Assert
     /**
      * Assert that the value is a zero-decimal amount.
      *
-     * @param $amount
      * @return void
      * @see https://stripe.com/docs/currencies#zero-decimal
      */

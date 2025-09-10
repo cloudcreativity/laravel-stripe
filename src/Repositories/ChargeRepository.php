@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,7 +25,6 @@ use Stripe\Charge;
 
 class ChargeRepository extends AbstractRepository
 {
-
     use Concerns\All;
     use Concerns\Retrieve;
     use Concerns\Update;
@@ -34,30 +34,24 @@ class ChargeRepository extends AbstractRepository
      *
      * Both currency and amount are required parameters.
      *
-     * @param string $currency
-     * @param int $amount
-     * @param iterable|array $params
+     * @param array|iterable $params
      *      additional optional parameters.
-     * @return Charge
      */
     public function create(string $currency, int $amount, iterable $params = []): Charge
     {
         Assert::chargeAmount($currency, $amount);
 
         $this->params($params)->params(
-            compact('currency', 'amount')
+            compact('currency', 'amount'),
         );
 
         return $this->send(
             'create',
             $this->params ?: null,
-            $this->options ?: null
+            $this->options ?: null,
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function fqn(): string
     {
         return Charge::class;

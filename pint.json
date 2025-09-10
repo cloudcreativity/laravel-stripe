@@ -1,0 +1,37 @@
+{
+    "preset": "psr12",
+    "rules": {
+        "array_syntax": true,
+        "assign_null_coalescing_to_coalesce_equal": true,
+        "clean_namespace": true,
+        "declare_strict_types": false,
+        "list_syntax": true,
+        "no_empty_phpdoc": true,
+        "no_superfluous_elseif": true,
+        "no_superfluous_phpdoc_tags": {
+            "remove_inheritdoc": true
+        },
+        "no_unneeded_braces": true,
+        "no_useless_nullsafe_operator": true,
+        "no_whitespace_before_comma_in_array": true,
+        "normalize_index_brace": true,
+        "nullable_type_declaration": true,
+        "nullable_type_declaration_for_default_null_value": true,
+        "ordered_attributes": true,
+        "ordered_traits": true,
+        "ordered_types": {
+            "null_adjustment": "always_last"
+        },
+        "phpdoc_summary": true,
+        "phpdoc_trim": true,
+        "phpdoc_types": true,
+        "phpdoc_types_order": {
+            "null_adjustment": "always_last"
+        },
+        "simple_to_complex_string_variable": true,
+        "ternary_to_null_coalescing": true,
+        "trailing_comma_in_multiline": {
+            "elements": ["arguments", "arrays", "match", "parameters"]
+        }
+    }
+}

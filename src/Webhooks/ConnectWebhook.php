@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -26,31 +27,28 @@ use Stripe\Event;
 
 class ConnectWebhook extends Webhook
 {
-
     /**
      * The stored Stripe account.
      *
      * The account can be `null` if the webhook was received but for some
      * reason the account is no longer in storage.
      *
-     * @var AccountInterface|StripeAccount|mixed|null
+     * @var AccountInterface|mixed|StripeAccount|null
      */
     public $account;
 
     /**
      * ConnectWebhook constructor.
      *
-     * @param Event $webhook
-     * @param AccountInterface|StripeAccount|mixed|null $account
-     * @param StripeEvent|mixed $model
-     * @param array $config
+     * @param AccountInterface|mixed|StripeAccount|null $account
+     * @param mixed|StripeEvent $model
      * @todo PHP7 account should be `?AccountInterface` and model not optional.
      */
     public function __construct(
         Event $webhook,
-        AccountInterface $account = null,
+        ?AccountInterface $account = null,
         $model = null,
-        array $config = []
+        array $config = [],
     ) {
         if (!Arr::get($webhook, 'account')) {
             throw new InvalidArgumentException('Expecting a Stripe Connect webhook.');
@@ -60,9 +58,6 @@ class ConnectWebhook extends Webhook
         $this->account = $account;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function connect()
     {
         return true;

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,7 +23,6 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class SignatureVerificationFailed implements Arrayable
 {
-
     /**
      * @var string
      */
@@ -62,9 +62,6 @@ class SignatureVerificationFailed implements Arrayable
         return Config::webhookSigningSecrect($this->signingSecret);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function toArray()
     {
         return [

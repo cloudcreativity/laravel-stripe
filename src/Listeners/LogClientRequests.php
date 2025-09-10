@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,7 +23,6 @@ use CloudCreativity\LaravelStripe\Log\Logger;
 
 class LogClientRequests
 {
-
     /**
      * @var Logger
      */
@@ -30,8 +30,6 @@ class LogClientRequests
 
     /**
      * LogClientRequests constructor.
-     *
-     * @param Logger $log
      */
     public function __construct(Logger $log)
     {
@@ -41,14 +39,13 @@ class LogClientRequests
     /**
      * Handle the event.
      *
-     * @param ClientWillSend $event
      * @return void
      */
     public function handle(ClientWillSend $event)
     {
         $this->log->log(
             "Sending {$event->name}.{$event->method}",
-            $event->toArray()
+            $event->toArray(),
         );
     }
 }

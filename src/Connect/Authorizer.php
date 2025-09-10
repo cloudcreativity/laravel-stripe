@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -25,13 +26,12 @@ use Stripe\StripeObject;
 
 class Authorizer
 {
-
-    const CODE = 'code';
-    const GRANT_TYPE = 'grant_type';
-    const GRANT_TYPE_AUTHORIZATION_CODE = 'authorization_code';
-    const SCOPE_READ_ONLY = 'read_only';
-    const SCOPE_READ_WRITE = 'read_write';
-    const STRIPE_USER_ID = 'stripe_user_id';
+    public const CODE = 'code';
+    public const GRANT_TYPE = 'grant_type';
+    public const GRANT_TYPE_AUTHORIZATION_CODE = 'authorization_code';
+    public const SCOPE_READ_ONLY = 'read_only';
+    public const SCOPE_READ_WRITE = 'read_write';
+    public const STRIPE_USER_ID = 'stripe_user_id';
 
     /**
      * @var Client
@@ -45,9 +45,6 @@ class Authorizer
 
     /**
      * Authorizer constructor.
-     *
-     * @param Client $client
-     * @param StateProviderInterface $state
      */
     public function __construct(Client $client, StateProviderInterface $state)
     {
@@ -58,7 +55,6 @@ class Authorizer
     /**
      * Create a Stripe Connect OAuth link.
      *
-     * @param array|null $options
      * @return AuthorizeUrl
      * @see https://stripe.com/docs/connect/standard-accounts#integrating-oauth
      */
@@ -74,8 +70,6 @@ class Authorizer
     /**
      * Authorize access to an account.
      *
-     * @param string $code
-     * @param array|null $options
      * @return StripeObject
      * @see https://stripe.com/docs/connect/standard-accounts#token-request
      */
@@ -97,8 +91,6 @@ class Authorizer
     /**
      * Revoke access to an account.
      *
-     * @param string $accountId
-     * @param array|null $options
      * @return StripeObject
      * @see https://stripe.com/docs/connect/standard-accounts#revoked-access
      */

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,11 +24,9 @@ use CloudCreativity\LaravelStripe\Jobs\FetchUserCredentials;
 
 class DispatchAuthorizeJob
 {
-
     /**
      * Handle the event.
      *
-     * @param OAuthSuccess $event
      * @return void
      */
     public function handle(OAuthSuccess $event)
@@ -37,7 +36,7 @@ class DispatchAuthorizeJob
         $job = new FetchUserCredentials(
             $event->code,
             $event->scope,
-            $event->owner
+            $event->owner,
         );
 
         $job->onQueue($config['queue'])->onConnection($config['connection']);

@@ -27,6 +27,7 @@
     "require-dev": {
         "laravel/cashier": "^15.6",
         "laravel/legacy-factories": "^1.4",
+        "laravel/pint": "^1.24",
         "orchestra/testbench": "^9.14|^10.0",
         "phpunit/phpunit": "^11.5"
     },
@@ -39,6 +40,15 @@
         "psr-4": {
             "CloudCreativity\\LaravelStripe\\Tests\\": "tests/lib"
         }
+    },
+    "scripts": {
+        "all": [
+            "@style",
+            "@test"
+        ],
+        "style": "pint --test",
+        "style:fix": "pint",
+        "test": "phpunit"
     },
     "extra": {
         "branch-alias": {

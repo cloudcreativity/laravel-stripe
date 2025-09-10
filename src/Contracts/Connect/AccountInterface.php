@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -19,7 +20,6 @@ namespace CloudCreativity\LaravelStripe\Contracts\Connect;
 
 interface AccountInterface
 {
-
     /**
      * Get the Stripe account id for the connected account.
      *
@@ -65,7 +65,7 @@ interface AccountInterface
     /**
      * Get the unique identifier for the Stripe account owner.
      *
-     * @return string|int
+     * @return int|string
      */
     public function getStripeOwnerIdentifier();
 

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -80,7 +81,7 @@ class StripeQueryTest extends TestCase
             $this->assertNull($params, 'params');
 
             $this->assertSame([
-                'stripe_account' => $account->getStripeAccountIdentifier()
+                'stripe_account' => $account->getStripeAccountIdentifier(),
             ], $options, 'options');
 
             return true;
@@ -155,7 +156,7 @@ class StripeQueryTest extends TestCase
             $this->assertSame(compact('id'), $params, 'params');
 
             $this->assertSame([
-                'stripe_account' => $account->getStripeAccountIdentifier()
+                'stripe_account' => $account->getStripeAccountIdentifier(),
             ], $options, 'options');
 
             return true;

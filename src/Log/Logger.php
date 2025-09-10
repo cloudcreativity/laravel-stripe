@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,7 +24,6 @@ use Psr\Log\LoggerInterface;
 
 class Logger
 {
-
     /**
      * @var LoggerInterface
      */
@@ -42,7 +42,6 @@ class Logger
     /**
      * Logger constructor.
      *
-     * @param LoggerInterface $log
      * @param string|null $level
      *      the log level, defaults to 'debug'.
      * @param array $exclude
@@ -59,7 +58,6 @@ class Logger
      * Log a message at the configured level.
      *
      * @param string $message
-     * @param array $context
      * @return void
      */
     public function log($message, array $context = [])
@@ -71,8 +69,6 @@ class Logger
      * Encode data into an error message.
      *
      * @param string $message
-     * @param mixed $data
-     * @param array $context
      * @return void
      */
     public function encode($message, $data, array $context = [])
@@ -85,7 +81,6 @@ class Logger
     /**
      * Encode a Stripe object for a log message.
      *
-     * @param mixed $data
      * @return string
      */
     private function toJson($data)
@@ -100,7 +95,6 @@ class Logger
     }
 
     /**
-     * @param array $data
      * @return array
      */
     private function serialize(array $data)
@@ -112,12 +106,9 @@ class Logger
         })->all();
     }
 
-    /**
-     * @param array $data
-     */
     private function sanitise(array &$data)
     {
-        $name = isset($data['object']) ? $data['object'] : null;
+        $name = $data['object'] ?? null;
 
         /** Stripe webhooks contain an object key that is not a string. */
         if (!is_string($name)) {
@@ -140,7 +131,6 @@ class Logger
     /**
      * Get the paths to exclude from logging.
      *
-     * @param mixed $name
      * @return array
      */
     private function exclude($name)

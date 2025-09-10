@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -27,7 +28,6 @@ use Illuminate\Support\Facades\Route;
 
 class StripeService
 {
-
     /**
      * Register a webhook endpoint.
      *
@@ -39,14 +39,13 @@ class StripeService
     public function webhook($uri, $signingSecret)
     {
         return Route::post($uri, '\\' . WebhookController::class)->middleware(
-            "stripe.verify:{$signingSecret}"
+            "stripe.verify:{$signingSecret}",
         );
     }
 
     /**
      * Register an Connect OAuth endpoint.
      *
-     * @param $uri
      * @return \Illuminate\Routing\Route
      */
     public function oauth($uri)
@@ -87,7 +86,6 @@ class StripeService
     /**
      * Get a Stripe Connect account by id.
      *
-     * @param $accountId
      * @return AccountInterface|null
      */
     public function connectAccount($accountId)
@@ -98,10 +96,9 @@ class StripeService
     /**
      * Create a Stripe Connect OAuth link.
      *
-     * @param array|null $options
      * @return AuthorizeUrl
      */
-    public function authorizeUrl(array $options = null)
+    public function authorizeUrl(?array $options = null)
     {
         return app(Authorizer::class)->authorizeUrl($options);
     }
@@ -110,8 +107,6 @@ class StripeService
      * Log a Stripe object, sanitising any sensitive data.
      *
      * @param string $message
-     * @param mixed $data
-     * @param array $context
      */
     public function log($message, $data, array $context = [])
     {

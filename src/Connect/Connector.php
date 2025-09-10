@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,8 +25,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Connector extends BaseConnector
 {
-
-
     /**
      * @var AccountInterface|Model
      */
@@ -38,8 +37,6 @@ class Connector extends BaseConnector
 
     /**
      * Connector constructor.
-     *
-     * @param AccountInterface $account
      */
     public function __construct(AccountInterface $account)
     {
@@ -72,22 +69,19 @@ class Connector extends BaseConnector
     /**
      * Deauthorize the connected account.
      *
-     * @param iterable|array|null $options
+     * @param array|iterable|null $options
      * @return void
      */
     public function deauthorize($options = null)
     {
         app(Authorizer::class)->deauthorize(
             $this->accountId(),
-            collect($options)->all() ?: null
+            collect($options)->all() ?: null,
         );
 
         event(new AccountDeauthorized($this->account));
     }
 
-    /**
-     * @return string
-     */
     protected function accountId(): string
     {
         return $this->id();

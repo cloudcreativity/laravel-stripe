@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,19 +23,18 @@ use CloudCreativity\LaravelStripe\Contracts\Connect\AccountInterface;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class TestAccount
+ * Class TestAccount.
  *
  * Tests that we can have our own model that does not
  * extend this package's `StripeAccount` model.
  */
 class TestAccount extends Model implements AccountInterface
 {
+    use ConnectedAccount;
 
     /**
      * @var bool
      */
     public $incrementing = false;
-
-    use ConnectedAccount;
 
 }

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * This file is part of cloudcreativity/laravel-stripe
+ * This file is part of cloudcreativity/laravel-stripe.
  *
  * (c) Christopher Gammie <info@cloudcreativity.co.uk>
  *

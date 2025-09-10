@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -21,15 +22,15 @@ use CloudCreativity\LaravelStripe\Config;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use LogicException;
+
 use function get_class;
 
 trait OwnsStripeAccounts
 {
-
     /**
      * Get the unique identifier for the Stripe account owner.
      *
-     * @return string|int
+     * @return int|string
      */
     public function getStripeIdentifier()
     {
@@ -38,8 +39,6 @@ trait OwnsStripeAccounts
 
     /**
      * Get the column name of the unique identifier for the Stripe account owner.
-     *
-     * @return string
      */
     public function getStripeIdentifierName(): string
     {
@@ -50,9 +49,6 @@ trait OwnsStripeAccounts
         return $this->getKeyName();
     }
 
-    /**
-     * @return HasMany
-     */
     public function stripeAccounts(): HasMany
     {
         $model = Config::connectModel();
@@ -64,7 +60,7 @@ trait OwnsStripeAccounts
         return $this->hasMany(
             get_class($model),
             $owner,
-            $this->getStripeIdentifierName()
+            $this->getStripeIdentifierName(),
         );
     }
 }

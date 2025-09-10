@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -19,14 +20,13 @@ namespace CloudCreativity\LaravelStripe\Connect;
 
 trait ConnectedAccount
 {
-
     /**
      * @return Connector
      */
     public function stripe()
     {
         return app('stripe')->connect(
-            $this->getStripeAccountIdentifier()
+            $this->getStripeAccountIdentifier(),
         );
     }
 

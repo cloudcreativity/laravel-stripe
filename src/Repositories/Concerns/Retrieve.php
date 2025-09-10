@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,12 +25,8 @@ use Stripe\StripeObject;
 
 trait Retrieve
 {
-
     /**
      * Retrieve a Stripe object.
-     *
-     * @param string $id
-     * @return StripeObject
      */
     public function retrieve(string $id): StripeObject
     {

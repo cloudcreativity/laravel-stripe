@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -29,8 +30,9 @@ use Illuminate\Queue\SerializesModels;
 
 class FetchUserCredentials implements ShouldQueue
 {
-
-    use InteractsWithQueue, SerializesModels, Queueable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * @var string
@@ -52,7 +54,6 @@ class FetchUserCredentials implements ShouldQueue
      *
      * @param string $code
      * @param string $scope
-     * @param AccountOwnerInterface $owner
      */
     public function __construct($code, $scope, AccountOwnerInterface $owner)
     {
@@ -64,8 +65,6 @@ class FetchUserCredentials implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @param Authorizer $authorizer
-     * @param AdapterInterface $adapter
      * @return void
      */
     public function handle(Authorizer $authorizer, AdapterInterface $adapter)
@@ -76,7 +75,7 @@ class FetchUserCredentials implements ShouldQueue
             $token['stripe_user_id'],
             $token['refresh_token'],
             $token['scope'],
-            $this->owner
+            $this->owner,
         );
 
         event(new FetchedUserCredentials($account, $this->owner, $token));

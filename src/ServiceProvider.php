@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -42,12 +43,9 @@ use Stripe\Stripe;
 
 class ServiceProvider extends BaseServiceProvider
 {
-
     /**
      * Boot services.
      *
-     * @param Router $router
-     * @param Events $events
      * @return void
      */
     public function boot(Router $router, Events $events)
@@ -107,7 +105,7 @@ class ServiceProvider extends BaseServiceProvider
             return new Logger(
                 $level ? $app->make(LoggerInterface::class) : new NullLogger(),
                 $level,
-                Config::logExclude()
+                Config::logExclude(),
             );
         });
 
@@ -139,7 +137,6 @@ class ServiceProvider extends BaseServiceProvider
     /**
      * Boot the Connect implementation.
      *
-     * @param Events $events
      * @return void
      */
     private function bootConnect(Events $events)
@@ -166,7 +163,7 @@ class ServiceProvider extends BaseServiceProvider
                 $app->make(Dispatcher::class),
                 $app->make(Events::class),
                 $app->make('stripe.connect'),
-                Config::webhookModel()
+                Config::webhookModel(),
             );
         });
     }
@@ -174,7 +171,6 @@ class ServiceProvider extends BaseServiceProvider
     /**
      * Boot the webhook implementation.
      *
-     * @param Events $events
      * @return void
      */
     private function bootWebhooks(Events $events)
@@ -186,7 +182,6 @@ class ServiceProvider extends BaseServiceProvider
     /**
      * Boot the logging implementation.
      *
-     * @param Events $events
      * @return void
      */
     private function bootLogging(Events $events)

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -26,12 +27,10 @@ use Stripe\Account;
 
 class Connector
 {
-
     /**
      * Get a resource repository by resource type.
      *
      * @param string $resource
-     * @return AbstractRepository
      */
     public function __invoke($resource): AbstractRepository
     {
@@ -47,86 +46,65 @@ class Connector
 
     /**
      * Retrieve the Stripe account object that this connector belongs to.
-     *
-     * @return Account
      */
     public function retrieve(): Account
     {
         return $this->accounts()->retrieve();
     }
 
-    /**
-     * @return Repositories\AccountRepository
-     */
     public function accounts(): Repositories\AccountRepository
     {
         return new Repositories\AccountRepository(
             app(Client::class),
-            $this->accountId()
+            $this->accountId(),
         );
     }
 
-    /**
-     * @return Repositories\BalanceRepository
-     */
     public function balances(): Repositories\BalanceRepository
     {
         return new Repositories\BalanceRepository(
             app(Client::class),
-            $this->accountId()
+            $this->accountId(),
         );
     }
 
-    /**
-     * @return Repositories\ChargeRepository
-     */
     public function charges(): Repositories\ChargeRepository
     {
         return new Repositories\ChargeRepository(
             app(Client::class),
-            $this->accountId()
+            $this->accountId(),
         );
     }
 
-    /**
-     * @return Repositories\EventRepository
-     */
     public function events(): Repositories\EventRepository
     {
         return new Repositories\EventRepository(
             app(Client::class),
-            $this->accountId()
+            $this->accountId(),
         );
     }
 
     /**
      * Create a payment intents client for the provided account.
-     *
-     * @return Repositories\PaymentIntentRepository
      */
     public function paymentIntents(): Repositories\PaymentIntentRepository
     {
         return new Repositories\PaymentIntentRepository(
             app(Client::class),
-            $this->accountId()
+            $this->accountId(),
         );
     }
 
-    /**
-     * @return Repositories\RefundRepository
-     */
     public function refunds(): Repositories\RefundRepository
     {
         return new Repositories\RefundRepository(
             app(Client::class),
-            $this->accountId()
+            $this->accountId(),
         );
     }
 
     /**
      * Get the account id to use when creating a repository.
-     *
-     * @return string|null
      */
     protected function accountId(): ?string
     {

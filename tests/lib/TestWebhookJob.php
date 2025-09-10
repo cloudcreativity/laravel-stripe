@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -26,8 +27,9 @@ use Illuminate\Queue\SerializesModels;
 
 class TestWebhookJob implements ShouldQueue
 {
-
-    use InteractsWithQueue, SerializesModels, Queueable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * @var Webhook
@@ -37,7 +39,7 @@ class TestWebhookJob implements ShouldQueue
     /**
      * TestWebhookJob constructor.
      *
-     * @param Webhook|ConnectWebhook $webhook
+     * @param ConnectWebhook|Webhook $webhook
      */
     public function __construct($webhook)
     {

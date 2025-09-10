@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -25,7 +26,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StripeEvent extends Model
 {
-
     /**
      * @var bool
      */
@@ -67,7 +67,7 @@ class StripeEvent extends Model
             $this,
             $this->getAccountIdentifierName(),
             $model->getStripeAccountIdentifierName(),
-            'account'
+            'account',
         );
     }
 

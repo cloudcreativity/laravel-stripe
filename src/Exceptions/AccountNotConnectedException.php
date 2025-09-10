@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -21,7 +22,6 @@ use LogicException;
 
 class AccountNotConnectedException extends LogicException
 {
-
     /**
      * @var string
      */
@@ -29,11 +29,8 @@ class AccountNotConnectedException extends LogicException
 
     /**
      * AccountNotConnected constructor.
-     *
-     * @param $accountId
-     * @param \Exception|null $previous
      */
-    public function __construct($accountId, \Exception $previous = null)
+    public function __construct($accountId, ?\Exception $previous = null)
     {
         parent::__construct("Stripe account {$accountId} is not connected.", 0, $previous);
         $this->accountId = $accountId;

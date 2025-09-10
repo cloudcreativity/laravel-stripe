@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,13 +24,9 @@ use Stripe\Event;
 
 class EventRepository extends AbstractRepository
 {
-
     use Concerns\All;
     use Concerns\Retrieve;
 
-    /**
-     * @inheritDoc
-     */
     protected function fqn(): string
     {
         return Event::class;

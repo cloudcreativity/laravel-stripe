@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -34,7 +35,6 @@ use Stripe\Exception\SignatureVerificationException;
 
 class ReceiveTest extends TestCase
 {
-
     /**
      * @var MockObject
      */
@@ -45,9 +45,6 @@ class ReceiveTest extends TestCase
      */
     private $event;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -177,7 +174,7 @@ class ReceiveTest extends TestCase
     public function testInvalidSignature()
     {
         $this->verifier->method('verify')->willThrowException(
-            SignatureVerificationException::factory('Invalid.', null, 'Header')
+            SignatureVerificationException::factory('Invalid.', null, 'Header'),
         );
 
         $this->postJson('/test/webhook', $this->event)->assertStatus(400)->assertExactJson([

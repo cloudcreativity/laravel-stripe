@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -25,15 +26,11 @@ use Stripe\Util\Util;
 
 class AuthorizeUrlTest extends TestCase
 {
-
     /**
      * @var AuthorizeUrl
      */
     private $url;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -41,18 +38,12 @@ class AuthorizeUrlTest extends TestCase
         $this->url = new AuthorizeUrl('state_secret');
     }
 
-    /**
-     * @return void
-     */
     protected function tearDown(): void
     {
         parent::tearDown();
         Stripe::setClientId(null);
     }
 
-    /**
-     * @return array
-     */
     public static function valueProvider(): array
     {
         return [

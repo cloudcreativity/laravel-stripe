@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -26,7 +27,6 @@ use Stripe\Event;
 
 class WebhookController extends Controller
 {
-
     /**
      * @var Logger
      */
@@ -34,8 +34,6 @@ class WebhookController extends Controller
 
     /**
      * WebhookController constructor.
-     *
-     * @param Logger $log
      */
     public function __construct(Logger $log)
     {
@@ -45,8 +43,6 @@ class WebhookController extends Controller
     /**
      * Handle a Stripe webhook.
      *
-     * @param Request $request
-     * @param ProcessorInterface $processor
      * @return Response
      */
     public function __invoke(Request $request, ProcessorInterface $processor)
@@ -64,7 +60,7 @@ class WebhookController extends Controller
             $this->log->log(sprintf(
                 "Ignoring Stripe webhook %s for event %s, as it is already processed.",
                 $event->id,
-                $event->type
+                $event->type,
             ));
         } else {
             $this->log->encode("Received new Stripe webhook event {$event->type}", $event);

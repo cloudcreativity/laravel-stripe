@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -27,10 +28,6 @@ use Stripe\Event;
 
 class ListenersTest extends TestCase
 {
-
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -52,7 +49,7 @@ class ListenersTest extends TestCase
         event('stripe.webhooks', $webhook = new Webhook(
             $event,
             factory(StripeEvent::class)->create(),
-            ['queue' => 'my_queue', 'connection' => 'my_connection', 'job' => TestWebhookJob::class]
+            ['queue' => 'my_queue', 'connection' => 'my_connection', 'job' => TestWebhookJob::class],
         ));
 
         Queue::assertPushedOn('my_queue', TestWebhookJob::class, function ($job) use ($webhook) {
@@ -82,7 +79,7 @@ class ListenersTest extends TestCase
             $event,
             $model->account,
             $model,
-            ['job' => TestWebhookJob::class]
+            ['job' => TestWebhookJob::class],
         ));
 
         Queue::assertPushed(TestWebhookJob::class, function ($job) use ($webhook) {
@@ -101,7 +98,7 @@ class ListenersTest extends TestCase
         event('stripe.webhooks', $webhook = new Webhook(
             Event::constructFrom(['id' => 'evt_00000000', 'type' => 'charge.refunded']),
             factory(StripeEvent::class)->create(),
-            ['job' => null]
+            ['job' => null],
         ));
 
         Queue::assertNotPushed(TestWebhookJob::class);
