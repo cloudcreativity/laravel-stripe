@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,7 +25,6 @@ use Stripe\StripeObject;
 
 trait MakesStripeAssertions
 {
-
     /**
      * @var ClientFake
      */
@@ -33,7 +33,6 @@ trait MakesStripeAssertions
     /**
      * Queue Stripe responses.
      *
-     * @param StripeObject ...$objects
      * @return void
      */
     public function withQueue(StripeObject ...$objects)
@@ -51,7 +50,7 @@ trait MakesStripeAssertions
      * @param Closure|null $args
      *      an optional closure to assert that the call received the correct arguments.
      */
-    public function assertInvoked($class, $method, Closure $args = null)
+    public function assertInvoked($class, $method, ?Closure $args = null)
     {
         $index = $this->stripeClient->increment();
 
@@ -70,7 +69,7 @@ trait MakesStripeAssertions
      * @param Closure|null $args
      *      an optional closure to assert that the call received the correct arguments.
      */
-    public function assertInvokedAt($index, $class, $method, Closure $args = null)
+    public function assertInvokedAt($index, $class, $method, ?Closure $args = null)
     {
         if (!$history = $this->stripeClient->at($index)) {
             Assert::fail("No Stripe call at index {$index}.");
@@ -79,13 +78,13 @@ trait MakesStripeAssertions
         Assert::assertSame(
             $class . '::' . $method,
             $history['class'] . '::' . $history['method'],
-            "Stripe {$index}: class and method"
+            "Stripe {$index}: class and method",
         );
 
         if ($args) {
             Assert::assertTrue(
                 $args(...$history['args']),
-                "Stripe {$index}: arguments"
+                "Stripe {$index}: arguments",
             );
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -21,7 +22,6 @@ use Closure;
 
 class LaravelStripe
 {
-
     /**
      * Stripe on storage of their ids:
      *
@@ -32,7 +32,7 @@ class LaravelStripe
      *
      * @see https://stripe.com/docs/upgrades#what-changes-does-stripe-consider-to-be-backwards-compatible
      */
-    const ID_DATABASE_COLLATION = 'utf8_bin';
+    public const ID_DATABASE_COLLATION = 'utf8_bin';
 
     /**
      * @var bool
@@ -123,10 +123,9 @@ class LaravelStripe
     /**
      * Set the resolver for the Stripe owner of the current request.
      *
-     * @param Closure|null $closure
      * @return LaravelStripe
      */
-    public static function currentOwnerResolver(Closure $closure = null)
+    public static function currentOwnerResolver(?Closure $closure = null)
     {
         self::$currentOwnerResolver = $closure;
 

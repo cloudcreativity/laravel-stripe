@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,13 +24,10 @@ use JsonSerializable;
 
 class LogClientResults
 {
-
     private $log;
 
     /**
      * LogClientResults constructor.
-     *
-     * @param Logger $log
      */
     public function __construct(Logger $log)
     {
@@ -39,7 +37,6 @@ class LogClientResults
     /**
      * Handle the event.
      *
-     * @param ClientReceivedResult $event
      * @return void
      */
     public function handle(ClientReceivedResult $event)

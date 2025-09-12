@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,10 +24,9 @@ use Stripe\OAuth;
 
 class AuthorizeUrl implements Arrayable
 {
-
-    const EXPRESS_CONNECT_BASE = 'https://connect.stripe.com/express';
-    const STRIPE_LANDING_LOGIN = 'login';
-    const STRIPE_LANDING_REGISTER = 'register';
+    public const EXPRESS_CONNECT_BASE = 'https://connect.stripe.com/express';
+    public const STRIPE_LANDING_LOGIN = 'login';
+    public const STRIPE_LANDING_REGISTER = 'register';
 
     /**
      * @var string
@@ -76,11 +76,8 @@ class AuthorizeUrl implements Arrayable
 
     /**
      * AuthorizeUrl constructor.
-     *
-     * @param string $state
-     * @param array|null $options
      */
-    public function __construct($state, array $options = null)
+    public function __construct(string $state, ?array $options = null)
     {
         $this->state = $state;
         $this->options = $options ?: [];
@@ -101,7 +98,7 @@ class AuthorizeUrl implements Arrayable
     {
         return OAuth::authorizeUrl(
             $this->toArray(),
-            $this->options ?: null
+            $this->options ?: null,
         );
     }
 
@@ -109,7 +106,6 @@ class AuthorizeUrl implements Arrayable
      * Redirect to the authorize URL.
      *
      * @param int $status
-     * @param array $headers
      * @return RedirectResponse
      */
     public function redirect($status = 302, array $headers = [])
@@ -117,7 +113,7 @@ class AuthorizeUrl implements Arrayable
         return redirect()->away(
             $this->toString(),
             $status,
-            $headers
+            $headers,
         );
     }
 
@@ -216,7 +212,7 @@ class AuthorizeUrl implements Arrayable
     /**
      * Set key/value pairs for the `stripe_user`.
      *
-     * @param iterable|array $user
+     * @param array|iterable $user
      * @return $this
      */
     public function user($user)
@@ -227,7 +223,7 @@ class AuthorizeUrl implements Arrayable
     /**
      * Set key/value pairs for the `stripe_user`.
      *
-     * @param iterable|array $user
+     * @param array|iterable $user
      * @return $this
      */
     public function stripeUser($user)
@@ -257,9 +253,6 @@ class AuthorizeUrl implements Arrayable
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
     public function toArray()
     {
         return collect($this->all())->reject(function ($value) {

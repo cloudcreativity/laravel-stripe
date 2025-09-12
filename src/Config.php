@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -28,7 +29,6 @@ use Stripe\Webhook;
 
 class Config
 {
-
     /**
      * Get the Stripe API Key.
      *
@@ -65,13 +65,13 @@ class Config
     /**
      * Get the Connect account model.
      *
-     * @return StripeAccount|mixed
+     * @return mixed|StripeAccount
      */
     public static function connectModel()
     {
         $class = self::fqn('connect.model');
 
-        return new $class;
+        return new $class();
     }
 
     /**
@@ -83,7 +83,7 @@ class Config
     {
         $class = self::fqn('connect.owner');
 
-        return new $class;
+        return new $class();
     }
 
     /**
@@ -118,13 +118,13 @@ class Config
     }
 
     /**
-     * @return StripeEvent|mixed
+     * @return mixed|StripeEvent
      */
     public static function webhookModel()
     {
         $class = self::fqn('webhooks.model');
 
-        return new $class;
+        return new $class();
     }
 
     /**
@@ -139,7 +139,7 @@ class Config
             throw new RuntimeException("Webhook signing secret does not exist: {$name}");
         }
 
-        if (!is_string($secret)|| empty($secret)) {
+        if (!is_string($secret) || empty($secret)) {
             throw new RuntimeException("Invalid webhook signing secret: {$name}");
         }
 
@@ -168,7 +168,7 @@ class Config
         $path = sprintf(
             'webhooks.%s.%s',
             $connect ? 'connect' : 'account',
-            str_replace('.', '_', $type)
+            str_replace('.', '_', $type),
         );
 
         return array_replace([
@@ -242,7 +242,6 @@ class Config
     /**
      * @param string $key
      * @param mixed|null $default
-     * @return mixed
      */
     private static function get($key, $default = null)
     {
@@ -265,7 +264,6 @@ class Config
     }
 
     /**
-     * @param $key
      * @return bool
      */
     private static function has($key)

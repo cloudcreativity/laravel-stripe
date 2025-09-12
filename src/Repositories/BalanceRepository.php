@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,11 +24,9 @@ use Stripe\Balance;
 
 class BalanceRepository extends AbstractRepository
 {
-
     /**
      * Retrieve the balance object of an account.
      *
-     * @return Balance
      * @link https://stripe.com/docs/api/balance/balance_retrieve
      */
     public function retrieve(): Balance
@@ -35,9 +34,6 @@ class BalanceRepository extends AbstractRepository
         return $this->send('retrieve', $this->options ?: null);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function fqn(): string
     {
         return Balance::class;

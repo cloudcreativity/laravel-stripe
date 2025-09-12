@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,12 +25,11 @@ use InvalidArgumentException;
 
 abstract class AbstractRepository
 {
-
-    const PARAM_EXPAND = 'expand';
-    const PARAM_ID = 'id';
-    const PARAM_METADATA = 'metadata';
-    const OPT_IDEMPOTENCY_KEY = 'idempotency_key';
-    const OPT_STRIPE_ACCOUNT = 'stripe_account';
+    public const PARAM_EXPAND = 'expand';
+    public const PARAM_ID = 'id';
+    public const PARAM_METADATA = 'metadata';
+    public const OPT_IDEMPOTENCY_KEY = 'idempotency_key';
+    public const OPT_STRIPE_ACCOUNT = 'stripe_account';
 
     /**
      * @var array
@@ -48,15 +48,12 @@ abstract class AbstractRepository
 
     /**
      * Get the fully qualified class name that the client handles.
-     *
-     * @return string
      */
     abstract protected function fqn(): string;
 
     /**
      * AbstractRepository constructor.
      *
-     * @param Client $client
      * @param string|null $accountId
      */
     public function __construct(Client $client, $accountId = null)
@@ -72,13 +69,10 @@ abstract class AbstractRepository
 
     /**
      * Get the account id.
-     *
-     * @return string|null
      */
     public function accountId(): ?string
     {
-        return isset($this->options[self::OPT_STRIPE_ACCOUNT]) ?
-            $this->options[self::OPT_STRIPE_ACCOUNT] : null;
+        return $this->options[self::OPT_STRIPE_ACCOUNT] ?? null;
     }
 
     /**
@@ -101,8 +95,6 @@ abstract class AbstractRepository
     /**
      * Set a parameter.
      *
-     * @param string $key
-     * @param mixed $value
      * @return $this
      */
     public function param(string $key, $value): self
@@ -115,7 +107,6 @@ abstract class AbstractRepository
     /**
      * Set many parameters.
      *
-     * @param iterable $values
      * @return $this
      */
     public function params(iterable $values): self
@@ -130,8 +121,6 @@ abstract class AbstractRepository
     /**
      * Set an option.
      *
-     * @param string $key
-     * @param mixed $value
      * @return $this
      */
     public function option(string $key, $value): self
@@ -144,7 +133,6 @@ abstract class AbstractRepository
     /**
      * Set many options.
      *
-     * @param iterable $values
      * @return $this
      */
     public function options(iterable $values): self
@@ -159,7 +147,6 @@ abstract class AbstractRepository
     /**
      * Set keys to expand.
      *
-     * @param string ...$keys
      * @return $this
      */
     public function expand(string ...$keys): self
@@ -178,10 +165,6 @@ abstract class AbstractRepository
      *
      * - The static call can be stubbed out in tests.
      * - Events are dispatched.
-     *
-     * @param string $method
-     * @param mixed ...$args
-     * @return mixed
      */
     protected function send(string $method, ...$args)
     {
@@ -189,7 +172,7 @@ abstract class AbstractRepository
             $this->client,
             $this->fqn(),
             $method,
-            ...$args
+            ...$args,
         );
 
         $this->reset();
@@ -197,9 +180,6 @@ abstract class AbstractRepository
         return $result;
     }
 
-    /**
-     * @return void
-     */
     protected function reset(): void
     {
         $this->params = [];

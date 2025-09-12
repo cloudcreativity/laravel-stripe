@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,7 +25,6 @@ use Illuminate\Contracts\Bus\Dispatcher;
 
 class DispatchWebhookJob
 {
-
     /**
      * @var Dispatcher
      */
@@ -37,9 +37,6 @@ class DispatchWebhookJob
 
     /**
      * DispatchWebhookJob constructor.
-     *
-     * @param Dispatcher $queue
-     * @param Logger $log
      */
     public function __construct(Dispatcher $queue, Logger $log)
     {
@@ -50,7 +47,6 @@ class DispatchWebhookJob
     /**
      * Handle the event.
      *
-     * @param Webhook $webhook
      * @return void
      */
     public function handle(Webhook $webhook)

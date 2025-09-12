@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,10 +23,6 @@ use CloudCreativity\LaravelStripe\Tests\TestAccount;
 
 class EloquentTest extends TestCase
 {
-
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();

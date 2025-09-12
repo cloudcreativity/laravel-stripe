@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -19,18 +20,15 @@ namespace CloudCreativity\LaravelStripe\Contracts\Connect;
 
 interface AccountOwnerInterface
 {
-
     /**
      * Get the column name of the unique identifier for the Stripe account owner.
-     *
-     * @return string
      */
     public function getStripeIdentifierName(): string;
 
     /**
      * Get the unique identifier for the Stripe account owner.
      *
-     * @return string|int
+     * @return int|string
      */
     public function getStripeIdentifier();
 }

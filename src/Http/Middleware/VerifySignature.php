@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -26,7 +27,6 @@ use Stripe\Exception\SignatureVerificationException;
 
 class VerifySignature
 {
-
     /**
      * @var Verifier
      */
@@ -44,10 +44,6 @@ class VerifySignature
 
     /**
      * VerifySignature constructor.
-     *
-     * @param Verifier $verifier
-     * @param Dispatcher $events
-     * @param Logger $log
      */
     public function __construct(Verifier $verifier, Dispatcher $events, Logger $log)
     {
@@ -57,10 +53,7 @@ class VerifySignature
     }
 
     /**
-     * @param $request
-     * @param \Closure $next
      * @param string $signingSecret
-     * @return mixed
      */
     public function handle($request, \Closure $next, $signingSecret = 'default')
     {
@@ -72,7 +65,7 @@ class VerifySignature
             $event = new SignatureVerificationFailed(
                 $ex->getMessage(),
                 $ex->getSigHeader(),
-                $signingSecret
+                $signingSecret,
             );
 
             $this->log->log("Stripe webhook signature verification failed.", $event->toArray());

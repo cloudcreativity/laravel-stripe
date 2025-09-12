@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,7 +23,6 @@ use Stripe\StripeObject;
 
 class ClientReceivedResult implements Arrayable
 {
-
     /**
      * @var string
      */
@@ -48,8 +48,6 @@ class ClientReceivedResult implements Arrayable
      *
      * @param string $name
      * @param string $method
-     * @param array $args
-     * @param StripeObject $result
      */
     public function __construct($name, $method, array $args, StripeObject $result)
     {

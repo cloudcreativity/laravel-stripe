@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -21,7 +22,6 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class ClientWillSend implements Arrayable
 {
-
     /**
      * @var string
      */
@@ -39,10 +39,6 @@ class ClientWillSend implements Arrayable
 
     /**
      * ClientWillSend constructor.
-     *
-     * @param $name
-     * @param $method
-     * @param $args
      */
     public function __construct($name, $method, $args)
     {

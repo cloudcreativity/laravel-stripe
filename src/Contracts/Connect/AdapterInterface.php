@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -21,11 +22,9 @@ use Stripe\Account;
 
 interface AdapterInterface
 {
-
     /**
      * Find a connected account by its Stripe id.
      *
-     * @param $accountId
      * @return AccountInterface|null
      */
     public function find($accountId);
@@ -56,7 +55,6 @@ interface AdapterInterface
     /**
      * Update an account from a Stripe account resource.
      *
-     * @param AccountInterface $account
      * @param Account $resource
      *      the Stripe account resource.
      * @return void
@@ -66,7 +64,6 @@ interface AdapterInterface
     /**
      * Remove an account when it is de-authorized.
      *
-     * @param AccountInterface $account
      * @return void
      */
     public function remove(AccountInterface $account);

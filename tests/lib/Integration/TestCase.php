@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -30,9 +31,6 @@ abstract class TestCase extends BaseTestCase
 {
     use InteractsWithDeprecationHandling;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -52,9 +50,6 @@ abstract class TestCase extends BaseTestCase
         $this->artisan('migrate', ['--database' => 'testbench']);
     }
 
-    /**
-     * @return void
-     */
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -65,10 +60,8 @@ abstract class TestCase extends BaseTestCase
      * Provider for all Stripe classes that are implemented via repositories.
      *
      * Balances are omitted because they do not have an id.
-     *
-     * @return array
      */
-    public function classProvider(): array
+    public static function classProvider(): array
     {
         return [
             'accounts' => [\Stripe\Account::class, 'accounts'],
@@ -144,7 +137,7 @@ abstract class TestCase extends BaseTestCase
     {
         return json_decode(
             file_get_contents(__DIR__ . '/../../stubs/' . $name . '.json'),
-            true
+            true,
         );
     }
 }

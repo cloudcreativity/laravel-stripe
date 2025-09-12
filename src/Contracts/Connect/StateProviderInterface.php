@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -19,7 +20,6 @@ namespace CloudCreativity\LaravelStripe\Contracts\Connect;
 
 interface StateProviderInterface
 {
-
     /**
      * Get the state value.
      *

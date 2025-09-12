@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -28,8 +29,6 @@ use Stripe\StripeObject;
 
 class DeauthorizeTest extends TestCase
 {
-
-
     public function test()
     {
         Event::fake();

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,7 +23,6 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateStripeAccountsAndEvents extends Migration
 {
-
     /**
      * Run the migration.
      *

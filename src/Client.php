@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -25,7 +26,6 @@ use InvalidArgumentException;
 
 class Client
 {
-
     /**
      * @var Dispatcher
      */
@@ -33,8 +33,6 @@ class Client
 
     /**
      * Client constructor.
-     *
-     * @param Dispatcher $events
      */
     public function __construct(Dispatcher $events)
     {
@@ -44,8 +42,6 @@ class Client
     /**
      * @param string $class
      * @param string $method
-     * @param mixed ...$args
-     * @return mixed
      */
     public function __invoke($class, $method, ...$args)
     {
@@ -66,11 +62,6 @@ class Client
 
     /**
      * Execute the static Stripe call.
-     *
-     * @param $class
-     * @param $method
-     * @param array $args
-     * @return mixed
      */
     protected function execute($class, $method, array $args)
     {

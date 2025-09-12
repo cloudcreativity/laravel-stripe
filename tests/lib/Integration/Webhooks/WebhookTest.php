@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,7 +25,6 @@ use Stripe\Event;
 
 class WebhookTest extends TestCase
 {
-
     public function test()
     {
         $webhook = Event::constructFrom($this->stub('webhook'));

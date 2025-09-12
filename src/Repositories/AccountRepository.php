@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,15 +25,12 @@ use Stripe\Account;
 
 class AccountRepository extends AbstractRepository
 {
-
     use Concerns\All;
     use Concerns\Update;
 
     /**
-     * @param string $type
      * @param iterable $params
      *      additional optional parameters.
-     * @return Account
      */
     public function create(string $type = 'custom', iterable $params = []): Account
     {
@@ -50,11 +48,8 @@ class AccountRepository extends AbstractRepository
      *
      * If the id is not provided, the account associated with this
      * repository is returned.
-     *
-     * @param string|null $id
-     * @return Account
      */
-    public function retrieve(string $id = null): Account
+    public function retrieve(?string $id = null): Account
     {
         if (!is_string($id) && !is_null($id)) {
             throw new InvalidArgumentException('Expecting a string or null.');
@@ -67,9 +62,6 @@ class AccountRepository extends AbstractRepository
         return $this->send('retrieve', $this->params ?: null, $this->options ?: null);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function fqn(): string
     {
         return Account::class;

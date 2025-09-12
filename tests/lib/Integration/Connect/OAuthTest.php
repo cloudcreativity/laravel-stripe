@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -28,18 +29,15 @@ use CloudCreativity\LaravelStripe\Tests\TestUser;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class OAuthTest extends TestCase
 {
-
     /**
      * @var User
      */
     private $user;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -48,7 +46,7 @@ class OAuthTest extends TestCase
 
         $this->instance(
             StateProviderInterface::class,
-            $state = $this->createMock(StateProviderInterface::class)
+            $state = $this->createMock(StateProviderInterface::class),
         );
 
         $state->method('get')->willReturn('session_token');
@@ -63,9 +61,6 @@ class OAuthTest extends TestCase
         });
     }
 
-    /**
-     * @return void
-     */
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -208,10 +203,7 @@ class OAuthTest extends TestCase
         Queue::assertNotPushed(FetchUserCredentials::class);
     }
 
-    /**
-     * @return array
-     */
-    public function invalidProvider()
+    public static function invalidProvider(): array
     {
         return [
             'state' => ['state'],
@@ -225,11 +217,9 @@ class OAuthTest extends TestCase
      *
      * In theory a user should never encounter this, as Stripe will send what
      * we expect it to send. But it is good to handle the scenario just in case.
-     *
-     * @param string $missing
-     * @dataProvider invalidProvider
      */
-    public function testInvalid($missing)
+    #[DataProvider('invalidProvider')]
+    public function testInvalid(string $missing): void
     {
         $params = collect([
             'state' => 'session_token',

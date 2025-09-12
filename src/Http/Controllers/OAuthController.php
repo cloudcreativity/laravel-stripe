@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -28,7 +29,6 @@ use Illuminate\Routing\Controller;
 
 class OAuthController extends Controller
 {
-
     /**
      * @var Logger
      */
@@ -36,8 +36,6 @@ class OAuthController extends Controller
 
     /**
      * OAuthController constructor.
-     *
-     * @param Logger $log
      */
     public function __construct(Logger $log)
     {
@@ -47,8 +45,6 @@ class OAuthController extends Controller
     /**
      * Handle the Stripe Connect authorize endpoint.
      *
-     * @param AuthorizeConnect $request
-     * @param StateProviderInterface $state
      * @return Response
      */
     public function __invoke(AuthorizeConnect $request, StateProviderInterface $state)
@@ -77,7 +73,7 @@ class OAuthController extends Controller
             return $this->error(
                 Response::HTTP_UNPROCESSABLE_ENTITY,
                 $data,
-                $owner
+                $owner,
             );
         }
 
@@ -88,8 +84,6 @@ class OAuthController extends Controller
     /**
      * Handle success.
      *
-     * @param $data
-     * @param $user
      * @return Response
      */
     protected function success($data, $user)
@@ -98,7 +92,7 @@ class OAuthController extends Controller
             $data['code'],
             $data['scope'] ?? null,
             $user,
-            Config::connectSuccessView()
+            Config::connectSuccessView(),
         ));
 
         return response()->view($success->view, $success->all());
@@ -108,8 +102,6 @@ class OAuthController extends Controller
      * Handle an error.
      *
      * @param int $status
-     * @param $data
-     * @param $user
      * @return Response
      */
     protected function error($status, $data, $user)
@@ -118,13 +110,13 @@ class OAuthController extends Controller
             $data['error'],
             $data['error_description'],
             $user,
-            Config::connectErrorView()
+            Config::connectErrorView(),
         ));
 
         return response()->view(
             $error->view,
             $error->all(),
-            $status
+            $status,
         );
     }
 }

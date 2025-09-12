@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,18 +24,16 @@ use Illuminate\Support\Collection as IlluminateCollection;
 use Stripe\Collection as StripeCollection;
 
 /**
- * Trait All
+ * Trait All.
  *
  * @todo add cursor paging helper methods
  */
 trait All
 {
-
     /**
      * Query all resources.
      *
-     * @param iterable|array $params
-     * @return StripeCollection
+     * @param array|iterable $params
      */
     public function all($params = []): StripeCollection
     {
@@ -46,8 +45,7 @@ trait All
     /**
      * Query all resources, and return a Laravel collection.
      *
-     * @param iterable|array $params
-     * @return IlluminateCollection
+     * @param array|iterable $params
      */
     public function collect($params = []): IlluminateCollection
     {

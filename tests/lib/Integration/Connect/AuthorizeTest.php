@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -30,15 +31,11 @@ use Stripe\StripeObject;
 
 class AuthorizeTest extends TestCase
 {
-
     /**
      * @var TestUser
      */
     private $user;
 
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();

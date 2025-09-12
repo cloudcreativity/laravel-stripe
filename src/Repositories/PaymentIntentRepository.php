@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,7 +25,6 @@ use Stripe\PaymentIntent;
 
 class PaymentIntentRepository extends AbstractRepository
 {
-
     use Concerns\All;
     use Concerns\Retrieve;
     use Concerns\Update;
@@ -34,9 +34,7 @@ class PaymentIntentRepository extends AbstractRepository
      *
      * Both currency and amount are required parameters.
      *
-     * @param string $currency
-     * @param int $amount
-     * @param iterable|array $params
+     * @param array|iterable $params
      *      additional optional parameters.
      * @return PaymentIntent
      */
@@ -45,15 +43,12 @@ class PaymentIntentRepository extends AbstractRepository
         Assert::chargeAmount($currency, $amount);
 
         $this->params($params)->params(
-            compact('currency', 'amount')
+            compact('currency', 'amount'),
         );
 
         return $this->send('create', $this->params, $this->options);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function fqn(): string
     {
         return PaymentIntent::class;

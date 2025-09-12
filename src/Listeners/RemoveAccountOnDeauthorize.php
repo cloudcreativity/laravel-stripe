@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,7 +23,6 @@ use CloudCreativity\LaravelStripe\Events\AccountDeauthorized;
 
 class RemoveAccountOnDeauthorize
 {
-
     /**
      * @var AdapterInterface
      */
@@ -30,8 +30,6 @@ class RemoveAccountOnDeauthorize
 
     /**
      * RemoveAccountOnDeauthorize constructor.
-     *
-     * @param AdapterInterface $adapter
      */
     public function __construct(AdapterInterface $adapter)
     {
@@ -41,7 +39,6 @@ class RemoveAccountOnDeauthorize
     /**
      * Handle the event.
      *
-     * @param AccountDeauthorized $event
      * @return void
      */
     public function handle(AccountDeauthorized $event)

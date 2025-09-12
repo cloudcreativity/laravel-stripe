@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,7 +25,6 @@ use Stripe\Event;
 
 class Webhook
 {
-
     use SerializesModels;
 
     /**
@@ -37,7 +37,7 @@ class Webhook
     /**
      * The stored webhook.
      *
-     * @var StripeEvent|mixed
+     * @var mixed|StripeEvent
      */
     public $model;
 
@@ -49,9 +49,7 @@ class Webhook
     /**
      * Webhook constructor.
      *
-     * @param Event $webhook
-     * @param StripeEvent|mixed $model
-     * @param array $config
+     * @param mixed|StripeEvent $model
      */
     public function __construct(Event $webhook, $model, array $config = [])
     {
@@ -93,7 +91,6 @@ class Webhook
     /**
      * Is the webhook the specified type?
      *
-     * @param $type
      * @return bool
      */
     public function is($type)
@@ -124,8 +121,6 @@ class Webhook
 
     /**
      * Get the configured connection for the webhook.
-     *
-     * @return
      */
     public function connection()
     {

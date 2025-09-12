@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -27,10 +28,6 @@ use Illuminate\Support\Facades\Event;
 
 class ProcessTest extends TestCase
 {
-
-    /**
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -64,7 +61,7 @@ class ProcessTest extends TestCase
                     $this->assertEquals(\Stripe\Event::constructFrom($payload), $webhook->webhook, "{$name}: webhook");
                     $this->assertTrue($model->is($webhook->model), "{$name}: model");
                     return true;
-                }
+                },
             );
         }
 
@@ -104,7 +101,7 @@ class ProcessTest extends TestCase
                     $this->assertTrue($model->account->is($webhook->account), "{$name}: account");
                     $this->assertTrue($model->is($webhook->model), "{$name}: model");
                     return true;
-                }
+                },
             );
         }
     }

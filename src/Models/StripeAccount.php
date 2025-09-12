@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -27,7 +28,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StripeAccount extends Model implements AccountInterface
 {
-
     use ConnectedAccount;
     use SoftDeletes;
 
@@ -85,7 +85,7 @@ class StripeAccount extends Model implements AccountInterface
         return $this->hasMany(
             get_class($model),
             $model->getAccountIdentifierName(),
-            $this->getStripeAccountIdentifierName()
+            $this->getStripeAccountIdentifierName(),
         );
     }
 
@@ -100,7 +100,7 @@ class StripeAccount extends Model implements AccountInterface
             get_class($model),
             $this->getStripeOwnerIdentifierName(),
             $model->getStripeIdentifierName(),
-            'owner'
+            'owner',
         );
     }
 }

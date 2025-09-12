@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -25,7 +26,6 @@ use Stripe\StripeObject;
 
 class ClientFake extends Client
 {
-
     /**
      * @var Collection
      */
@@ -43,8 +43,6 @@ class ClientFake extends Client
 
     /**
      * ClientFake constructor.
-     *
-     * @param Dispatcher $events
      */
     public function __construct(Dispatcher $events)
     {
@@ -57,7 +55,6 @@ class ClientFake extends Client
     /**
      * Queue results.
      *
-     * @param StripeObject ...$results
      * @return void
      */
     public function queue(StripeObject ...$results)
@@ -99,9 +96,6 @@ class ClientFake extends Client
     }
 
     /**
-     * @param $class
-     * @param $method
-     * @param array $args
      * @return StripeObject
      */
     protected function execute($class, $method, array $args)
@@ -114,7 +108,7 @@ class ClientFake extends Client
             'class' => $class,
             'method' => $method,
             'args' => $args,
-            'result' => $result = $this->queue->shift()
+            'result' => $result = $this->queue->shift(),
         ]);
 
         return $result;

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -22,7 +23,6 @@ use CloudCreativity\LaravelStripe\Contracts\Connect\AccountOwnerInterface;
 
 class OAuthSuccess extends AbstractOAuthEvent
 {
-
     /**
      * @var string
      */
@@ -69,9 +69,6 @@ class OAuthSuccess extends AbstractOAuthEvent
         return Authorizer::SCOPE_READ_WRITE === $this->scope;
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function defaults()
     {
         return ['scope' => $this->scope];

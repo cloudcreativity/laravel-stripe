@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -20,18 +21,14 @@ namespace CloudCreativity\LaravelStripe\Tests\Integration\Console;
 use CloudCreativity\LaravelStripe\Facades\Stripe;
 use CloudCreativity\LaravelStripe\Models\StripeAccount;
 use CloudCreativity\LaravelStripe\Tests\Integration\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Stripe\Balance;
 use Stripe\Charge;
 use Stripe\Collection;
 
 class StripeQueryTest extends TestCase
 {
-
-    /**
-     * @param string $fqn
-     * @param string $resource
-     * @dataProvider classProvider
-     */
+    #[DataProvider('classProvider')]
     public function testAll(string $fqn, string $resource): void
     {
         Stripe::fake(new Collection());
@@ -65,11 +62,7 @@ class StripeQueryTest extends TestCase
         });
     }
 
-    /**
-     * @param string $fqn
-     * @param string $resource
-     * @dataProvider classProvider
-     */
+    #[DataProvider('classProvider')]
     public function testAllConnect(string $fqn, string $resource): void
     {
         /** @var StripeAccount $account */
@@ -88,18 +81,14 @@ class StripeQueryTest extends TestCase
             $this->assertNull($params, 'params');
 
             $this->assertSame([
-                'stripe_account' => $account->getStripeAccountIdentifier()
+                'stripe_account' => $account->getStripeAccountIdentifier(),
             ], $options, 'options');
 
             return true;
         });
     }
 
-    /**
-     * @param string $fqn
-     * @param string $resource
-     * @dataProvider classProvider
-     */
+    #[DataProvider('classProvider')]
     public function testRetrieveAndExpand(string $fqn, string $resource): void
     {
         Stripe::fake(new $fqn($id = 'foo_bazbat'));
@@ -147,11 +136,7 @@ class StripeQueryTest extends TestCase
         });
     }
 
-    /**
-     * @param $fqn
-     * @param $resource
-     * @dataProvider classProvider
-     */
+    #[DataProvider('classProvider')]
     public function testRetrieveConnect($fqn, $resource)
     {
         /** @var StripeAccount $account */
@@ -171,7 +156,7 @@ class StripeQueryTest extends TestCase
             $this->assertSame(compact('id'), $params, 'params');
 
             $this->assertSame([
-                'stripe_account' => $account->getStripeAccountIdentifier()
+                'stripe_account' => $account->getStripeAccountIdentifier(),
             ], $options, 'options');
 
             return true;

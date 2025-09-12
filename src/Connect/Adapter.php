@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -28,16 +29,13 @@ use Stripe\Account;
 
 class Adapter implements AdapterInterface
 {
-
     /**
-     * @var Model|ConnectedAccount
+     * @var ConnectedAccount|Model
      */
     private $model;
 
     /**
      * ConnectedAccounts constructor.
-     *
-     * @param Model $model
      */
     public function __construct(Model $model)
     {
@@ -48,17 +46,11 @@ class Adapter implements AdapterInterface
         $this->model = $model;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function find($accountId)
     {
         return $this->query($accountId)->first();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function store($accountId, $refreshToken, $scope, AccountOwnerInterface $owner)
     {
         $account = $this->findWithTrashed($accountId) ?: $this->newInstance($accountId);
@@ -75,9 +67,6 @@ class Adapter implements AdapterInterface
         return $account;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function update(AccountInterface $account, Account $resource)
     {
         if (!$account instanceof $this->model) {
@@ -91,9 +80,6 @@ class Adapter implements AdapterInterface
         $account->update($resource->jsonSerialize());
     }
 
-    /**
-     * @inheritDoc
-     */
     public function remove(AccountInterface $account)
     {
         if (!$account instanceof $this->model) {
@@ -110,19 +96,17 @@ class Adapter implements AdapterInterface
     }
 
     /**
-     * @param $accountId
      * @return Builder
      */
     protected function query($accountId)
     {
         return $this->model->newQuery()->where(
             $this->model->getStripeAccountIdentifierName(),
-            $accountId
+            $accountId,
         );
     }
 
     /**
-     * @param $accountId
      * @return Model|null
      */
     protected function findWithTrashed($accountId)
@@ -139,7 +123,6 @@ class Adapter implements AdapterInterface
     /**
      * Make a new instance of the account model.
      *
-     * @param $accountId
      * @return Model
      */
     protected function newInstance($accountId)

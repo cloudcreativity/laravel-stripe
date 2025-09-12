@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -23,18 +24,16 @@ use CloudCreativity\LaravelStripe\Repositories\AbstractRepository;
 
 trait HasMetadata
 {
-
     /**
      * Set metadata.
      *
-     * @param iterable $meta
      * @return $this
      */
     public function metadata(iterable $meta): self
     {
         $this->param(
             AbstractRepository::PARAM_METADATA,
-            collect($meta)->toArray()
+            collect($meta)->toArray(),
         );
 
         return $this;

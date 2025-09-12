@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -28,7 +29,6 @@ use Stripe\Exception\ApiErrorException;
 
 class StripeQuery extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
@@ -51,7 +51,6 @@ class StripeQuery extends Command
     /**
      * Execute the console command.
      *
-     * @param StripeService $stripe
      * @return int
      */
     public function handle(StripeService $stripe)
@@ -93,10 +92,8 @@ class StripeQuery extends Command
     }
 
     /**
-     * @param AbstractRepository $repository
      * @param string $resource
      * @param string $id
-     * @return JsonSerializable
      * @throws ApiErrorException
      */
     private function retrieve(AbstractRepository $repository, $resource, $id): JsonSerializable
@@ -111,9 +108,6 @@ class StripeQuery extends Command
     }
 
     /**
-     * @param AbstractRepository $repository
-     * @param $resource
-     * @return JsonSerializable
      * @throws ApiErrorException
      * @todo add support for pagination.
      */

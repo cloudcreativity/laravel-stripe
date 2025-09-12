@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright 2023 Cloud Creativity Limited
  *
@@ -24,8 +25,7 @@ use Stripe\WebhookSignature;
 
 class Verifier
 {
-
-    const SIGNATURE_HEADER = 'Stripe-Signature';
+    public const SIGNATURE_HEADER = 'Stripe-Signature';
 
     /**
      * Verify the request is from Stripe.
@@ -42,7 +42,7 @@ class Verifier
             throw SignatureVerificationException::factory(
                 'Expecting ' . self::SIGNATURE_HEADER . ' header.',
                 $request->getContent(),
-                $header
+                $header,
             );
         }
 
@@ -50,7 +50,7 @@ class Verifier
             $request->getContent(),
             $header,
             Config::webhookSigningSecrect($name),
-            Config::webhookTolerance()
+            Config::webhookTolerance(),
         );
     }
 }
