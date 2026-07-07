@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## Unreleased
 
+### Removed
+
+- Dropped support for Laravel 11.
+
 ## [0.9.0] - 2026-07-07
 
 ### Added
