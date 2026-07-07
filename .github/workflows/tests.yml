@@ -15,7 +15,7 @@ jobs:
       fail-fast: true
       matrix:
         php: [ 8.2, 8.3, 8.4, 8.5 ]
-        laravel: [ 11, 12, 13 ]
+        laravel: [ 12, 13 ]
         exclude:
           - laravel: 13
             php: 8.2
@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -39,7 +39,7 @@ jobs:
         run: composer require "laravel/framework:^${{ matrix.laravel }}" --no-update
 
       - name: Install dependencies
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 5
